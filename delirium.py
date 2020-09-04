@@ -2,6 +2,11 @@
 contains functions an customization
 that are specifically tailored towards the BOLD5000 dataset
 
+expects you to have cloned https://github.com/ariaaay/NeuralTaskonomy.git into this directory like so:
+delirium---NeuralTaskonomy
+        ---tests
+        ---delirium.py
+        ...
 """
 
 import os
@@ -102,6 +107,15 @@ def load_nn_data(
         suffix: str = config.NAME_SUFFIX,
         file_ending: str = config.NAME_FENDING
 ) -> np.ndarray:
+    """
+    TODO:doc
+    :param stim_list:
+    :param nn_data_path:
+    :param prefix:
+    :param suffix:
+    :param file_ending:
+    :return:
+    """
 
     if file_ending in ["npy"]:
         data_: t.List[np.ndarray] = []
