@@ -106,7 +106,7 @@ def load_nn_data(
     if file_ending in ["npy"]:
         data_: t.List[np.ndarray] = []
         for img_name in tqdm.tqdm(stim_list):
-            data_path = os.path.join(nn_data_path, prefix + img_name.split(".")[0] + "." + file_ending,)
+            data_path = os.path.join(nn_data_path, prefix + img_name.split(".")[0] + suffix + "." + file_ending,)
             data_.append(np.load(data_path, allow_pickle=True).flatten())
         data_: np.ndarray = np.array(data_)
         assert len(data_.shape) == 2, "Error: not all datapoints have the same number of parameters!"

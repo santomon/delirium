@@ -2,6 +2,8 @@ import pytest
 import delirium
 import utility
 import numpy as np
+import os
+import typing as t
 
 
 @pytest.fixture(scope="package")
@@ -42,6 +44,31 @@ def target_shapes_after_load():
         "LHOPA": (5254, 101)
     }
     return target_shapes
+
+
+@pytest.fixture(scope="module")
+def nn_data_path():
+    return r"C:\xd\bt\data\rcf_inference"
+
+
+@pytest.fixture(scope="module")
+def nn_data_suffix():
+    return "_bb_f16"
+
+
+@pytest.fixture(scope="module")
+def nn_data_prefix():
+    return ""
+
+
+@pytest.fixture(scope="module")
+def nn_data_file_ending():
+    return "npy"
+
+
+###########################################################################################################
+#################################### test functions #######################################################
+###########################################################################################################
 
 
 @pytest.fixture(scope="module")
@@ -94,6 +121,7 @@ def test_eliminate_data_by_substr_rep_assert_shape0_equals_4916(brain_data_subj1
             assert new_data[i][roi].shape[0] == 4916, new_data[i][roi].shape[0]
 
 
+@pytest.mark.dependency()
 def test_eliminate_data_by_substr_3entities_assert_shape0_equals_4913(brain_data_subj123_TR3):
     data_ = brain_data_subj123_TR3
     stim_lists = delirium.load_stim_lists(subjects=[1, 2, 3])
@@ -108,6 +136,8 @@ def test_eliminate_data_by_substr_3entities_assert_shape0_equals_4913(brain_data
     for i in range(3):
         for roi in new_data[i].keys():
             assert new_data[i][roi].shape[0] == 4913, new_data[i][roi].shape[0]
+
+    pytest.Class.stim_lists = new_stim_lists
 
 
 def test_load_brain_data_run_through_on_tr_list(brain_data_path, target_shapes_after_load):
@@ -127,3 +157,27 @@ def test_eliminate_data_by_substr_with_sample_data(sample_data, sample_stim_list
     assert (solution[0]["lmao"] == new_data[0]["lmao"]).all()
     assert (solution[1]["xd"] == new_data[1]["xd"]).all()
     assert (solution[1]["lmao"] == new_data[1]["lmao"]).all()
+
+
+@pytest.mark.slow
+@pytest.mark.dependency(depends=["test_eliminate_data_by_substr_3entities_assert_shape0_equals_4913"])
+def test_load_nn_data_with_legit_data_assert_shape(nn_data_path, nn_data_prefix, nn_data_suffix, nn_data_file_ending):
+    if os.path.isdir(nn_data_path):
+        data_ = delirium.load_nn_data(pytest.Class.stim_lists[0], nn_data_path, nn_data_prefix, nn_data_suffix,
+                              nn_data_file_ending)
+
+        assert len(data_.shape) == 2
+        assert data_.shape[0] == len(pytest.Class.stim_lists[0])
+
+    else:
+        print("test_load_nn_data_with_legit_data_assert_shape() skipped because nn_data_path does not exist")
+
+
+@pytest.mark.dependency(depends=["test_eliminate_data_by_substr_3entities_assert_shape0_equals_4913"])
+def test_load_nn_data_with_file_ending_xd(nn_data_path, nn_data_prefix, nn_data_suffix):
+    if os.path.isdir(nn_data_path):
+        with pytest.raises(NotImplementedError) as excinfo:
+            data_ = delirium.load_nn_data(pytest.Class.stim_lists[0], nn_data_path, nn_data_prefix, nn_data_suffix, "xd")
+        assert "operation is currently only supported for npy-files" in str(excinfo.value)
+    else:
+        print("test_load_nn_data_with_file_ending_xd() has been skipped because nn_data_path does not exist")

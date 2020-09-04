@@ -15,3 +15,7 @@ NAME_FENDING = "npy"  # file-ending of the saving format
 # dataset specific
 BOLD5K_PRES_STIM_SUBPATH = r"\Scene_Stimuli\Presented_Stimuli"
 BOLD5K_PRES_STIM_SUBSETS = ["COCO", "ImageNet", "Scene"]
+
+
+################################
+# testing:
