@@ -11,6 +11,7 @@ import numpy as np
 
 import utility
 import delirium_config as config
+import tqdm
 
 
 HEMISPHERES = ["LH", "RH"]
@@ -95,10 +96,20 @@ def eliminate_from_data_by_substr(data_: brain_dtype, stim_lists: t.List[t.List[
 
 
 def load_nn_data(
-        nn_data_path: str = config.NN_DATA_PATH
+        stim_list: t.List[str],
+        nn_data_path: str = config.NN_DATA_PATH,
+        prefix: str = config.NAME_PREFIX,
+        suffix: str = config.NAME_SUFFIX,
+        file_ending: str = config.NAME_FENDING
+) -> np.ndarray:
 
-
-) -> t.List[np.ndarray]:
-
-
-    pass
+    if file_ending in ["npy"]:
+        data_: t.List[np.ndarray] = []
+        for img_name in tqdm.tqdm(stim_list):
+            data_path = os.path.join(nn_data_path, prefix + img_name.split(".")[0] + "." + file_ending,)
+            data_.append(np.load(data_path, allow_pickle=True).flatten())
+        data_: np.ndarray = np.array(data_)
+        assert len(data_.shape) == 2, "Error: not all datapoints have the same number of parameters!"
+        return data_
+    else:
+        raise NotImplementedError("operation is currently only supported for npy-files")

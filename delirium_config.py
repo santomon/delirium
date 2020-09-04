@@ -9,6 +9,7 @@ NN_DATA_PATH = r"C:\xd\bt\data\rcf_inference"
 
 NAME_PREFIX = ""  # when loading inferences from neural nets, you can specify a prefix for the name of the file
 NAME_SUFFIX = "_bb_f16"  # when loading inferences from neural nets, you can specify a prefix for the name of the file
+NAME_FENDING = "npy"  # file-ending of the saving format
 
 #################################
 # dataset specific
