@@ -2,22 +2,15 @@
 contains custom config for users and dataset
 """
 
-BOLD5K_ROI_DATA_DIR = r"C:\xd\bt\data\ROIs"
-BOLD5K_STIMULI_DIR = r"C:\xd\bt\data\BOLD5000_Stimuli\BOLD5000_Stimuli"
+BOLD5K_ROI_DATA_PATH = r"C:\xd\bt\data\ROIs"
+BOLD5K_STIMULI_PATH = r"C:\xd\bt\data\BOLD5000_Stimuli\BOLD5000_Stimuli"
 
-NN_DATA_DIR = r""
+NN_DATA_PATH = r"C:\xd\bt\data\rcf_inference"
 
-
-
-
-
-
-
-
-
-
+NAME_PREFIX = ""  # when loading inferences from neural nets, you can specify a prefix for the name of the file
+NAME_SUFFIX = "_bb_f16"  # when loading inferences from neural nets, you can specify a prefix for the name of the file
 
 #################################
-#dataset specific
-BOLD5K_PRES_STIM_SUBDIR = r"\Scene_Stimuli\Presented_Stimuli"
+# dataset specific
+BOLD5K_PRES_STIM_SUBPATH = r"\Scene_Stimuli\Presented_Stimuli"
 BOLD5K_PRES_STIM_SUBSETS = ["COCO", "ImageNet", "Scene"]

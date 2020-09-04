@@ -23,8 +23,8 @@ def infer_recursive():
 
 
 def infer_single_folder(
-        img_dir: str,
-        out_dir: str,
+        img_path: str,
+        out_path: str,
         fendings: t.List[str] = FENDINGS,
         model_=None,
         model_params=[],

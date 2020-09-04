@@ -23,7 +23,7 @@ brain_dtype = t.List[t.Dict[str, np.ndarray]]
 
 
 def load_brain_data(
-        brain_data_path: str = config.BOLD5K_ROI_DATA_DIR,
+        brain_data_path: str = config.BOLD5K_ROI_DATA_PATH,
         subject: int = 1,
         tr: t.Union[int, t.List[int]] = 3,  # int or list of ints
         aggregator: t.Callable[[t.List[np.ndarray]], np.ndarray] = lambda x: np.mean(x, axis=0),
@@ -55,7 +55,7 @@ def load_brain_data(
         raise TypeError("tr should be either instance of int or list[int]!")
 
 
-def load_stim_lists(brain_data_path: str = config.BOLD5K_ROI_DATA_DIR, subjects: t.List[int] = (1, 2, 3)) -> \
+def load_stim_lists(brain_data_path: str = config.BOLD5K_ROI_DATA_PATH, subjects: t.List[int] = (1, 2, 3)) -> \
     t.List[t.List[str]]:
     stim_lists = []
 
@@ -94,7 +94,11 @@ def eliminate_from_data_by_substr(data_: brain_dtype, stim_lists: t.List[t.List[
     return new_data, new_stim_lists
 
 
-def load_nn_data() -> t.List[np.ndarray]:
+def load_nn_data(
+        nn_data_path: str = config.NN_DATA_PATH
+
+
+) -> t.List[np.ndarray]:
 
 
     pass
