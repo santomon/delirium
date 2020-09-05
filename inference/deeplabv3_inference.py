@@ -48,7 +48,7 @@ def postprocessor(data_: t.Dict) -> np.ndarray:
 
     result = data_['out']
     result = torch.nn.AvgPool2d(3)(result).cpu()
-    result = np.float16(result)
+    result = np.float16(result).squeeze(0)
     return result
 
 
