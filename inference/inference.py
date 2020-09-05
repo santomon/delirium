@@ -24,7 +24,8 @@ Type_of_Data = t.Any
 # decorator function to use
 def infer_BOLD5K(subdirectories=delirium_config.BOLD5K_PRES_STIM_SUBDIRECTORIES):
     """
-
+    Why go this far for so little?
+        -Why indeed
     :param subdirectories:
     :return:
     """
@@ -48,7 +49,6 @@ def infer_BOLD5K(subdirectories=delirium_config.BOLD5K_PRES_STIM_SUBDIRECTORIES)
     return inner
 
 
-@infer_BOLD5K(subdirectories=delirium_config.BOLD5K_PRES_STIM_SUBDIRECTORIES)
 def infer_folder(
         data_path: str,
         save_path: str,
@@ -82,12 +82,9 @@ def infer_folder(
         saver(postprocessed_output, save_path, file_)
 
 
-
-
-def parse_args():
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--model_module", default="deeplabv3_inference", type=str,
+def parse_args() -> argparse.ArgumentParser().parse_args():
+    parser_ = argparse.ArgumentParser()
+    parser_.add_argument("--model_module", default="deeplabv3_inference", type=str,
                         help="will attempt to import model_module"
                              "any model_module has to implement methods:"
                              "      data_path: str,"
@@ -100,16 +97,20 @@ def parse_args():
                              "specify a file which implements method, to run network inference on a set of data"
                              "depending on the implementation of the model by the original authors, this can vary from"
                              "easy to rather complicated;"
-                             )
+                        )
 
-    return parser.parse_args()
+    parser_.add_argument("--dataset", default="BOLD5000", type=str,
+                        help="essentially specify, if the dataset is used for the BOLD5000 dataset")
 
+    return parser_.parse_args()
 
-    pass
 
 if __name__ == "__main__":
 
     parser = parse_args()
+
+    if parser.dataset == "BOLD5000":
+        infer_folder = infer_BOLD5K(subdirectories=delirium_config.BOLD5K_PRES_STIM_SUBDIRECTORIES)(infer_folder)
 
     infer_folder(
         os.path.join(delirium_config.BOLD5K_STIMULI_PATH, delirium_config.BOLD5K_PRES_STIM_SUBPATH),
