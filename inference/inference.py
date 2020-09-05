@@ -80,7 +80,7 @@ def infer_folder(
         saver(postprocessed_output, save_path, file_)
 
 
-def parse_args() -> argparse.ArgumentParser().parse_args():
+def parse_args() -> argparse.ArgumentParser():
     parser_ = argparse.ArgumentParser()
     parser_.add_argument("--model_module", default="deeplabv3_inference", type=str,
                          help="will attempt to import model_module"
@@ -108,7 +108,11 @@ def parse_args() -> argparse.ArgumentParser().parse_args():
     parser_.add_argument("--save_path", default=delirium_config.NN_SAVE_PATH, type=str,
                         help="path, where the results of inference will be saved; if none is provided,"
                             "delirium_config.NN_SAVE_PATH will be used")
-    return parser_.parse_args()
+
+    if "inference/inference.py" in sys.argv:
+        return parser_.parse_args()
+    else:
+        return parser_.parse_args("")
 
 
 if __name__ == "__main__":
