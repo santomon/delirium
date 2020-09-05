@@ -18,7 +18,7 @@ import tqdm
 
 sys.path.append(os.path.join(config.NT_PATH, "code"))
 
-import encodingmodel.encoding_model
+# import encodingmodel.encoding_model
 
 
 HEMISPHERES = ["LH", "RH"]
