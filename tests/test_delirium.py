@@ -173,7 +173,7 @@ def test_load_nn_data_with_legit_data_assert_shape(nn_data_path, nn_data_prefix,
     else:
         print("test_load_nn_data_with_legit_data_assert_shape() skipped because nn_data_path does not exist")
 
-
+@pytest.mark.slow
 @pytest.mark.dependency(depends=["test_eliminate_data_by_substr_3entities_assert_shape0_equals_4913"])
 def test_load_nn_data_with_file_ending_xd(nn_data_path, nn_data_prefix, nn_data_suffix):
     if os.path.isdir(nn_data_path):
