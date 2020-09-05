@@ -79,6 +79,8 @@ def infer_folder(
 
 if __name__ == "__main__":
 
+
+
     infer_folder(
         os.path.join(delirium_config.BOLD5K_STIMULI_PATH, delirium_config.BOLD5K_PRES_STIM_SUBPATH),
         delirium_config.NN_SAVE_PATH,

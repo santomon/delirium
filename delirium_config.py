@@ -3,8 +3,8 @@ contains custom config for users and dataset
 """
 import os
 
-BOLD5K_ROI_DATA_PATH = r"C:\xd\bt\data\ROIs"
-BOLD5K_STIMULI_PATH = r"C:\xd\bt\data\BOLD5000_Stimuli\BOLD5000_Stimuli"
+BOLD5K_ROI_DATA_PATH = r"/content/gdrive/My Drive/ROIs"
+BOLD5K_STIMULI_PATH = r"/content/gdrive/My Drive/BOLD5000_Stimuli"
 
 NN_DATA_PATH = r"C:\xd\bt\data\rcf_inference"
 NN_SAVE_PATH = r"C:\xd\bt\output\deeplab_inference"
@@ -23,4 +23,9 @@ BOLD5K_PRES_STIM_SUBDIRECTORIES = ("COCO", "ImageNet", "Scene")
 
 
 ################################
-# testing:
+#downloadlinks:
+# BOLD5000_Stimuli dataset:
+# https://www.dropbox.com/s/5ie18t4rjjvsl47/BOLD5000_Stimuli.zip?dl=1
+
+# BOLD5000 ROI data:
+# https://ndownloader.figshare.com/files/12965447
