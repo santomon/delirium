@@ -7,7 +7,7 @@ BOLD5K_ROI_DATA_PATH = r"/content/gdrive/My Drive/ROIs"
 BOLD5K_STIMULI_PATH = r"/content/gdrive/My Drive/BOLD5000_Stimuli"
 
 NN_DATA_PATH = r"C:\xd\bt\data\rcf_inference"
-NN_SAVE_PATH = r"C:\xd\bt\output\deeplab_inference"
+NN_SAVE_PATH = r"/content/output/deeplab_inference"
 
 NT_PATH = r"C:\xd\bt\NeuralTaskonomy"
 

@@ -12,10 +12,10 @@ import tensorflow as tf
 import os
 
 import sys
-sys.path.append("..")
+sys.path.append(".")
 
 import delirium_config
-import inference.deeplabv3_inference
+import deeplabv3_inference
 
 Tensor = t.Union[torch.Tensor, tf.Tensor]
 Type_of_Data = t.Any
@@ -33,11 +33,12 @@ def infer_BOLD5K(subdirectories=delirium_config.BOLD5K_PRES_STIM_SUBDIRECTORIES)
 
         def wrapper(*args, **kwargs):
 
-            parent_path = kwargs['path']
+            parent_path = args[0]
+            args_ = list(args)
             for subdirectory in subdirectories:
 
-                kwargs['path'] = os.path.join(parent_path, subdirectory)
-                infer_function(*args, **kwargs)
+                args_[0] = os.path.join(parent_path, subdirectory)
+                infer_function(*args_, **kwargs)
         return wrapper
     return inner
 
@@ -87,9 +88,9 @@ if __name__ == "__main__":
     infer_folder(
         os.path.join(delirium_config.BOLD5K_STIMULI_PATH, delirium_config.BOLD5K_PRES_STIM_SUBPATH),
         delirium_config.NN_SAVE_PATH,
-        inference.deeplabv3_inference.loader,
-        inference.deeplabv3_inference.preprocessor,
-        inference.deeplabv3_inference.model_call,
-        inference.deeplabv3_inference.postprocessor,
-        inference.deeplabv3_inference.saver
+        deeplabv3_inference.loader,
+        deeplabv3_inference.preprocessor,
+        deeplabv3_inference.model_call,
+        deeplabv3_inference.postprocessor,
+        deeplabv3_inference.saver
     )
