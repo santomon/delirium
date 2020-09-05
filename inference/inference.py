@@ -9,6 +9,7 @@ import tqdm
 import torch
 import tensorflow as tf
 import os
+import importlib
 
 import sys
 
@@ -84,7 +85,7 @@ def infer_folder(
 def parse_args() -> argparse.ArgumentParser().parse_args():
     parser_ = argparse.ArgumentParser()
     parser_.add_argument("--model_module", default="deeplabv3_inference", type=str,
-                        help="will attempt to import model_module"
+                         help="will attempt to import model_module"
                              "any model_module has to implement methods:"
                              "      data_path: str,"
                              "     save_path: str,"
@@ -96,11 +97,19 @@ def parse_args() -> argparse.ArgumentParser().parse_args():
                              "specify a file which implements method, to run network inference on a set of data"
                              "depending on the implementation of the model by the original authors, this can vary from"
                              "easy to rather complicated;"
-                        )
+                         )
 
     parser_.add_argument("--dataset", default="BOLD5000", type=str,
-                        help="essentially specify, if the dataset is used for the BOLD5000 dataset")
+                         help="essentially specify, if the dataset is used for the BOLD5000 dataset")
 
+    parser_.add_argument("--data_path",
+                         default=os.path.join(delirium_config.BOLD5K_STIMULI_PATH, delirium_config.BOLD5K_PRES_STIM_SUBPATH),
+                         type=str,
+                         help="directory of the dataset; if none is provided, delirium_config specification will be used")
+
+    parser.add_argument("--save_path", default=delirium_config.NN_SAVE_PATH, type=str,
+                        help="path, where the results of inference will be saved; if none is provided,"
+                            "delirium_config.NN_SAVE_PATH will be used")
     return parser_.parse_args()
 
 
@@ -114,8 +123,8 @@ if __name__ == "__main__":
     model_ = importlib.import_module(parser.model_module)
 
     infer_folder(
-        os.path.join(delirium_config.BOLD5K_STIMULI_PATH, delirium_config.BOLD5K_PRES_STIM_SUBPATH),
-        delirium_config.NN_SAVE_PATH,
+        parser.data_path,
+        parser.save_path,
         model_.loader,
         model_.preprocessor,
         model_.model_call,
