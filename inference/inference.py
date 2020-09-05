@@ -15,7 +15,6 @@ import sys
 sys.path.append(".")
 
 import delirium_config
-import deeplabv3_inference
 
 Tensor = t.Union[torch.Tensor, tf.Tensor]
 Type_of_Data = t.Any
@@ -112,12 +111,14 @@ if __name__ == "__main__":
     if parser.dataset == "BOLD5000":
         infer_folder = infer_BOLD5K(subdirectories=delirium_config.BOLD5K_PRES_STIM_SUBDIRECTORIES)(infer_folder)
 
+    model_ = importlib.import_module(parser.model_module)
+
     infer_folder(
         os.path.join(delirium_config.BOLD5K_STIMULI_PATH, delirium_config.BOLD5K_PRES_STIM_SUBPATH),
         delirium_config.NN_SAVE_PATH,
-        deeplabv3_inference.loader,
-        deeplabv3_inference.preprocessor,
-        deeplabv3_inference.model_call,
-        deeplabv3_inference.postprocessor,
-        deeplabv3_inference.saver
+        model_.loader,
+        model_.preprocessor,
+        model_.model_call,
+        model_.postprocessor,
+        model_.saver
     )
