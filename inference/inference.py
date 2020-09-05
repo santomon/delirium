@@ -43,9 +43,7 @@ def infer_BOLD5K(subdirectories=delirium_config.BOLD5K_PRES_STIM_SUBDIRECTORIES)
                     except:
                         pass
                 infer_function(*args_, **kwargs)
-
         return wrapper
-
     return inner
 
 
@@ -107,7 +105,7 @@ def parse_args() -> argparse.ArgumentParser().parse_args():
                          type=str,
                          help="directory of the dataset; if none is provided, delirium_config specification will be used")
 
-    parser.add_argument("--save_path", default=delirium_config.NN_SAVE_PATH, type=str,
+    parser_.add_argument("--save_path", default=delirium_config.NN_SAVE_PATH, type=str,
                         help="path, where the results of inference will be saved; if none is provided,"
                             "delirium_config.NN_SAVE_PATH will be used")
     return parser_.parse_args()
