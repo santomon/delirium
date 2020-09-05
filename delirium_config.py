@@ -3,11 +3,11 @@ contains custom config for users and dataset
 """
 import os
 
-BOLD5K_ROI_DATA_PATH = r"/content/gdrive/My Drive/ROIs"
-BOLD5K_STIMULI_PATH = r"/content/gdrive/My Drive/BOLD5000_Stimuli"
+BOLD5K_ROI_DATA_PATH = r"/content/ROIs"
+BOLD5K_STIMULI_PATH = r"/content/BOLD5000_Stimuli"
 
-NN_DATA_PATH = r"C:\xd\bt\data\rcf_inference"
-NN_SAVE_PATH = r"/content/output/deeplab_inference"
+NN_DATA_PATH = r"/content/gdrive/My Drive/output/rcf_inference"
+NN_SAVE_PATH = r"/content/output/rcf_inference"
 
 NT_PATH = r"C:\xd\bt\NeuralTaskonomy"
 
