@@ -23,4 +23,10 @@ BOLD5K_PRES_STIM_SUBDIRECTORIES = ("COCO", "ImageNet", "Scene")
 
 
 ################################
-# testing:
+################################
+#downloadlinks:
+# BOLD5000_Stimuli dataset:
+# https://www.dropbox.com/s/5ie18t4rjjvsl47/BOLD5000_Stimuli.zip?dl=1
+
+# BOLD5000 ROI data:
+# https://ndownloader.figshare.com/files/12965447
