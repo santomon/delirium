@@ -11,7 +11,7 @@ import torch
 import tensorflow as tf
 import os
 
-import delirium_config
+from .. import delirium_config
 import inference.deeplabv3_inference
 
 Tensor = t.Union[torch.Tensor, tf.Tensor]
