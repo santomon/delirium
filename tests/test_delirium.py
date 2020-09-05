@@ -1,5 +1,6 @@
 import pytest
 import delirium
+import delirium_config
 import utility
 import numpy as np
 import os
@@ -26,7 +27,7 @@ def sample_substr():
 
 @pytest.fixture(scope="module")
 def brain_data_path():
-    return "C:/xd/bt/data/ROIs"
+    return delirium_config.BOLD5K_ROI_DATA_PATH
 
 
 @pytest.fixture(scope="module")
@@ -48,7 +49,7 @@ def target_shapes_after_load():
 
 @pytest.fixture(scope="module")
 def nn_data_path():
-    return r"C:\xd\bt\data\rcf_inference"
+    return delirium_config.NN_DATA_PATH
 
 
 @pytest.fixture(scope="module")
