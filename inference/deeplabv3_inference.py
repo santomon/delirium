@@ -9,9 +9,6 @@ import torch
 from PIL import Image
 from torchvision import transforms
 
-import inference.inference as inference
-
-
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 model_: torch.nn.Module = torch.hub.load('pytorch/vision:v0.6.0', 'deeplabv3_resnet101', pretrained=True)
