@@ -124,6 +124,10 @@ if __name__ == "__main__":
 
     model_ = importlib.import_module(parser.model_module)
 
+    if hasattr(model_, "dependency_solver"):
+        model_.dependecy_solver()
+
+
     infer_folder(
         parser.data_path,
         parser.save_path,

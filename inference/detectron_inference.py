@@ -6,8 +6,8 @@ import torch
 device: str = "cuda" if torch.cuda.is_available() else "cpu"
 
 
-# def dependency_solver(): #implement this, if needed
-#     pass
+def dependency_solver(): #implement this, if needed
+    pass
 
 
 def loader(data_):
