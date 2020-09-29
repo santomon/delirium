@@ -1,17 +1,24 @@
 """
 contains functions an customization
-that are specifically tailored towards the BOLD5000 dataset
+that are specifically tailored towards the BOLD5000 data set and NeuralTaskonomy
 
+expects you to have cloned https://github.com/ariaaay/NeuralTaskonomy.git somewhere
+and edited the variable config.NT_PATH:
 """
 
 import os
 import typing as t
 import scipy.io
 import numpy as np
+import sys
 
 import utility
 import delirium_config as config
 import tqdm
+
+sys.path.append(os.path.join(config.NT_PATH, "code"))
+
+# import encodingmodel.encoding_model
 
 
 HEMISPHERES = ["LH", "RH"]
@@ -102,6 +109,15 @@ def load_nn_data(
         suffix: str = config.NAME_SUFFIX,
         file_ending: str = config.NAME_FENDING
 ) -> np.ndarray:
+    """
+    TODO:doc
+    :param stim_list:
+    :param nn_data_path:
+    :param prefix:
+    :param suffix:
+    :param file_ending:
+    :return:
+    """
 
     if file_ending in ["npy"]:
         data_: t.List[np.ndarray] = []
@@ -113,3 +129,7 @@ def load_nn_data(
         return data_
     else:
         raise NotImplementedError("operation is currently only supported for npy-files")
+
+
+if __name__ == "__main__":
+    print("not dead")
