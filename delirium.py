@@ -29,6 +29,8 @@ TO_ELIMINATE = ["golfcourse7.jpg", "childsroom7.jpg", "COCO_train2014_0000000006
 
 brain_dtype = t.List[t.Dict[str, np.ndarray]]
 
+DEFINED_ASTMT_MODELS = ["pascal_resnet", "pascal_mnet", "nyud_resnet"]
+
 
 def load_brain_data(
         brain_data_path: str = config.BOLD5K_ROI_DATA_PATH,
@@ -133,25 +135,36 @@ def load_nn_data(
 
 def get_BOLD5K_Stimuli(target_dir: str=".", chunk_size= 1024*1024*10) -> t.NoReturn:
 
+    import utility
+    utility.download_and_extract(config.BOLD5K_STIMULI_URL, "BOLD5K.zip", target_dir, chunk_size=chunk_size)
+    
 
-    import requests
-    bold5k_data = requests.get(config.BOLD5K_STIMULI_URL, allow_redirects=True, stream=True)
-
-    with open(os.path.join(target_dir, "BOLD5K.zip"), "wb") as fd:
-
-        try:
-            import tqdm._tqdm
+def get_BOLD5K_ROI_data(target_dir: str=".", chunk_size= 1024*1024*10) -> t.NoReturn:
+    import  utility
+    utility.download_and_extract(config.BOLD5K_ROI_DATA_URL, "ROIs.zip", target_dir, chunk_size=chunk_size)
 
 
-            for chunk in tqdm._tqdm.tqdm(bold5k_data.iter_content(chunk_size=chunk_size)):
-                fd.write(chunk)
-        except ModuleNotFoundError:
-            for chunk in bold5k_data.iter_content(chunk_size=chunk_size):
-                fd.write(chunk)
 
-    import zipfile
-    bold5k = zipfile.ZipFile(os.path.join(target_dir, "BOLD5K.zip"))
-    bold5k.extractall(target_dir)
+def copy_astmt_model(model_dir: str, target_base_dir: str=".") -> t.NoReturn:
+
+    for model_name in DEFINED_ASTMT_MODELS:
+        if model_name in model_dir:
+            base_model = model_name
+            break
+    else:
+        raise ValueError("no astmt model that fits the selected directory")
+
+    base_index = model_dir.index(base_model)
+    target_dir = os.path.join(target_base_dir, model_dir[base_index:])
+    print(target_dir)
+
+    import shutil
+
+    if not os.path.isdir(target_dir):
+        os.makedirs(target_dir)
+    if os.path.isdir(target_dir):
+        os.rmdir(target_dir)
+    shutil.copytree(model_dir, target_dir)
 
 
 if __name__ == "__main__":

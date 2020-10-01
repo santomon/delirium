@@ -11,7 +11,6 @@ import numpy as np
 
 
 
-DEFINED_ASTMT_MODELS = ["pascal_resnet", "pascal_mnet", "nyud_resnet"]
 FENDINGS = ("jpg", "JPEG", "JPG")
 
 
@@ -105,25 +104,21 @@ def eliminate_by_indices(data_: t.Union[t.List, np.ndarray],
         raise NotImplementedError("Currently not supported for other types than np.ndarrays and lists")
 
 
+def download_and_extract(url: str, tmp_name:str, target_dir:str =".", chunk_size=1024*1024*10) ->t.NoReturn:
+    import requests
+    bold5k_data = requests.get(url, allow_redirects=True, stream=True)
 
+    with open(os.path.join(target_dir, tmp_name), "wb") as fd:
 
-def copy_astmt_model(model_dir: str, target_base_dir: str=".") -> t.NoReturn:
+        try:
+            import tqdm._tqdm
 
-    for model_name in DEFINED_ASTMT_MODELS:
-        if model_name in model_dir:
-            base_model = model_name
-            break
-    else:
-        raise ValueError("no astmt model that fits the selected directory")
+            for chunk in tqdm._tqdm.tqdm(bold5k_data.iter_content(chunk_size=chunk_size)):
+                fd.write(chunk)
+        except ModuleNotFoundError:
+            for chunk in bold5k_data.iter_content(chunk_size=chunk_size):
+                fd.write(chunk)
 
-    base_index = model_dir.index(base_model)
-    target_dir = os.path.join(target_base_dir, model_dir[base_index:])
-    print(target_dir)
-
-    import shutil
-
-    if not os.path.isdir(target_dir):
-        os.makedirs(target_dir)
-    if os.path.isdir(target_dir):
-        os.rmdir(target_dir)
-    shutil.copytree(model_dir, target_dir)
+    import zipfile
+    bold5k = zipfile.ZipFile(os.path.join(target_dir, "BOLD5K.zip"))
+    bold5k.extractall(target_dir)
