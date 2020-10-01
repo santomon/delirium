@@ -137,7 +137,7 @@ def get_BOLD5K_Stimuli(target_dir: str=".", chunk_size= 1024*1024*10) -> t.NoRet
 
     import utility
     utility.download_and_extract(config.BOLD5K_STIMULI_URL, "BOLD5K.zip", target_dir, chunk_size=chunk_size)
-    
+
 
 def get_BOLD5K_ROI_data(target_dir: str=".", chunk_size= 1024*1024*10) -> t.NoReturn:
     import  utility

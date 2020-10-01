@@ -120,5 +120,5 @@ def download_and_extract(url: str, tmp_name:str, target_dir:str =".", chunk_size
                 fd.write(chunk)
 
     import zipfile
-    bold5k = zipfile.ZipFile(os.path.join(target_dir, "BOLD5K.zip"))
+    bold5k = zipfile.ZipFile(os.path.join(target_dir, tmp_name))
     bold5k.extractall(target_dir)
