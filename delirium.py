@@ -104,6 +104,8 @@ def eliminate_from_data_by_substr(data_: brain_dtype, stim_lists: t.List[t.List[
     return new_data, new_stim_lists
 
 
+
+
 def load_nn_data(
         stim_list: t.List[str],
         nn_data_path: str = config.NN_DATA_PATH,
@@ -140,8 +142,21 @@ def get_BOLD5K_Stimuli(target_dir: str=".", chunk_size= 1024*1024*10) -> t.NoRet
 
 
 def get_BOLD5K_ROI_data(target_dir: str=".", chunk_size= 1024*1024*10) -> t.NoReturn:
-    import  utility
+    import utility
     utility.download_and_extract(config.BOLD5K_ROI_DATA_URL, "ROIs.zip", target_dir, chunk_size=chunk_size)
+
+
+
+def rearrange_nn_data(nn_data: np.ndarray,
+                      curr_subj: int,
+                      next_subj: int,
+                      stim_lists: t.List[t.List[str]]):
+
+  idx_tmp = []
+  for fname in stim_lists[next_subj - 1]:
+    idx_tmp.append(stim_lists[curr_subj].index(fname))
+
+    return nn_data[idx_tmp]
 
 
 
