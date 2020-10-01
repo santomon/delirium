@@ -152,9 +152,9 @@ def rearrange_nn_data(nn_data: np.ndarray,
                       next_subj: int,
                       stim_lists: t.List[t.List[str]]):
 
-  idx_tmp = []
-  for fname in stim_lists[next_subj - 1]:
-    idx_tmp.append(stim_lists[curr_subj - 1].index(fname))
+    idx_tmp = []
+    for fname in stim_lists[next_subj - 1]:
+        idx_tmp.append(stim_lists[curr_subj - 1].index(fname))
 
     return nn_data[idx_tmp]
 
