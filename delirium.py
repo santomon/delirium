@@ -135,8 +135,12 @@ def get_BOLD5K_Stimuli(target_dir: str=".") -> t.NoReturn:
 
 
     import requests
-    bold5k_data = requests.get(config.BOLD5K_STIMULI_URL, allow_redirects=True)
-    open(os.path.join(target_dir, "BOLD5K.zip"), "wb").write(bold5k_data.content)
+    bold5k_data = requests.get(config.BOLD5K_STIMULI_URL, allow_redirects=True, stream=True)
+
+    with open(os.path.join(target_dir), "wb") as fd:
+        for chunk in bold5k_data.iter_content():
+            fd.write(chunk)
+
     import zipfile
     bold5k = zipfile.ZipFile(os.path.join(target_dir, "BOLD5K.zip"))
     bold5k.extractall(target_dir)
