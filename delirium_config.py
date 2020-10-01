@@ -6,7 +6,9 @@ import os
 BOLD5K_ROI_DATA_PATH = os.path.join("content", "ROIs")
 BOLD5K_STIMULI_PATH = os.path.join("content", "BOLD5000_Stimuli")
 
-BOLD5K_STIMULI_URL = "https://bold5000.github.io/download.html"
+# src https://bold5000.github.io/download.html
+BOLD5K_STIMULI_URL = "https://www.dropbox.com/s/5ie18t4rjjvsl47/BOLD5000_Stimuli.zip?dl=1"
+
 
 NN_DATA_PATH = os.path.join(*r"/content/gdrive/My Drive/output/rcf_inference".split("/"))
 NN_SAVE_PATH = os.path.join(*"/content/output/rcf_inference".split("/"))
