@@ -131,5 +131,16 @@ def load_nn_data(
         raise NotImplementedError("operation is currently only supported for npy-files")
 
 
+def get_BOLD5K_Stimuli(target_dir: str=".") -> t.NoReturn:
+
+
+    import requests
+    bold5k_data = requests.get(config.BOLD5K_STIMULI_URL, allow_redirects=True)
+    open(os.path.join(target_dir, "BOLD5K.zip"), "wb").write(bold5k_data.content)
+    import zipfile
+    bold5k = zipfile.ZipFile("BOLD5K.zip")
+    bold5k.extractall(target_dir)
+
+
 if __name__ == "__main__":
     print("not dead")
