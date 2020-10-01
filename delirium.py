@@ -131,15 +131,23 @@ def load_nn_data(
         raise NotImplementedError("operation is currently only supported for npy-files")
 
 
-def get_BOLD5K_Stimuli(target_dir: str=".") -> t.NoReturn:
+def get_BOLD5K_Stimuli(target_dir: str=".", chunk_size= 1024*1024*10) -> t.NoReturn:
 
 
     import requests
     bold5k_data = requests.get(config.BOLD5K_STIMULI_URL, allow_redirects=True, stream=True)
 
     with open(os.path.join(target_dir, "BOLD5K.zip"), "wb") as fd:
-        for chunk in bold5k_data.iter_content():
-            fd.write(chunk)
+
+        try:
+            import tqdm._tqdm
+
+
+            for chunk in tqdm._tqdm.tqdm(bold5k_data.iter_content(chunk_size=chunk_size)):
+                fd.write(chunk)
+        except ModuleNotFoundError:
+            for chunk in bold5k_data.iter_content(chunk_size=chunk_size):
+                fd.write(chunk)
 
     import zipfile
     bold5k = zipfile.ZipFile(os.path.join(target_dir, "BOLD5K.zip"))
