@@ -11,8 +11,8 @@ import numpy as np
 
 
 
-
-FENDINGS = ["jpg", "JPEG", "JPG"]
+DEFINED_ASTMT_MODELS = ["pascal_resnet", "pascal_mnet", "nyud_resnet"]
+FENDINGS = ("jpg", "JPEG", "JPG")
 
 
 def infer_recursive():
@@ -27,9 +27,9 @@ def infer_single_folder(
         out_path: str,
         fendings: t.List[str] = FENDINGS,
         model_=None,
-        model_params=[],
+        model_params=(),
         compressor=None,
-        compress_params=[],
+        compress_params=(),
 ):
     """
       given a list of file endings; applies the model for all those files
@@ -107,3 +107,23 @@ def eliminate_by_indices(data_: t.Union[t.List, np.ndarray],
 
 
 
+def copy_astmt_model(model_dir: str, target_base_dir: str=".") -> t.NoReturn:
+
+    for model_name in DEFINED_ASTMT_MODELS:
+        if model_name in model_dir:
+            base_model = model_name
+            break
+    else:
+        raise ValueError("no astmt model that fits the selected directory")
+
+    base_index = model_dir.index(base_model)
+    target_dir = os.path.join(target_base_dir, model_dir[base_index:])
+    print(target_dir)
+
+    import shutil
+
+    if not os.path.isdir(target_dir):
+        os.makedirs(target_dir)
+    if os.path.isdir(target_dir):
+        os.rmdir(target_dir)
+    shutil.copytree(model_dir, target_dir)
