@@ -154,7 +154,7 @@ def rearrange_nn_data(nn_data: np.ndarray,
 
   idx_tmp = []
   for fname in stim_lists[next_subj - 1]:
-    idx_tmp.append(stim_lists[curr_subj].index(fname))
+    idx_tmp.append(stim_lists[curr_subj - 1].index(fname))
 
     return nn_data[idx_tmp]
 
