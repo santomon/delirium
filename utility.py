@@ -111,9 +111,9 @@ def download_and_extract(url: str, tmp_name:str, target_dir:str =".", chunk_size
     with open(os.path.join(target_dir, tmp_name), "wb") as fd:
 
         try:
-            import tqdm._tqdm
+            import tqdm
 
-            for chunk in tqdm._tqdm.tqdm(bold5k_data.iter_content(chunk_size=chunk_size)):
+            for chunk in tqdm.tqdm(bold5k_data.iter_content(chunk_size=chunk_size)):
                 fd.write(chunk)
         except ModuleNotFoundError:
             for chunk in bold5k_data.iter_content(chunk_size=chunk_size):
@@ -122,3 +122,7 @@ def download_and_extract(url: str, tmp_name:str, target_dir:str =".", chunk_size
     import zipfile
     bold5k = zipfile.ZipFile(os.path.join(target_dir, tmp_name))
     bold5k.extractall(target_dir)
+
+
+def identity(x: t.Any) -> t.Any:
+    return x
