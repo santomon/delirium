@@ -30,6 +30,11 @@ UNWANTED_IMAGES = ("golfcourse7.jpg", "childsroom7.jpg", "COCO_train2014_0000000
 UNWANTED_SUBSTRS = ("rep_",)  # due to repetition; but our network models of interest are not capable of such feats
 
 
+
+HEMISPHERES = ["LH", "RH"]
+ROI = ["OPA", "PPA", "LOC", "EarlyVis", "RSC"]
+ROI_LABELS = tuple(hs + roi for hs in HEMISPHERES for roi in ROI)
+
 ################################
 #downloadlinks:
 # BOLD5000_Stimuli dataset:
