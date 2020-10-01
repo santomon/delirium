@@ -3,16 +3,16 @@ contains custom config for users and dataset
 """
 import os
 
-BOLD5K_ROI_DATA_PATH = os.path.join("content", "ROIs")
-BOLD5K_STIMULI_PATH = os.path.join("content", "BOLD5000_Stimuli")
+BOLD5K_ROI_DATA_PATH = os.path.join("/content", "ROIs")
+BOLD5K_STIMULI_PATH = os.path.join("/content", "BOLD5000_Stimuli")
 
 # src https://bold5000.github.io/download.html
 BOLD5K_STIMULI_URL = "https://www.dropbox.com/s/5ie18t4rjjvsl47/BOLD5000_Stimuli.zip?dl=1"
 BOLD5K_ROI_DATA_URL = "https://ndownloader.figshare.com/files/12965447"
 
 
-NN_DATA_PATH = os.path.join(*r"/content/gdrive/My Drive/output/rcf_inference".split("/"))
-NN_SAVE_PATH = os.path.join(*"/content/output/rcf_inference".split("/"))
+NN_DATA_PATH = os.path.join("/content/gdrive/My Drive/output/rcf_inference")
+NN_SAVE_PATH = os.path.join("/content/output/rcf_inference")
 
 NT_PATH = r"C:\xd\bt\NeuralTaskonomy"
 
