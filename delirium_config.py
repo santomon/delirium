@@ -26,6 +26,9 @@ NAME_FENDING = "npy"  # file-ending of the saving format
 BOLD5K_PRES_STIM_SUBPATH = os.path.join("Scene_Stimuli", "Presented_Stimuli")
 BOLD5K_PRES_STIM_SUBDIRECTORIES = ("COCO", "ImageNet", "Scene")
 
+UNWANTED_IMAGES = ("golfcourse7.jpg", "childsroom7.jpg", "COCO_train2014_000000000625.jpg")  # due to inconsistent sizes
+UNWANTED_SUBSTRS = ("rep_",)  # due to repetition; but our network models of interest are not capable of such feats
+
 
 ################################
 #downloadlinks:
