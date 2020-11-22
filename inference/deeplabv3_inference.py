@@ -112,7 +112,7 @@ def get_features_by_image_data(img_data: np.ndarray) -> t.Dict[str, torch.Tensor
     please also refer to the function get_features_by_image_path
     """
     with torch.no_grad():
-        data = preprocessor(img_data)
+        img_data = preprocessor(img_data)
         return intermediate_layer_getter(img_data)
 
 
