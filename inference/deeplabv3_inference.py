@@ -12,15 +12,19 @@ from torchvision import transforms
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
+segmentation_models = ['fcn_resnet50', 'fcn_resnet101', 'deeplabv3_resnet50', 'deeplabv3_resnet101']
+
+
 model_: torch.nn.Module = torch.hub.load('pytorch/vision:v0.6.0', 'deeplabv3_resnet101', pretrained=True)
+currently_selected_model = 'deeplabv3_resnet101'
+
 backbone = model_.backbone
 backbone.to(device)
 backbone.eval()
 
 
 #the names of the layers, that can be extracted from the backbone
-backbone_layer_keys = ["conv1", "bn1", "relu", "maxpool",
-                       "layer1", "layer2", "layer3", "layer4"]
+backbone_layer_keys = backbone.keys()
 
 
 #preparing the model, that can return all layers specified in backbone_layer_keys
@@ -68,6 +72,13 @@ def saver(data_: np.ndarray, path: str, file_name: str) -> t.NoReturn:
     if not os.path.isdir(path):
         os.makedirs(path)
     np.save(os.path.join(path, file_name.split(".")[0] + '_bb_compressed' + '.npy'), data_)
+    
+
+
+def select_model(model_name: str) -> t.NoReturn:
+    global model_, currently_selected_model
+    model_ = torch.hub.load('pytorch/vision:v0.6.0', model_name, pretrained=True)
+    currently_selected_model = model_name
 
 
 def get_features_by_image_path(path_to_file: str):  # -> t.OrderedDict[str, torch.Tensor]
