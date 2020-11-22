@@ -162,6 +162,8 @@ def rearrange_nn_data(nn_data: np.ndarray,
 
 def copy_astmt_model(model_dir: str, target_base_dir: str=".") -> t.NoReturn:
 
+    # TODO: error on gdrive, when too many files; which can happen, if results have already been computed
+
     for model_name in DEFINED_ASTMT_MODELS:
         if model_name in model_dir:
             base_model = model_name
