@@ -14,19 +14,23 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 
 model_: torch.nn.Module = torch.hub.load('pytorch/vision:v0.6.0', 'deeplabv3_resnet101', pretrained=True)
 backbone = model_.backbone
+backbone.to(device)
+backbone.eval()
 
 
+#the names of the layers, that can be extracted from the backbone
 backbone_layer_keys = ["conv1", "bn1", "relu", "maxpool",
                        "layer1", "layer2", "layer3", "layer4"]
 
-backbone_return_layers = {layer_name: layer_name for layer_name in backbone_layer_keys}
 
+#preparing the model, that can return all layers specified in backbone_layer_keys
+backbone_return_layers = {layer_name: layer_name for layer_name in backbone_layer_keys}
 intermediate_layer_getter = _utils.IntermediateLayerGetter(backbone, backbone_return_layers)  # used to generate all features
 intermediate_layer_getter.to(device)
 intermediate_layer_getter.eval()
 
-backbone.to(device)
-backbone.eval()
+
+
 
 
 loader = lambda x: np.asarray(Image.open(x))
