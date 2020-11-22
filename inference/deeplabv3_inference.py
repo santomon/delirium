@@ -6,6 +6,7 @@ import typing as t
 import os
 import numpy as np
 import torch
+from torchvision.models import _utils
 from PIL import Image
 from torchvision import transforms
 
@@ -13,14 +14,19 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 
 model_: torch.nn.Module = torch.hub.load('pytorch/vision:v0.6.0', 'deeplabv3_resnet101', pretrained=True)
 backbone = model_.backbone
-backbone.to(device)
-backbone.eval()
-
 
 
 backbone_layer_keys = ["conv1", "bn1", "relu", "maxpool",
-                       "layer1", "layer2", "layer3", "layer4",
-                       "avgpool", "flatten", "fc"]
+                       "layer1", "layer2", "layer3", "layer4"]
+
+backbone_return_layers = {layer_name: layer_name for layer_name in backbone_layer_keys}
+
+intermediate_layer_getter = _utils.IntermediateLayerGetter(backbone, backbone_return_layers)  # used to generate all features
+intermediate_layer_getter.to(device)
+intermediate_layer_getter.eval()
+
+backbone.to(device)
+backbone.eval()
 
 
 loader = lambda x: np.asarray(Image.open(x))
@@ -83,9 +89,9 @@ def get_features_by_image_path(path_to_file: str) -> t.Dict[str, torch.Tensor]:
                 x = self.layer3(x)
                 x = self.layer4(x)
 
-                x = self.avgpool(x)
-                x = torch.flatten(x, 1)
-                x = self.fc(x)
+                x = self.avgpool(x)         // is cut off in the deeplabv3 model
+                x = torch.flatten(x, 1)     // is cut off in the deeplabv3 model
+                x = self.fc(x)              // is cut off in the deeplabv3 model
                 return x
     architecture graph: https://www.researchgate.net/figure/The-network-architectures-a-original-deep-ResNet-101-and-b-our-improved-deep_fig1_337010913
     # last time checked: 22.11.20
@@ -93,5 +99,8 @@ def get_features_by_image_path(path_to_file: str) -> t.Dict[str, torch.Tensor]:
 
     img = loader(path_to_file)
     img = preprocessor(img)
+
+    with torch.no_grad():
+        return intermediate_layer_getter(img)
 
 
