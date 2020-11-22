@@ -23,7 +23,7 @@ backbone_layer_keys = ["conv1", "bn1", "relu", "maxpool",
                        "avgpool", "flatten", "fc"]
 
 
-loader = np.asarray(Image.open)
+loader = lambda x: np.asarray(Image.open(x))
 
 
 def preprocessor(data_):
