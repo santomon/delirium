@@ -66,8 +66,7 @@ def saver(data_: np.ndarray, path: str, file_name: str) -> t.NoReturn:
     np.save(os.path.join(path, file_name.split(".")[0] + '_bb_compressed' + '.npy'), data_)
 
 
-
-def get_features_by_image_path(path_to_file: str) -> t.Dict[str, torch.Tensor]:
+def get_features_by_image_path(path_to_file: str) -> t.OrderedDict[str, torch.Tensor]:
     """
     API function for Algonauts; for a given string, that is a path to an image file, compute a dictionary
     of of outputs of various layers from the encoding model
@@ -103,7 +102,7 @@ def get_features_by_image_path(path_to_file: str) -> t.Dict[str, torch.Tensor]:
         return get_features_by_image_data(img)
 
 
-def get_features_by_image_data(img_data: np.ndarray) -> t.Dict[str, torch.Tensor]:
+def get_features_by_image_data(img_data: np.ndarray) -> t.OrderedDict[str, torch.Tensor]:
     """
     API function for Algonauts; for a loaded, not yet preprocessed image;
     image data is expected to be in RGB
