@@ -98,9 +98,21 @@ def get_features_by_image_path(path_to_file: str) -> t.Dict[str, torch.Tensor]:
     """
 
     img = loader(path_to_file)
-    img = preprocessor(img)
 
     with torch.no_grad():
-        return intermediate_layer_getter(img)
+        return get_features_by_image_data(img)
+
+
+def get_features_by_image_data(img_data: np.ndarray) -> t.Dict[str, torch.Tensor]:
+    """
+    API function for Algonauts; for a loaded, not yet preprocessed image;
+    image data is expected to be in RGB
+
+    computes a dictionary of outputs for various layers from the encoding model,
+    please also refer to the function get_features_by_image_path
+    """
+    with torch.no_grad():
+        data = preprocessor(img_data)
+        return intermediate_layer_getter(img_data)
 
 
