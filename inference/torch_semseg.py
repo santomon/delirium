@@ -6,7 +6,7 @@ known problems:
 intermediate_layer_getter fails for InceptionV3, googlenet;
     will fail for anything that uses torch.flatten...
     basically will always happen, if neither backbone nor features exist
-checkpoint for 'mnasnet1_3' exists, but the model does not
+checkpoint for 'mnasnet1_3' and 'masnet0_75' exists, but the model does not
 """
 import argparse
 import typing as t
@@ -144,7 +144,6 @@ def get_features_by_image_path(path_to_file: str):  # -> t.OrderedDict[str, torc
     API function for Algonauts; for a given string, that is a path to an image file, compute a dictionary
     of of outputs of various layers from the encoding model
 
-    in this case, a resnet-101
     all keys can be accessed with backbone_layer_keys
 
     the implementation of the resnet-101 in torch is as follows:
