@@ -31,8 +31,6 @@ default_model = "COCO-Detection/retinanet_R_50_FPN_3x.yaml"
 
 device: torch.device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
-cfg = get_cfg()
-
 
 class FeatureExtractor:
     """
@@ -58,8 +56,8 @@ class FeatureExtractor:
 
     def __init__(self, cfg_path: str):
 
-        self.cfg = model_zoo.get_config(cfg_path)
-        self.model = model_zoo.get(cfg_path)
+        self.cfg = model_zoo.get_config(cfg_path, trained=True)
+        self.model = model_zoo.get(cfg_path, trained=True)
         self.model.eval()
         self.aug = T.ResizeShortestEdge(
             [cfg.INPUT.MIN_SIZE_TEST, cfg.INPUT.MIN_SIZE_TEST], cfg.INPUT.MAX_SIZE_TEST
@@ -170,10 +168,6 @@ def get_features_by_image_data(image_data: np.ndarray) -> t.Dict[str, torch.Tens
     """
     with torch.no_grad():
         return predictor(image_data)
-
-
-
-
 
 
 #####################################################
