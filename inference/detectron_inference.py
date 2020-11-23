@@ -2,6 +2,7 @@ import numpy as np
 import os
 import typing as t
 import torch
+import pandas as pd
 
 from PIL import Image
 
@@ -89,14 +90,17 @@ class FeatureExtractor:
             predictions = self.model.backbone(images.tensor)
             if hasattr(self.model.backbone, "bottom_up"):
                 predictions_bottom_up = self.model.backbone.bottom_up(images.tensor)
-                predictions.update(predictions_bottom_up)
-            return predictions
+                predictions_bottom_up.update(predictions)
+                return predictions_bottom_up
+            else:
+                return predictions
 
 
     def preprocess_image(self, batched_inputs):
         # all models from detectron2 preprocess the images the same way
         # this could change in the future; fingers crossed that fbresearch stays consistent
-        
+        # reference: https://github.com/facebookresearch/detectron2/tree/master/detectron2/modeling/meta_arch  # last checked: 23.11.20
+
         images = [x["image"].to(self.model.device) for x in batched_inputs]
         images = [(x - self.model.pixel_mean) / self.model.pixel_std for x in images]
         images = ImageList.from_tensors(images, self.model.backbone.size_divisibility)
@@ -168,14 +172,27 @@ def get_features_by_image_data(image_data: np.ndarray) -> t.Dict[str, torch.Tens
         return predictor(image_data)
 
 
-def _update_viable_models():
+
+
+
+
+#####################################################
+def _create_model_out_dictkeys():
+    """
+    unsafe to use, will download all models;
+
+    """
     model_names = []
+    result_keys = []
     for model_name in model_zoo._ModelZooUrls.CONFIG_PATH_TO_URL_SUFFIX.keys():
         try:
             print(model_name, ":")
             select_model(model_name)
-            get_features_by_image_path("./input.jpg")
+            result = get_features_by_image_path("./sample.jpg")
             model_names.append(model_name)
+            result_keys.append(list(result.keys()))
         except RuntimeError as t:
             print(t)
-    return model_names
+
+    pd.DataFrame(list(zip(model_names, result_keys))).to_csv("d2_model_out_dictkeys.csv")
+
