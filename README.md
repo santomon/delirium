@@ -17,4 +17,4 @@ https://github.com/facebookresearch/detectron2 <br>
 
 
 <br>
-This project requires naturally has all dependencies of the repositories used.
+This project naturally has all dependencies of the repositories used.
