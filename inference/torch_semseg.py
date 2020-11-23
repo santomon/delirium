@@ -1,5 +1,12 @@
 """
 inference specific for pretrained models provided by pytorch
+
+
+known problems:
+intermediate_layer_getter fails for InceptionV3, googlenet;
+    will fail for anything that uses torch.flatten...
+    basically will always happen, if neither backbone nor features exist
+checkpoint for 'mnasnet1_3' exists, but the model does not
 """
 import argparse
 import typing as t
@@ -15,7 +22,28 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 
 torch_dir = 'pytorch/vision'
 default_model = 'deeplabv3_resnet101'
-available_models = torch.hub.list(torch_dir)
+# available_models = torch.hub.list(torch_dir)
+
+viable_models = ['alexnet',
+    'deeplabv3_resnet101',
+    'deeplabv3_resnet50',
+    'densenet121',
+    'densenet161',
+    'densenet169',
+    'densenet201',
+    'fcn_resnet101',
+    'fcn_resnet50',
+    'mobilenet_v2',
+    'squeezenet1_0',
+    'squeezenet1_1',
+    'vgg11',
+    'vgg11_bn',
+    'vgg13',
+    'vgg13_bn',
+    'vgg16',
+    'vgg16_bn',
+    'vgg19',
+    'vgg19_bn']
 
 
 model_: torch.nn.Module = torch.hub.load(torch_dir, default_model, pretrained=True)
@@ -25,12 +53,11 @@ backbone = model_.backbone
 backbone.to(device)
 backbone.eval()
 
-
-#the names of the layers, that can be extracted from the backbone
+# the names of the layers, that can be extracted from the backbone
 backbone_layer_keys = [name for name, module in backbone.named_children()]
 
 
-#preparing the model, that can return all layers specified in backbone_layer_keys
+# preparing the model, that can return all layers specified in backbone_layer_keys
 backbone_return_layers = {layer_name: layer_name for layer_name in backbone_layer_keys}
 intermediate_layer_getter = _utils.IntermediateLayerGetter(backbone, backbone_return_layers)  # used to generate all features
 intermediate_layer_getter.to(device)
@@ -82,7 +109,7 @@ def saver(data_: np.ndarray, path: str, file_name: str) -> t.NoReturn:
 def select_model(model_name: str) -> t.NoReturn:
     """
     API function for Algonauts; for a given model name, change the model of this module to the selected one;
-    to get a list of all available models, use torch.hub.list(  <torch_dir / github repo>)
+    to get a list of all viable models, refer to viable_models
     """
     global model_, currently_selected_model, backbone_layer_keys, backbone_return_layers, intermediate_layer_getter
     global backbone
@@ -161,4 +188,23 @@ def get_features_by_image_data(img_data: np.ndarray):  #-> t.OrderedDict[str, to
         return intermediate_layer_getter(img_data)
 
 
+########################################
 
+
+def _update_viable_models():
+    """
+    unsafe, do not use this
+
+    """
+    model_names = []
+    for model_name in torch.hub.list('pytorch/vision'):
+        try:
+            print(model_name, ":")
+            select_model(model_name)
+            get_features_by_image_path("./input.jpg")
+            model_names.append(model_name)
+        except ValueError:
+            print(model_name, "failed to get from torchhub")
+        except RuntimeError as t:
+            print(t)
+    return model_names
