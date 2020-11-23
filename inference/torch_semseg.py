@@ -91,7 +91,13 @@ def select_model(model_name: str) -> t.NoReturn:
     model_.eval()
     currently_selected_model = model_name
 
-    backbone = model_.backbone
+    if hasattr(model_, "backbone"):
+        backbone = model_.backbone
+    elif hasattr(model_, 'features'):
+        backbone = model_.features
+    else:
+        backbone = model_
+        print("backbone could not be found; defaulting to usual model output")
     backbone.to(device)
     backbone.eval()
 
