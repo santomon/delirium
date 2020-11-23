@@ -1,5 +1,5 @@
 """
-inference specific for deeplabv3
+inference specific for pretrained models provided by pytorch
 """
 import argparse
 import typing as t
@@ -12,11 +12,14 @@ from torchvision import transforms
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-segmentation_models = ['fcn_resnet50', 'fcn_resnet101', 'deeplabv3_resnet50', 'deeplabv3_resnet101']
+
+torch_dir = 'pytorch/vision'
+default_model = 'deeplabv3_resnet101'
+available_models = torch.hub.list(torch_dir)
 
 
-model_: torch.nn.Module = torch.hub.load('pytorch/vision:v0.6.0', 'deeplabv3_resnet101', pretrained=True)
-currently_selected_model = 'deeplabv3_resnet101'
+model_: torch.nn.Module = torch.hub.load(torch_dir, default_model, pretrained=True)
+currently_selected_model = default_model
 
 backbone = model_.backbone
 backbone.to(device)
@@ -74,11 +77,33 @@ def saver(data_: np.ndarray, path: str, file_name: str) -> t.NoReturn:
     np.save(os.path.join(path, file_name.split(".")[0] + '_bb_compressed' + '.npy'), data_)
 
 
+###########
 
 def select_model(model_name: str) -> t.NoReturn:
-    global model_, currently_selected_model
-    model_ = torch.hub.load('pytorch/vision:v0.6.0', model_name, pretrained=True)
+    """
+    API function for Algonauts; for a given model name, change the model of this module to the selected one;
+    to get a list of all available models, use torch.hub.list(  <torch_dir / github repo>)
+    """
+    global model_, currently_selected_model, backbone_layer_keys, backbone_return_layers, intermediate_layer_getter
+    global backbone
+    model_ = torch.hub.load(torch_dir, model_name, pretrained=True)
+    model_.to(device)
+    model_.eval()
     currently_selected_model = model_name
+
+    backbone = model_.backbone
+    backbone.to(device)
+    backbone.eval()
+
+    # the names of the layers, that can be extracted from the backbone
+    backbone_layer_keys = backbone.keys()
+
+    # preparing the model, that can return all layers specified in backbone_layer_keys
+    backbone_return_layers = {layer_name: layer_name for layer_name in backbone_layer_keys}
+    intermediate_layer_getter = _utils.IntermediateLayerGetter(backbone,
+                                                               backbone_return_layers)  # used to generate all features
+    intermediate_layer_getter.to(device)
+    intermediate_layer_getter.eval()
 
 
 def get_features_by_image_path(path_to_file: str):  # -> t.OrderedDict[str, torch.Tensor]
