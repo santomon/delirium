@@ -72,7 +72,7 @@ def saver(data_: np.ndarray, path: str, file_name: str) -> t.NoReturn:
     if not os.path.isdir(path):
         os.makedirs(path)
     np.save(os.path.join(path, file_name.split(".")[0] + '_bb_compressed' + '.npy'), data_)
-    
+
 
 
 def select_model(model_name: str) -> t.NoReturn:
