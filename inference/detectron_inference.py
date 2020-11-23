@@ -12,8 +12,10 @@ from detectron2.data import MetadataCatalog
 from detectron2.checkpoint import DetectionCheckpointer
 from detectron2.config import get_cfg
 import detectron2.data.transforms as T
+from detectron2.structures import ImageList
 
 from detectron2.model_zoo import model_zoo
+from detectron2.modeling import meta_arch
 
 
 viable_models = model_zoo._ModelZooUrls.CONFIG_PATH_TO_URL_SUFFIX.keys()
@@ -81,13 +83,25 @@ class FeatureExtractor:
             image = torch.as_tensor(image.astype("float32").transpose(2, 0, 1))
 
             inputs = {"image": image, "height": height, "width": width}
-            images = self.model.preprocess_image([inputs])
+
+            images = self.preprocess_image([inputs])
 
             predictions = self.model.backbone(images.tensor)
             if hasattr(self.model.backbone, "bottom_up"):
                 predictions_bottom_up = self.model.backbone.bottom_up(images.tensor)
                 predictions.update(predictions_bottom_up)
             return predictions
+
+
+    def preprocess_image(self, batched_inputs):
+        # all models from detectron2 preprocess the images the same way
+        # this could change in the future; fingers crossed that fbresearch stays consistent
+        
+        images = [x["image"].to(self.model.device) for x in batched_inputs]
+        images = [(x - self.model.pixel_mean) / self.model.pixel_std for x in images]
+        images = ImageList.from_tensors(images, self.model.backbone.size_divisibility)
+        return images
+
 
 
 predictor: FeatureExtractor = FeatureExtractor(default_model)
