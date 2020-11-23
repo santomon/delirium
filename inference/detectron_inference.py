@@ -5,15 +5,15 @@ import torch
 
 from PIL import Image
 
-from detectron2.detectron2.modeling import build_model
-from detectron2.detectron2.config import get_cfg
-from detectron2.detectron2.layers import ShapeSpec
-from detectron2.detectron2.data import MetadataCatalog
-from detectron2.detectron2.checkpoint import DetectionCheckpointer
-from detectron2.detectron2.config import get_cfg
-import detectron2.detectron2.data.transforms as T
+from detectron2.modeling import build_model
+from detectron2.config import get_cfg
+from detectron2.layers import ShapeSpec
+from detectron2.data import MetadataCatalog
+from detectron2.checkpoint import DetectionCheckpointer
+from detectron2.config import get_cfg
+import detectron2.data.transforms as T
 
-from detectron2.detectron2.model_zoo import model_zoo
+from detectron2.model_zoo import model_zoo
 
 
 viable_models = model_zoo._ModelZooUrls.CONFIG_PATH_TO_URL_SUFFIX.keys()
@@ -151,4 +151,3 @@ def get_features_by_image_data(image_data: np.ndarray) -> t.Dict[str, torch.Tens
     """
     with torch.no_grad():
         return predictor(image_data)
-    
