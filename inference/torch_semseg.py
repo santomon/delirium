@@ -27,7 +27,7 @@ backbone.eval()
 
 
 #the names of the layers, that can be extracted from the backbone
-backbone_layer_keys = backbone.keys()
+backbone_layer_keys = [name for name, module in backbone.named_children()]
 
 
 #preparing the model, that can return all layers specified in backbone_layer_keys
@@ -102,7 +102,7 @@ def select_model(model_name: str) -> t.NoReturn:
     backbone.eval()
 
     # the names of the layers, that can be extracted from the backbone
-    backbone_layer_keys = backbone.keys()
+    backbone_layer_keys = [name for name, module in backbone.named_children()]
 
     # preparing the model, that can return all layers specified in backbone_layer_keys
     backbone_return_layers = {layer_name: layer_name for layer_name in backbone_layer_keys}
