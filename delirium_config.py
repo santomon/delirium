@@ -3,11 +3,16 @@ contains custom config for users and dataset
 """
 import os
 
-BOLD5K_ROI_DATA_PATH = r"/content/ROIs"
-BOLD5K_STIMULI_PATH = r"/content/BOLD5000_Stimuli"
+BOLD5K_ROI_DATA_PATH = os.path.join("/content", "ROIs")
+BOLD5K_STIMULI_PATH = os.path.join("/content", "BOLD5000_Stimuli")
 
-NN_DATA_PATH = r"/content/gdrive/My Drive/output/rcf_inference"
-NN_SAVE_PATH = r"/content/output/rcf_inference"
+# src https://bold5000.github.io/download.html
+BOLD5K_STIMULI_URL = "https://www.dropbox.com/s/5ie18t4rjjvsl47/BOLD5000_Stimuli.zip?dl=1"
+BOLD5K_ROI_DATA_URL = "https://ndownloader.figshare.com/files/12965447"
+
+
+NN_DATA_PATH = os.path.join("/content/gdrive/My Drive/output/rcf_inference")
+NN_SAVE_PATH = os.path.join("/content/output/rcf_inference")
 
 NT_PATH = r"C:\xd\bt\NeuralTaskonomy"
 
@@ -21,6 +26,14 @@ NAME_FENDING = "npy"  # file-ending of the saving format
 BOLD5K_PRES_STIM_SUBPATH = os.path.join("Scene_Stimuli", "Presented_Stimuli")
 BOLD5K_PRES_STIM_SUBDIRECTORIES = ("COCO", "ImageNet", "Scene")
 
+UNWANTED_IMAGES = ("golfcourse7.jpg", "childsroom7.jpg", "COCO_train2014_000000000625.jpg")  # due to inconsistent sizes
+UNWANTED_SUBSTRS = ("rep_",)  # due to repetition; but our network models of interest are not capable of such feats
+
+
+
+HEMISPHERES = ["LH", "RH"]
+ROI = ["OPA", "PPA", "LOC", "EarlyVis", "RSC"]
+ROI_LABELS = tuple(hs + roi for hs in HEMISPHERES for roi in ROI)
 
 ################################
 #downloadlinks:

@@ -2,3 +2,7 @@ __pycache__/
 cov_html/
 .idea/
 .coverage
+*.coco
+
+
+detectron2/

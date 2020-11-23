@@ -21,6 +21,9 @@ Tensor = t.Union[torch.Tensor, tf.Tensor]
 Type_of_Data = t.Any
 
 
+identity = lambda *args: args
+
+
 # decorator function to use
 def infer_BOLD5K(subdirectories=delirium_config.BOLD5K_PRES_STIM_SUBDIRECTORIES):
     """

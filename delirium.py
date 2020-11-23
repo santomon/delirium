@@ -29,6 +29,8 @@ TO_ELIMINATE = ["golfcourse7.jpg", "childsroom7.jpg", "COCO_train2014_0000000006
 
 brain_dtype = t.List[t.Dict[str, np.ndarray]]
 
+DEFINED_ASTMT_MODELS = ["pascal_resnet", "pascal_mnet", "nyud_resnet"]
+
 
 def load_brain_data(
         brain_data_path: str = config.BOLD5K_ROI_DATA_PATH,
@@ -102,6 +104,8 @@ def eliminate_from_data_by_substr(data_: brain_dtype, stim_lists: t.List[t.List[
     return new_data, new_stim_lists
 
 
+
+
 def load_nn_data(
         stim_list: t.List[str],
         nn_data_path: str = config.NN_DATA_PATH,
@@ -129,6 +133,55 @@ def load_nn_data(
         return data_
     else:
         raise NotImplementedError("operation is currently only supported for npy-files")
+
+
+def get_BOLD5K_Stimuli(target_dir: str=".", chunk_size= 1024*1024*10) -> t.NoReturn:
+
+    import utility
+    utility.download_and_extract(config.BOLD5K_STIMULI_URL, "BOLD5K.zip", target_dir, chunk_size=chunk_size)
+
+
+def get_BOLD5K_ROI_data(target_dir: str=".", chunk_size= 1024*1024*10) -> t.NoReturn:
+    import utility
+    utility.download_and_extract(config.BOLD5K_ROI_DATA_URL, "ROIs.zip", target_dir, chunk_size=chunk_size)
+
+
+
+def rearrange_nn_data(nn_data: np.ndarray,
+                      curr_subj: int,
+                      next_subj: int,
+                      stim_lists: t.List[t.List[str]]):
+
+    idx_tmp = []
+    for fname in stim_lists[next_subj - 1]:
+        idx_tmp.append(stim_lists[curr_subj - 1].index(fname))
+
+    return nn_data[idx_tmp]
+
+
+
+def copy_astmt_model(model_dir: str, target_base_dir: str=".") -> t.NoReturn:
+
+    # TODO: error on gdrive, when too many files; which can happen, if results have already been computed
+
+    for model_name in DEFINED_ASTMT_MODELS:
+        if model_name in model_dir:
+            base_model = model_name
+            break
+    else:
+        raise ValueError("no astmt model that fits the selected directory")
+
+    base_index = model_dir.index(base_model)
+    target_dir = os.path.join(target_base_dir, model_dir[base_index:])
+    print(target_dir)
+
+    import shutil
+
+    if not os.path.isdir(target_dir):
+        os.makedirs(target_dir)
+    if os.path.isdir(target_dir):
+        os.rmdir(target_dir)
+    shutil.copytree(model_dir, target_dir)
 
 
 if __name__ == "__main__":

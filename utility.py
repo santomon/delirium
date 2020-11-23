@@ -11,8 +11,7 @@ import numpy as np
 
 
 
-
-FENDINGS = ["jpg", "JPEG", "JPG"]
+FENDINGS = ("jpg", "JPEG", "JPG")
 
 
 def infer_recursive():
@@ -27,9 +26,9 @@ def infer_single_folder(
         out_path: str,
         fendings: t.List[str] = FENDINGS,
         model_=None,
-        model_params=[],
+        model_params=(),
         compressor=None,
-        compress_params=[],
+        compress_params=(),
 ):
     """
       given a list of file endings; applies the model for all those files
@@ -105,5 +104,25 @@ def eliminate_by_indices(data_: t.Union[t.List, np.ndarray],
         raise NotImplementedError("Currently not supported for other types than np.ndarrays and lists")
 
 
+def download_and_extract(url: str, tmp_name:str, target_dir:str =".", chunk_size=1024*1024*10) ->t.NoReturn:
+    import requests
+    bold5k_data = requests.get(url, allow_redirects=True, stream=True)
+
+    with open(os.path.join(target_dir, tmp_name), "wb") as fd:
+
+        try:
+            import tqdm
+
+            for chunk in tqdm.tqdm(bold5k_data.iter_content(chunk_size=chunk_size)):
+                fd.write(chunk)
+        except ModuleNotFoundError:
+            for chunk in bold5k_data.iter_content(chunk_size=chunk_size):
+                fd.write(chunk)
+
+    import zipfile
+    bold5k = zipfile.ZipFile(os.path.join(target_dir, tmp_name))
+    bold5k.extractall(target_dir)
 
 
+def identity(x: t.Any) -> t.Any:
+    return x

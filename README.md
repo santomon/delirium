@@ -1,4 +1,20 @@
 # delirium
-custom library for various things for task-driven explanation of brain data
+framework for my bachelor-thesis \<insert name\>.
 
-designed to be used with google colab
+The root directory of this repository is the designated working directory of this project.
+you will also have to clone the following repositories into this project:
+
+Neural Taskonomy: <br>
+https://github.com/santomon/NeuralTaskonomy | Link to the original
+
+Various Computer Vision Models: <br>
+https://github.com/santomon/astmt | Link to the original <br>
+https://github.com/facebookresearch/detectron2 <br>
+
+
+
+
+
+
+<br>
+This project requires naturally has all dependencies of the repositories used.
