@@ -1,8 +1,18 @@
+"""
+the correct order for the keys in the output of the features:
+res{number} -> ascending order, followed by
+p{number} -> descending order
+
+e.g.
+[res2, res3, re4, p6, p5, p4, p3, p2]
+"""
+
 import numpy as np
 import os
 import typing as t
 import torch
 import pandas as pd
+import collections
 
 from PIL import Image
 
@@ -86,7 +96,7 @@ class FeatureExtractor:
             images = self.preprocess_image([inputs])
 
             predictions = self.model.backbone(images.tensor)
-            if hasattr(self.model.backbone, "bottom_up"):
+            if hasattr(self.model.backbone, "bottom_up"):  # fpn backbones are actually 2 backbones
                 predictions_bottom_up = self.model.backbone.bottom_up(images.tensor)
                 predictions_bottom_up.update(predictions)
                 return predictions_bottom_up
@@ -155,10 +165,8 @@ def get_features_by_image_path(path_to_image: str) -> t.Dict[str, torch.Tensor]:
         return get_features_by_image_data(image_data)
 
 
-
 def get_features_by_image_data(image_data: np.ndarray) -> t.Dict[str, torch.Tensor]:
     """
-
     API function for Algonauts; for a loaded, not yet preprocessed image,
     return outputs of various layers of the encoding model;
     image data is expected to be in RGB
@@ -167,7 +175,29 @@ def get_features_by_image_data(image_data: np.ndarray) -> t.Dict[str, torch.Tens
     no IntermediateLayerGetter
     """
     with torch.no_grad():
-        return predictor(image_data)
+        return _reorder_features(predictor(image_data))
+
+
+def _reorder_features(outputs: t.Dict[str, torch.Tensor]) -> t.Dict[str, torch.Tensor]:
+    """
+    vulnarable to future updates;
+    last reviewed: 23.11.20
+
+    reoorders the features based on the heuristic described at the top of this file
+    and turns the dict into an ordered dict (type annotation for t.OrderedDict raises Error)
+    """
+    results = collections.OrderedDict()
+    keys = outputs.keys()
+
+    res_keys: t.List = [key for key in keys if 'res' in key]
+    p_keys: t.List = sorted([key for key in keys if 'p' in key], reverse=True)
+
+    new_keys = res_keys + p_keys
+
+    for key in new_keys:
+        results.update({key: outputs[key]})
+
+    return results
 
 
 #####################################################
