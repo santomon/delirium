@@ -38,7 +38,7 @@ class FeatureExtractor:
     single device for a single input image.
     Compared to using the model directly, this class does the following additions:
     1. Load checkpoint from `cfg.MODEL.WEIGHTS`.
-    2. Always take RGB image as the input and apply conversion defined by `model.input_format`.
+    2. Always take RGB image as the input and apply conversion defined by `cfg.INPUT.FORMAT`.
     3. Apply resizing defined by `cfg.INPUT.{MIN,MAX}_SIZE_TEST`.
     4. Take one input image and produce a single output, instead of a batch.
     If you'd like to do anything more fancy, please refer to its source code
@@ -55,8 +55,9 @@ class FeatureExtractor:
 
     def __init__(self, cfg_path: str):
 
-        self.cfg  = model_zoo.get_config(cfg_path)
+        self.cfg = model_zoo.get_config(cfg_path)
         self.model = model_zoo.get(cfg_path)
+        self.model.eval()
         self.aug = T.ResizeShortestEdge(
             [cfg.INPUT.MIN_SIZE_TEST, cfg.INPUT.MIN_SIZE_TEST], cfg.INPUT.MAX_SIZE_TEST
         )
@@ -72,7 +73,7 @@ class FeatureExtractor:
         """
         with torch.no_grad():  # https://github.com/sphinx-doc/sphinx/issues/4258
             # Apply pre-processing to image.
-            if self.model.input_format == "BGR":
+            if self.cfg.INPUT.FORMAT == "BGR":
                 # whether the model expects BGR inputs or RGB
                 original_image = original_image[:, :, ::-1]
             height, width = original_image.shape[:2]
