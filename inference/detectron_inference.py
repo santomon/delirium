@@ -151,3 +151,16 @@ def get_features_by_image_data(image_data: np.ndarray) -> t.Dict[str, torch.Tens
     """
     with torch.no_grad():
         return predictor(image_data)
+
+
+def _update_viable_models():
+    model_names = []
+    for model_name in model_zoo._ModelZooUrls.CONFIG_PATH_TO_URL_SUFFIX.keys():
+        try:
+            print(model_name, ":")
+            select_model(model_name)
+            get_features_by_image_path("./input.jpg")
+            model_names.append(model_name)
+        except RuntimeError as t:
+            print(t)
+    return model_names
