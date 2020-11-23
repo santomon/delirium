@@ -5,6 +5,13 @@ p{number} -> descending order
 
 e.g.
 [res2, res3, re4, p6, p5, p4, p3, p2]
+
+known issue:
+some models only return one layer; more specifically networks, where the head only needs one output from the backbone
+not exactly sure how to change that without injections into detectron2 itself
+
+maybe just ignore these models for now; fpn-backbone models are safe to use; alternatively, check
+d2_model_out_dictkeys.csv
 """
 
 import numpy as np
