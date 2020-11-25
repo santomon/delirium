@@ -46,22 +46,32 @@ viable_models = ['alexnet',
     'vgg19_bn']
 
 
-model_: torch.nn.Module = torch.hub.load(torch_dir, default_model, pretrained=True)
-currently_selected_model = default_model
+model_: torch.nn.Module = None
+backbone : torch.nn.Module = None
+backbone_layer_keys: t.List[str] = None
 
-backbone = model_.backbone
-backbone.to(device)
-backbone.eval()
+intermediate_layer_getter: torch.nn.Module = None
 
-# the names of the layers, that can be extracted from the backbone
-backbone_layer_keys = [name for name, module in backbone.named_children()]
+select_default_model = lambda: select_model(default_model)
+select_default_model()
 
 
-# preparing the model, that can return all layers specified in backbone_layer_keys
-backbone_return_layers = {layer_name: layer_name for layer_name in backbone_layer_keys}
-intermediate_layer_getter = _utils.IntermediateLayerGetter(backbone, backbone_return_layers)  # used to generate all features
-intermediate_layer_getter.to(device)
-intermediate_layer_getter.eval()
+# model_: torch.nn.Module = torch.hub.load(torch_dir, default_model, pretrained=True)
+# currently_selected_model = default_model
+#
+# backbone = model_.backbone
+# backbone.to(device)
+# backbone.eval()
+#
+# # the names of the layers, that can be extracted from the backbone
+# backbone_layer_keys = [name for name, module in backbone.named_children()]
+#
+#
+# # preparing the model, that can return all layers specified in backbone_layer_keys
+# backbone_return_layers = {layer_name: layer_name for layer_name in backbone_layer_keys}
+# intermediate_layer_getter = _utils.IntermediateLayerGetter(backbone, backbone_return_layers)  # used to generate all features
+# intermediate_layer_getter.to(device)
+# intermediate_layer_getter.eval()
 
 
 
