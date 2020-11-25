@@ -7,6 +7,8 @@ intermediate_layer_getter fails for InceptionV3, googlenet;
     will fail for anything that uses torch.flatten...
     basically will always happen, if neither backbone nor features exist
 checkpoint for 'mnasnet1_3' and 'masnet0_75' exists, but the model does not
+
+models that use the Sequential class (i think) like vgg16 will hab ascending integers as layer_names
 """
 import argparse
 import typing as t
