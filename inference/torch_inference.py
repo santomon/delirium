@@ -167,7 +167,7 @@ def get_features_by_image_data(img_data: np.ndarray):  #-> t.OrderedDict[str, to
 def _update_viable_models():
     """
     used for determining all viable models, returning them as a list
-    also generates a csv file that, contains the names with their respective output keys
+    also generates a csv file that, contains the model names with their respective output keys in forward order
     """
     model_names = []
     result_keys = []
@@ -178,6 +178,7 @@ def _update_viable_models():
             result = get_features_by_image_path("./sample.jpg")
             model_names.append(model_name)
             result_keys.append(list(result.keys()))
+            print("   no issues found")
         except ValueError:
             print(model_name, "failed to get from torchhub")
         except RuntimeError as t:
