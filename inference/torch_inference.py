@@ -52,9 +52,6 @@ backbone_layer_keys: t.List[str] = None
 
 intermediate_layer_getter: torch.nn.Module = None
 
-select_default_model = lambda: select_model(default_model)
-select_default_model()
-
 
 # model_: torch.nn.Module = torch.hub.load(torch_dir, default_model, pretrained=True)
 # currently_selected_model = default_model
@@ -217,3 +214,7 @@ def _update_viable_models():
         except RuntimeError as t:
             print(t)
     return model_names
+
+
+select_default_model = lambda: select_model(default_model)
+select_default_model()
