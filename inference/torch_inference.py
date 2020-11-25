@@ -185,7 +185,7 @@ def _update_viable_models():
 
     df: pd.DataFrame = pd.DataFrame(list(zip(model_names, result_keys)))
     df.columns = ['model_name', 'output_keys']
-    df.to_csv('./torch_model_out_dictkeys.csv')
+    df.to_csv('./inference/torch_model_out_dictkeys.csv')
 
     return model_names
 
