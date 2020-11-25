@@ -14,6 +14,8 @@ import argparse
 import typing as t
 import os
 import numpy as np
+import pandas as pd
+
 import torch
 from torchvision.models import _utils
 from PIL import Image
@@ -57,27 +59,6 @@ backbone_layer_keys: t.List[str] = None
 backbone_return_layers: t.Dict[str, str] = None
 
 intermediate_layer_getter: torch.nn.Module = None
-
-
-# model_: torch.nn.Module = torch.hub.load(torch_dir, default_model, pretrained=True)
-# currently_selected_model = default_model
-#
-# backbone = model_.backbone
-# backbone.to(device)
-# backbone.eval()
-#
-# # the names of the layers, that can be extracted from the backbone
-# backbone_layer_keys = [name for name, module in backbone.named_children()]
-#
-#
-# # preparing the model, that can return all layers specified in backbone_layer_keys
-# backbone_return_layers = {layer_name: layer_name for layer_name in backbone_layer_keys}
-# intermediate_layer_getter = _utils.IntermediateLayerGetter(backbone, backbone_return_layers)  # used to generate all features
-# intermediate_layer_getter.to(device)
-# intermediate_layer_getter.eval()
-
-
-
 
 
 loader = lambda x: np.asarray(Image.open(x))
@@ -159,26 +140,6 @@ def get_features_by_image_path(path_to_file: str):  # -> t.OrderedDict[str, torc
 
     all keys can be accessed with backbone_layer_keys
 
-    the implementation of the resnet-101 in torch is as follows:
-    source: https://github.com/pytorch/vision/blob/master/torchvision/models/resnet.py      #last time verified: 22.11.20
-            def _forward_impl(self, x: Tensor) -> Tensor:
-                # See note [TorchScript super()]
-                x = self.conv1(x)
-                x = self.bn1(x)
-                x = self.relu(x)
-                x = self.maxpool(x)
-
-                x = self.layer1(x)
-                x = self.layer2(x)
-                x = self.layer3(x)
-                x = self.layer4(x)
-
-                x = self.avgpool(x)         // is cut off in the deeplabv3 model
-                x = torch.flatten(x, 1)     // is cut off in the deeplabv3 model
-                x = self.fc(x)              // is cut off in the deeplabv3 model
-                return x
-    architecture graph: https://www.researchgate.net/figure/The-network-architectures-a-original-deep-ResNet-101-and-b-our-improved-deep_fig1_337010913
-    # last time checked: 22.11.20
     """
 
     img = loader(path_to_file)
@@ -205,20 +166,27 @@ def get_features_by_image_data(img_data: np.ndarray):  #-> t.OrderedDict[str, to
 
 def _update_viable_models():
     """
-    unsafe, do not use this
-
+    used for determining all viable models, returning them as a list
+    also generates a csv file that, contains the names with their respective output keys
     """
     model_names = []
+    result_keys = []
     for model_name in torch.hub.list('pytorch/vision'):
         try:
             print(model_name, ":")
             select_model(model_name)
-            get_features_by_image_path("./sample.jpg")
+            result = get_features_by_image_path("./sample.jpg")
             model_names.append(model_name)
+            result_keys.append(list(result.keys()))
         except ValueError:
             print(model_name, "failed to get from torchhub")
         except RuntimeError as t:
             print(t)
+
+    df: pd.DataFrame = pd.DataFrame(list(zip(model_names, result_keys)))
+    df.columns = ['model_name', 'output_keys']
+    df.to_csv('./torch_model_out_dictkeys.csv')
+
     return model_names
 
 ##############################################
