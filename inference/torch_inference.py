@@ -49,8 +49,12 @@ viable_models = ['alexnet',
 
 
 model_: torch.nn.Module = None
+currently_selected_model: str = None
+
+
 backbone : torch.nn.Module = None
 backbone_layer_keys: t.List[str] = None
+backbone_return_layers: t.Dict[str, str] = None
 
 intermediate_layer_getter: torch.nn.Module = None
 
@@ -217,6 +221,7 @@ def _update_viable_models():
             print(t)
     return model_names
 
+##############################################
 
 select_default_model = lambda: select_model(default_model)
 select_default_model()
