@@ -207,7 +207,7 @@ def _update_viable_models():
         try:
             print(model_name, ":")
             select_model(model_name)
-            get_features_by_image_path("./input.jpg")
+            get_features_by_image_path("./sample.jpg")
             model_names.append(model_name)
         except ValueError:
             print(model_name, "failed to get from torchhub")
