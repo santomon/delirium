@@ -81,6 +81,7 @@ def main():
             print("model(s) could not be found!")
 
         for model_name in model_names:
+            print("running experiment for: ", model_name)
             if args.do_permutations > 0:
                 delirium.permutation_test_SSF( n = args.do_permutations,
                                            data_path = args.data_path,
