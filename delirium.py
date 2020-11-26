@@ -249,7 +249,14 @@ def fit_encoding_model_SSF(
                 full_save_path = os.path.join(save_path, module_name, model_name, 'permutations', 'subj{}'.format(i))
                 if not os.path.isdir(full_save_path):
                     os.makedirs(full_save_path)
-                np.save(os.path.join(full_save_path, 'permutation_test_on_test_data_corr{}.npy'.format(roi)), 'wb')
+
+                pickle.dump(
+                    corrs,
+                    open(
+                        os.path.join(full_save_path, "permutation_test_on_test_data_corr{}.p".format(roi)),
+                        "wb",
+                    ),
+                )
 
                 pickle.dump(
                     cv_outputs[0],
