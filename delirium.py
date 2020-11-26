@@ -171,8 +171,8 @@ def permutation_test_SSF(
         do_pca: bool,
         BOLD5000_ROI_path: str,
         BOLD5000_Stimuli_path: str,
-        subjects: t.List[int] = (1, 2, 3),
-        TR: t.List[int] = (3, 4)
+        subjects: t.List[int] = [1, 2, 3],
+        TR: t.List[int] = [3, 4]
 
 ):
     brain_data = [load_brain_data(subject=i, tr=TR) for i in subjects]
@@ -202,6 +202,7 @@ def permutation_test_SSF(
         permute_y=True,
         do_cv=False,
     )
+
 
 
 
