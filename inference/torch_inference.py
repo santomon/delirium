@@ -74,8 +74,11 @@ def preprocessor(data_):
 
     # create a transformer, the numeric values can be found on https://pytorch.org/hub/pytorch_vision_deeplabv3_resnet101/
     transformer = transforms.Compose([
+    transforms.Resize(256),
+    transforms.CenterCrop(224),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),  # luckily torch models all have the same mean and std
+    transforms.Resize()
     ])
     return transformer(data_).to(device).unsqueeze(0)
 
