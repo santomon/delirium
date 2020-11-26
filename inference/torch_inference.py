@@ -81,13 +81,13 @@ def preprocessor(data_):
 
 def model_call(data_: torch.Tensor) -> t.Dict:
     with torch.no_grad():
-        return backbone(data_)
+        return intermediate_layer_getter(data_)[-1]
 
 
 def postprocessor(data_: t.Dict, compress=True) -> np.ndarray:
 
     try:
-        result = data_['out']
+        result = data_
         if compress:
             result = torch.nn.AvgPool2d(3)(result).cpu()
             result = np.float16(result).squeeze(0)
