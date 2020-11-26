@@ -62,7 +62,7 @@ backbone_return_layers: t.Dict[str, str] = None
 intermediate_layer_getter: torch.nn.Module = None
 
 
-loader = lambda x: np.asarray(Image.open(x))
+loader = lambda x: Image.open(x)
 
 
 def preprocessor(data_):
