@@ -74,7 +74,7 @@ def preprocessor(data_):
     # create a transformer, the numeric values can be found on https://pytorch.org/hub/pytorch_vision_deeplabv3_resnet101/
     transformer = transforms.Compose([
     transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),  # luckily torch models all have the same mean and std
     ])
     return transformer(data_).to(device).unsqueeze(0)
 
@@ -84,18 +84,30 @@ def model_call(data_: torch.Tensor) -> t.Dict:
         return backbone(data_)
 
 
-def postprocessor(data_: t.Dict) -> np.ndarray:
+def postprocessor(data_: t.Dict, compress=True) -> np.ndarray:
 
     result = data_['out']
-    result = torch.nn.AvgPool2d(3)(result).cpu()
-    result = np.float16(result).squeeze(0)
+    if compress:
+        result = torch.nn.AvgPool2d(3)(result).cpu()
+        result = np.float16(result).squeeze(0)
     return result
 
 
 def saver(data_: np.ndarray, path: str, file_name: str) -> t.NoReturn:
-    if not os.path.isdir(path):
-        os.makedirs(path)
-    np.save(os.path.join(path, file_name.split(".")[0] + '_bb_compressed' + '.npy'), data_)
+    full_path = os.path.join(path, currently_selected_model)
+    if not os.path.isdir(full_path):
+        os.makedirs(full_path)
+    np.save(os.path.join(full_path, generate_file_name(file_name)), data_)
+
+
+def generate_file_name(old_file_name: str) -> str:
+    """
+    for a given image name, generate a respective file name, the output should be saved as;
+    e.g.  xd.jpg -> xd_features.npy
+
+    can be used to find the files for the regression part
+    """
+    return old_file_name.split(".")[0] + '_features' + '.npy'
 
 
 ###########
