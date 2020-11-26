@@ -70,7 +70,7 @@ def main():
 
     for module_name in module_names:
         if args.model == 'all':
-            model_names: t.List[str] = [file for file in os.listdir(args.data_path) if os.path.isdir(os.path.join(args.data_path, module_name, file))]
+            model_names: t.List[str] = [file for file in os.listdir(os.path.join(args.data_path, module_name)) if os.path.isdir(os.path.join(args.data_path, module_name, file))]
         else:
             model_names: t.List[str] = [args.model] if os.path.isdir(os.path.join(args.data_path, module_name, args.model)) else []
 
