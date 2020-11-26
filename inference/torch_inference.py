@@ -105,10 +105,10 @@ def postprocessor(data_: t.Dict, compress=True) -> np.ndarray:
 
 
 def saver(data_: np.ndarray, path: str, file_name: str) -> t.NoReturn:
-    full_path = os.path.join(path, currently_selected_model)
+    full_path = os.path.join(path, module_name, currently_selected_model)
     if not os.path.isdir(full_path):
         os.makedirs(full_path)
-    np.save(os.path.join(full_path, module_name, generate_file_name(file_name)), data_)
+    np.save(os.path.join(full_path, generate_file_name(file_name)), data_)
 
 
 def generate_file_name(old_file_name: str) -> str:
