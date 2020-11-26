@@ -130,7 +130,7 @@ if __name__ == "__main__":
     if parser.dataset == "BOLD5000":
         infer_folder = infer_BOLD5K(subdirectories=delirium_config.BOLD5K_PRES_STIM_SUBDIRECTORIES)(infer_folder)
 
-    module = importlib.import_module(parser.model_module)
+    module = importlib.import_module(parser.module)
 
 
     if parser.model == 'all':
