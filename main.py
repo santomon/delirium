@@ -7,6 +7,9 @@ import typing as t
 import os
 import numpy as np
 
+
+import sys
+sys.path.append('NeuralTaskonomy/code')
 import delirium_config
 import delirium
 
