@@ -86,11 +86,17 @@ def model_call(data_: torch.Tensor) -> t.Dict:
 
 def postprocessor(data_: t.Dict, compress=True) -> np.ndarray:
 
-    result = data_['out']
-    if compress:
-        result = torch.nn.AvgPool2d(3)(result).cpu()
-        result = np.float16(result).squeeze(0)
-    return result
+    try:
+        result = data_['out']
+        if compress:
+            result = torch.nn.AvgPool2d(3)(result).cpu()
+            result = np.float16(result).squeeze(0)
+        return result
+    except TypeError as t:
+        print(t)
+        print(currently_selected_model, "failed. ")
+        print("data_ looks like:" )
+        print(data_)
 
 
 def saver(data_: np.ndarray, path: str, file_name: str) -> t.NoReturn:
