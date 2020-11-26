@@ -85,7 +85,7 @@ def infer_folder(
 
 def parse_args() -> argparse.ArgumentParser():
     parser_ = argparse.ArgumentParser()
-    parser_.add_argument("--model_module", default="deeplabv3_inference", type=str,
+    parser_.add_argument("--module", default="torch_inference", type=str,
                          help="will attempt to import model_module"
                              "any model_module has to implement methods:"
                              "      data_path: str,"
@@ -112,6 +112,11 @@ def parse_args() -> argparse.ArgumentParser():
                         help="path, where the results of inference will be saved; if none is provided,"
                             "delirium_config.NN_SAVE_PATH will be used")
 
+    parser_.add_argument("--model", default="all", type=str,
+                         help="specify, which model of the module to use; refer to the respective csv files, to get "
+                              "valid model names; \n"
+                              "all can be used, generate features for all models")
+
     if "inference/inference.py" in sys.argv:
         return parser_.parse_args()
     else:
@@ -125,18 +130,26 @@ if __name__ == "__main__":
     if parser.dataset == "BOLD5000":
         infer_folder = infer_BOLD5K(subdirectories=delirium_config.BOLD5K_PRES_STIM_SUBDIRECTORIES)(infer_folder)
 
-    model_ = importlib.import_module(parser.model_module)
-
-    if hasattr(model_, "dependency_solver"):
-        model_.dependecy_solver()
+    module = importlib.import_module(parser.model_module)
 
 
-    infer_folder(
-        parser.data_path,
-        parser.save_path,
-        model_.loader,
-        model_.preprocessor,
-        model_.model_call,
-        model_.postprocessor,
-        model_.saver
-    )
+    if parser.model == 'all':
+        models = module.viable_models
+    else:
+        models = [parser.model]
+
+    if hasattr(module, "dependency_solver"):
+        module.dependecy_solver()
+
+
+    for model in models:
+        module.select_model(model)
+        infer_folder(
+            parser.data_path,
+            parser.save_path,
+            module.loader,
+            module.preprocessor,
+            module.model_call,
+            module.postprocessor,
+            module.saver
+        )
