@@ -11,6 +11,7 @@ import typing as t
 import scipy.io
 import numpy as np
 import sys
+import importlib
 
 import utility
 import delirium_config as config
@@ -108,31 +109,29 @@ def eliminate_from_data_by_substr(data_: brain_dtype, stim_lists: t.List[t.List[
 
 def load_nn_data(
         stim_list: t.List[str],
-        nn_data_path: str = config.NN_DATA_PATH,
-        prefix: str = config.NAME_PREFIX,
-        suffix: str = config.NAME_SUFFIX,
-        file_ending: str = config.NAME_FENDING
+        nn_data_path: str,
 ) -> np.ndarray:
     """
     TODO:doc
     :param stim_list:
     :param nn_data_path:
-    :param prefix:
-    :param suffix:
-    :param file_ending:
     :return:
     """
 
-    if file_ending in ["npy"]:
-        data_: t.List[np.ndarray] = []
-        for img_name in tqdm.tqdm(stim_list):
-            data_path = os.path.join(nn_data_path, prefix + img_name.split(".")[0] + suffix + "." + file_ending,)
-            data_.append(np.load(data_path, allow_pickle=True).flatten())
-        data_: np.ndarray = np.array(data_)
-        assert len(data_.shape) == 2, "Error: not all datapoints have the same number of parameters!"
-        return data_
-    else:
-        raise NotImplementedError("operation is currently only supported for npy-files")
+    rest_path, model_name = os.path.split(nn_data_path)
+    _, module_name = os.path.split(rest_path)
+
+    #VULNERABLE:
+    module = importlib.import_module("inference." + module_name)
+
+    data_: t.List[np.ndarray] = []
+    for img_name in tqdm.tqdm(stim_list):
+        data_path = os.path.join(nn_data_path, module.generate_file_name(img_name))
+        data_.append(np.load(data_path, allow_pickle=True).flatten())
+    data_: np.ndarray = np.array(data_)
+    assert len(data_.shape) == 2, "Error: not all datapoints have the same number of parameters!"
+    return data_
+
 
 
 def get_BOLD5K_Stimuli(target_dir: str=".", chunk_size= 1024*1024*10) -> t.NoReturn:
@@ -159,9 +158,15 @@ def rearrange_nn_data(nn_data: np.ndarray,
     return nn_data[idx_tmp]
 
 
+def permutation_test():
+    pass
+
+
+
+
 
 def copy_astmt_model(model_dir: str, target_base_dir: str=".") -> t.NoReturn:
-
+    # Deprecated:
     # TODO: error on gdrive, when too many files; which can happen, if results have already been computed
 
     for model_name in DEFINED_ASTMT_MODELS:

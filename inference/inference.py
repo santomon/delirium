@@ -115,7 +115,7 @@ def parse_args() -> argparse.ArgumentParser():
     parser_.add_argument("--model", default="all", type=str,
                          help="specify, which model of the module to use; refer to the respective csv files, to get "
                               "valid model names; \n"
-                              "all can be used, generate features for all models")
+                              "'all' can be used, generate features for all models")
 
     if "inference/inference.py" in sys.argv:
         return parser_.parse_args()

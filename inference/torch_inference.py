@@ -23,6 +23,7 @@ from torchvision import transforms
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
+module_name = 'torch_inference'  # VULNERABLE: last verified 26.11.20
 
 torch_dir = 'pytorch/vision'
 default_model = 'deeplabv3_resnet101'
@@ -105,7 +106,7 @@ def saver(data_: np.ndarray, path: str, file_name: str) -> t.NoReturn:
     full_path = os.path.join(path, currently_selected_model)
     if not os.path.isdir(full_path):
         os.makedirs(full_path)
-    np.save(os.path.join(full_path, generate_file_name(file_name)), data_)
+    np.save(os.path.join(full_path, module_name, generate_file_name(file_name)), data_)
 
 
 def generate_file_name(old_file_name: str) -> str:
