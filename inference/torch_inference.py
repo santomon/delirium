@@ -82,7 +82,7 @@ def preprocessor(data_):
 def model_call(data_: torch.Tensor) -> t.Dict:
     with torch.no_grad():
         result = intermediate_layer_getter(data_)
-        return result[result.keys()[-1]]           # take the last ouput from all generated features
+        return result[list(result.keys())[-1]]           # take the last ouput from all generated features
 
 
 def postprocessor(data_: t.Dict, compress=True) -> np.ndarray:
