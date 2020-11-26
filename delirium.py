@@ -231,7 +231,7 @@ def fit_encoding_model_SSF(
         """
         data = load_nn_data(
             stim_list=stim_lists[i - 1],
-            full_nn_data_path=nn_data_path,
+            full_nn_data_path=os.path.join(nn_data_path, module_name, model_name),
             module_name=module_name
         )
 
