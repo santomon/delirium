@@ -97,6 +97,7 @@ def postprocessor(data_: t.Dict, compress=True) -> np.ndarray:
         print(currently_selected_model, "failed. ")
         print("data_ looks like:" )
         print(data_)
+        raise TypeError("stop")
 
 
 def saver(data_: np.ndarray, path: str, file_name: str) -> t.NoReturn:
