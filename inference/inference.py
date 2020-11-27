@@ -138,8 +138,6 @@ if __name__ == "__main__":
     else:
         models = [parser.model]
 
-    if hasattr(module, "dependency_solver"):
-        module.dependecy_solver()
 
 
     for model in models:
