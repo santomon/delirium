@@ -35,6 +35,7 @@ from detectron2.structures import ImageList
 from detectron2.model_zoo import model_zoo
 from detectron2.modeling import meta_arch
 
+module_name = "detectron_inference"
 
 viable_models = model_zoo._ModelZooUrls.CONFIG_PATH_TO_URL_SUFFIX.keys()
 # the viable model names can be found there
@@ -124,6 +125,8 @@ class FeatureExtractor:
 
 
 predictor: FeatureExtractor = FeatureExtractor(default_model)
+currently_selected_model = default_model
+
 
 
 
@@ -138,19 +141,45 @@ def loader(path_to_image: str) -> np.ndarray:
 
 
 def preprocessor(data_):
-    pass
+    return predictor.preprocess_image(data_)
 
 
 def model_call(data_):
-    pass
+    result = predictor(data_)
+    return result[list(result.keys())[-1]]
 
 
-def postprpocessor(data_):
-    pass
+def postprocessor(data_: t.Dict, compress=True) -> np.ndarray:
+
+    try:
+        result = data_
+        if compress:
+            result = torch.nn.AvgPool2d(3)(result).cpu()
+            result = np.float16(result).squeeze(0)
+        return result
+    except TypeError as t:
+        print(t)
+        print(currently_selected_model, "failed. ")
+        print("data_ looks like:" )
+        print(data_)
+        raise TypeError("stop")
 
 
-def saver(data_, save_path, name):
-    pass
+def saver(data_: np.ndarray, path: str, file_name: str) -> t.NoReturn:
+    full_path = os.path.join(path, module_name, currently_selected_model)
+    if not os.path.isdir(full_path):
+        os.makedirs(full_path)
+    np.save(os.path.join(full_path, generate_file_name(file_name)), data_)
+
+
+def generate_file_name(old_file_name: str) -> str:
+    """
+    for a given image name, generate a respective file name, the output should be saved as;
+    e.g.  xd.jpg -> xd_features.npy
+
+    can be used to find the files for the regression part
+    """
+    return old_file_name.split(".")[0] + '_features' + '.npy'
 
 
 def select_model(model_name: str):
@@ -226,4 +255,5 @@ def _create_model_out_dictkeys():
             print(t)
 
     pd.DataFrame(list(zip(model_names, result_keys))).to_csv("d2_model_out_dictkeys.csv")
+
 

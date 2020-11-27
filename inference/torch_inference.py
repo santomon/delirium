@@ -89,7 +89,6 @@ def model_call(data_: torch.Tensor) -> t.Dict:
 
 
 def postprocessor(data_: t.Dict, compress=True) -> np.ndarray:
-
     try:
         result = data_
         if compress:
