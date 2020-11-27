@@ -128,12 +128,6 @@ predictor: FeatureExtractor = FeatureExtractor(default_model)
 currently_selected_model = default_model
 
 
-
-
-def dependency_solver(): #implement this, if needed
-    pass
-
-
 def loader(path_to_image: str) -> np.ndarray:
 
     img = np.asarray(Image.open(path_to_image))  # loaded as RGB
