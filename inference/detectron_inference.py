@@ -135,7 +135,7 @@ def loader(path_to_image: str) -> np.ndarray:
 
 
 def preprocessor(data_):
-    return predictor.preprocess_image(data_)
+    return data_
 
 
 def model_call(data_):
