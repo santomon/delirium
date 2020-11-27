@@ -184,6 +184,7 @@ def select_model(model_name: str):
     """
     global predictor
     predictor = FeatureExtractor(model_name)
+    currently_selected_model = model_name
 
 
 def get_features_by_image_path(path_to_image: str) -> t.Dict[str, torch.Tensor]:
