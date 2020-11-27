@@ -135,18 +135,19 @@ def loader(path_to_image: str) -> np.ndarray:
 
 
 def preprocessor(data_):
+    #identity; incorporated in modelcall
     return data_
 
 
 def model_call(data_):
-    result = predictor(data_)
+    result = _reorder_features(predictor(data_))
     return result[list(result.keys())[-1]]
 
 
 def postprocessor(data_: t.Dict, compress=True) -> np.ndarray:
 
     try:
-        result = _reorder_features(data_)
+        result = data_
         if compress:
             result = torch.nn.AvgPool2d(3)(result).cpu()
             result = np.float16(result).squeeze(0)
