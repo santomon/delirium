@@ -78,7 +78,7 @@ class FeatureExtractor:
         self.model = model_zoo.get(cfg_path, trained=True)
         self.model.eval()
         self.aug = T.ResizeShortestEdge(
-            [cfg.INPUT.MIN_SIZE_TEST, cfg.INPUT.MIN_SIZE_TEST], cfg.INPUT.MAX_SIZE_TEST
+            [self.cfg.INPUT.MIN_SIZE_TEST, self.cfg.INPUT.MIN_SIZE_TEST], self.cfg.INPUT.MAX_SIZE_TEST
         )
 
     def __call__(self, original_image):
