@@ -152,7 +152,7 @@ def model_call(data_):
 def postprocessor(data_: t.Dict, compress=True) -> np.ndarray:
 
     try:
-        result = data_
+        result = _reorder_features(data_)
         if compress:
             result = torch.nn.AvgPool2d(3)(result).cpu()
             result = np.float16(result).squeeze(0)
