@@ -182,7 +182,7 @@ def select_model(model_name: str):
     change the model, that will be used by the predictor;
     to get the model_names, refer to viable models at the top of this file
     """
-    global predictor
+    global predictor, currently_selected_model
     predictor = FeatureExtractor(model_name)
     currently_selected_model = model_name
 
