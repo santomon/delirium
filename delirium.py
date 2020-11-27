@@ -235,13 +235,18 @@ def fit_encoding_model_SSF(
             module_name=module_name
         )
 
+        if do_pca:
+            pca = PCA()
+            pca.fit(data[:1000])
+            data = pca.transform(data)
+
         ridged_brain_data_single = dict()
         for roi in config.ROI_LABELS:
             corrs, *cv_outputs =ridge_cv(X=np.float32(data),
                                             y=np.float32(brain_data_single[roi]),
                                             permute_y= permute_y,
                                             cv=do_cv,
-                                            pca = do_pca,
+                                            pca = False,
                                             split_by_runs=False,
                                             repeat=repeat)
 
