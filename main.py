@@ -46,6 +46,11 @@ def parse_args() -> argparse.Namespace:
                          help="specify, if PCA should be applied on the data, before running a given experiment;\n"
                               "this is highly recommended, as feature spaces can be really large and potentially cause"
                               "your RAM to explode")
+
+    _parser.add_argument("--fix_testing", action="store_true",
+                         help="specify, if the train test split for the ridge regression should be fixed. This option "
+                              "was chosen in the NeuralTaskonomy project and it is therefore recommended to be used as well")
+
     _parser.add_argument("--BOLD5000_ROI_path", default=os.path.join(delirium_config.BOLD5K_ROI_DATA_PATH), type=str,
                          help="specify, where to find the BOLD5000 ROI dataset")
 
@@ -89,6 +94,7 @@ def main():
                                            model_name = model_name,
                                            save_path = args.save_path,
                                            do_pca = args.do_pca,
+                                           fix_testing = args.fix_testing,
                                            BOLD5000_ROI_path = args.BOLD5000_ROI_path,
                                            BOLD5000_Stimuli_path = args.BOLD5000_Stimuli_path,
                 )
