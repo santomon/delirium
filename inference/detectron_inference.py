@@ -139,9 +139,13 @@ def preprocessor(data_):
     return data_
 
 
-def model_call(data_):
+def model_call(data_, layer: str=None):
     result = _reorder_features(predictor(data_))
-    return result[list(result.keys())[-1]]
+
+    if layer is None:
+        return result[list(result.keys())[-1]]  # return last layer
+    else:
+        return result[layer]
 
 
 def postprocessor(data_: t.Dict, compress=True) -> np.ndarray:
@@ -221,7 +225,7 @@ def _reorder_features(outputs: t.Dict[str, torch.Tensor]) -> t.Dict[str, torch.T
     results = collections.OrderedDict()
     keys = outputs.keys()
 
-    res_keys: t.List = [key for key in keys if 'res' in key]
+    res_keys: t.List = sorted([key for key in keys if 'res' in key])
     p_keys: t.List = sorted([key for key in keys if 'p' in key], reverse=True)
 
     new_keys = res_keys + p_keys

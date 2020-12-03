@@ -55,9 +55,10 @@ def infer_folder(
         save_path: str,
         loader: t.Callable[[str], Type_of_Data],
         preprocessor: t.Callable[[Type_of_Data], Tensor],
-        mode_call: t.Callable[[Tensor], t.Any],
+        model_call: t.Callable[[Tensor], t.Any],
         postprocessor: t.Callable[[t.Any], t.Any],
         saver: t.Callable[[t.Any, str, str], t.NoReturn],
+        layer: str
 ) -> t.Any:
     """
     TODO:doc
@@ -70,6 +71,7 @@ def infer_folder(
     :param mode_call:
     :param postprocessor:
     :param saver:
+    :param layer:
     :return:
     """
 
@@ -78,7 +80,7 @@ def infer_folder(
     for file_ in tqdm.tqdm(files):
         loaded_file = loader(os.path.join(data_path, file_))
         data = preprocessor(loaded_file)
-        output = mode_call(data)
+        output = model_call(data, layer)
         postprocessed_output = postprocessor(output)
         saver(postprocessed_output, save_path, file_)
 
@@ -117,6 +119,12 @@ def parse_args() -> argparse.ArgumentParser():
                               "valid model names; \n"
                               "'all' can be used, generate features for all models")
 
+    parser_.add_argument("--layer", default=None, type=str,
+                         help="specify a layer name, for which the features should be extracted. "
+                              "This parameter is ignored when using 'all' keyword in model selection. Instead the last"
+                              "layer will from the backbone will be extracted. \n"
+                              "For information on extractable layers, please refer to the respective csv files")
+
     if "inference/inference.py" in sys.argv:
         return parser_.parse_args()
     else:
@@ -135,8 +143,10 @@ if __name__ == "__main__":
 
     if parser.model == 'all':
         models = module.viable_models
+        layer = None
     else:
         models = [parser.model]
+        layer = parser.layer
 
 
 
@@ -149,8 +159,8 @@ if __name__ == "__main__":
             module.preprocessor,
             module.model_call,
             module.postprocessor,
-            module.saver
+            module.saver,
+            layer
         )
 
-
-    print("we finished")
+    print("Finished extracting features for all models")
