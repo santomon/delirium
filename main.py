@@ -50,7 +50,7 @@ def parse_args() -> argparse.Namespace:
     _parser.add_argument("--TR", default=[3, 4], type=int, nargs="*",
                          help="specify, which TRs you want to use, if multiple are chosen, the average over them will"
                               "be used.")
-    _parser.add_argument("--subs", default= [1,2,3], type=int, nargs="*",
+    _parser.add_argument("--subjs", default= [1,2,3], type=int, nargs="*",
                          help="specify, for which subjects the experiments should be run for.")
     _parser.add_argument("--do_cv", default=False, type=bool,
                          help="run cross validation")
@@ -106,7 +106,7 @@ def main():
                                                     fix_testing=args.fix_testing,
                                                     BOLD5000_ROI_path=args.BOLD5000_ROI_path,  # not even used atm, lmao
                                                     BOLD5000_Stimuli_path=args.BOLD5000_Stimuli_path,  # not even used atm lmao
-                                                    subjects= args.subj,
+                                                    subjects= args.subjs,
                                                     TR= args.TR,
                                                     do_cv=args.do_cv
             )
