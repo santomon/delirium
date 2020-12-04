@@ -275,7 +275,7 @@ class EncodingModel:
                 corrs_array, open(os.path.join(outpath, "corr_{}.p".format(full_model_name)), "wb")
             )
 
-            if len(cv_outputs) > 0:
+            if len(cv_outputs) > 0:  # happens if no permutations
                 pickle.dump(
                     cv_outputs[0], open(outpath + "rsq_{}.p".format(full_model_name), "wb")
                 )
