@@ -47,6 +47,15 @@ def parse_args() -> argparse.Namespace:
                               "this is highly recommended, as feature spaces can be really large and potentially cause"
                               "your RAM to explode")
 
+    _parser.add_argument("--TR", default=[3, 4], type=int, nargs="*",
+                         help="specify, which TRs you want to use, if multiple are chosen, the average over them will"
+                              "be used.")
+    _parser.add_argument("--subs", default= [1,2,3], type=int, nargs="*",
+                         help="specify, for which subjects the experiments should be run for.")
+    _parser.add_argument("--do_cv", default=False, type=bool,
+                         help="run cross validation")
+
+
     _parser.add_argument("--fix_testing", action="store_true",
                          help="specify, if the train test split for the ridge regression should be fixed. This option "
                               "was chosen in the NeuralTaskonomy project and it is therefore recommended to be used as well")
@@ -87,20 +96,21 @@ def main():
 
         for model_name in model_names:
             print("running experiment for: ", model_name)
-            if args.do_permutations > 0:
-                delirium.permutation_test_SSF( n = args.do_permutations,
-                                           data_path = args.data_path,
-                                           module_name = module_name,
-                                           model_name = model_name,
-                                           save_path = args.save_path,
-                                           do_pca = args.do_pca,
-                                           fix_testing = args.fix_testing,
-                                           BOLD5000_ROI_path = args.BOLD5000_ROI_path,
-                                           BOLD5000_Stimuli_path = args.BOLD5000_Stimuli_path,
-                )
 
-
-
+            encodingmodel = delirium.EncodingModel(
+                                                    data_path=args.data_path,
+                                                    module_name= args.module_name,
+                                                    model_name= args.model_name,
+                                                    save_path=args.save_path,
+                                                    do_pca=args.do_pca,
+                                                    fix_testing=args.fix_testing,
+                                                    BOLD5000_ROI_path=args.BOLD5000_ROI_path,  # not even used atm, lmao
+                                                    BOLD5000_Stimuli_path=args.BOLD5000_Stimuli_path,  # not even used atm lmao
+                                                    subjects= args.subj,
+                                                    TR= args.TR,
+                                                    do_cv=args.do_cv
+            )
+            encodingmodel.fit_encoding_model_SSF(args.do_permutations)
 
 
 if __name__ == '__main__':

@@ -162,111 +162,151 @@ def rearrange_nn_data(nn_data: np.ndarray,
     return nn_data[idx_tmp]
 
 
-def permutation_test_SSF(
-        n: int,
-        data_path :str,
-        module_name: str,
-        model_name: str,
-        save_path: str,
-        do_pca: bool,
-        BOLD5000_ROI_path: str,
-        BOLD5000_Stimuli_path: str,
-        subjects: t.List[int] = [1, 2, 3],
-        TR: t.List[int] = [3, 4]
 
-):
-    brain_data = [load_brain_data(subject=i, tr=TR) for i in subjects]
-    stim_lists = load_stim_lists(subjects=subjects)
+class EncodingModel:
 
-    brain_data, stim_lists = eliminate_from_data_by_substr(
-        brain_data,
-        stim_lists,
-        substr='rep_'
-    )
+    def __init__(self,
+                 data_path: str,
+                 module_name: str,
+                 model_name: str,
+                 save_path: str,
+                 do_pca: bool,
+                 fix_testing: bool,
+                 BOLD5000_ROI_path: str,
+                 BOLD5000_Stimuli_path: str,
+                 do_cv: bool,
+                 subjects: t.List[int] = [1, 2, 3],
+                 TR: t.List[int] = [3, 4]
+                 ):
 
-    for substr in config.UNWANTED_IMAGES:
-        brain_data, stim_lists = eliminate_from_data_by_substr(brain_data, stim_lists, substr)
+        self.data_path = data_path
+        self.module_name = module_name
+        self.model_name = model_name
+        self.save_path = save_path
+        self.do_pca = do_pca
+        self.fix_testing = fix_testing
+        self.subjects = subjects
+        self.TR = TR
+        self.do_cv = do_cv
 
-    utility.inspect(brain_data)
+        self.brain_data = [load_brain_data(subject=i, tr=TR) for i in subjects]
+        self.stim_lists = load_stim_lists(subjects=subjects)
 
-    fit_encoding_model_SSF(
-        brain_data = brain_data,
-        stim_lists = stim_lists,
-        subjects = subjects,
-        nn_data_path = data_path,
-        module_name= module_name,
-        model_name = model_name,
-        save_path=save_path,
-        do_pca=do_pca,
-        repeat=n,
-        permute_y=True,
-        do_cv=False,
-    )
+        self.brain_data, self.stim_lists = eliminate_from_data_by_substr(
+            self.brain_data,
+            self.stim_lists,
+            substr='rep_'
+        )   # remove stimuli, that were not shown for the first time
 
+        for substr in config.UNWANTED_IMAGES:
+            self.brain_data, self.stim_lists = eliminate_from_data_by_substr(self.brain_data, self.stim_lists, substr)
 
+        utility.inspect(self.brain_data)
 
 
+    def fit_encoding_model_SSF(self, do_permutation: int):
 
-def fit_encoding_model_SSF(
-        brain_data,
-        stim_lists,
-        subjects: t.List[int],
-        nn_data_path: str,
-        module_name: str,
-        model_name: str,
-        save_path: str,
-        do_pca: bool,
-        fix_testing,
-        repeat=1,
-        permute_y = False,
-        do_cv = False,
-):
-    ridged_brain_data = []
-    for i, brain_data_single in zip(subjects, brain_data):
+        for subj, brain_data_single in zip(self.subjects, self.brain_data):
 
-        """
-        if i==1:
-          data = nn_data
-        else:
-          data = delirium.rearrange_nn_data(nn_data, 1, i, stim_lists)
-        """
-        data = load_nn_data(
-            stim_list=stim_lists[i - 1],
-            full_nn_data_path=os.path.join(nn_data_path, module_name, model_name),
-            module_name=module_name
-        )
+            corrs_array, rsqs_array, cv_array, l_score_array, best_l_array, predictions_array = (
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+            )
 
-        ridged_brain_data_single = dict()
-        for roi in config.ROI_LABELS:
-            corrs, *cv_outputs =ridge_cv(X=np.float32(data),
-                                            y=np.float32(brain_data_single[roi]),
-                                            permute_y= permute_y,
-                                            cv=do_cv,
-                                            pca = do_pca,
-                                            fix_testing= fix_testing,
-                                            split_by_runs=False,
-                                            repeat=repeat)
 
-            if permute_y:
-                full_save_path = os.path.join(save_path, module_name, model_name, 'permutations', 'subj{}'.format(i))
-                if not os.path.isdir(full_save_path):
-                    os.makedirs(full_save_path)
+            data = load_nn_data(
+                stim_list=self.stim_lists[subj - 1],
+                full_nn_data_path=os.path.join(self.data_path, self.module_name, self.model_name),
+                module_name=self.module_name
+            )
 
+            ridged_brain_data_single = dict()
+            for roi in config.ROI_LABELS:
+                corrs, *cv_outputs =ridge_cv(X=np.float32(data),
+                                                y=np.float32(brain_data_single[roi]),
+                                                permute_y= do_permutation,
+                                                cv=self.do_cv,
+                                                pca = self.do_pca,
+                                                fix_testing= self.fix_testing,
+                                                split_by_runs=False,
+                                                repeat=do_permutation)
+
+                if do_permutation:
+                    full_save_path = os.path.join(self.save_path, self.module_name, self.model_name, 'permutations', 'subj{}'.format(subj))
+                    if not os.path.isdir(full_save_path):
+                        os.makedirs(full_save_path)
+
+                    pickle.dump(
+                        corrs,
+                        open(
+                            os.path.join(full_save_path, "permutation_test_on_test_data_corr{}.p".format(roi)),
+                            "wb",
+                        ),
+                    )
+
+                    pickle.dump(
+                        cv_outputs[0],
+                        open(
+                            os.path.join(full_save_path, "permutation_test_on_test_data_pvalue_{}.p".format(roi)),
+                            "wb",
+                        ),
+                    )
+                else:
+                    corrs_array.append(corrs)  # append values of all ROIs
+                    if len(cv_outputs) > 0:
+                        rsqs_array.append(cv_outputs[0])
+                        cv_array.append(cv_outputs[1])
+                        l_score_array.append(cv_outputs[2])
+                        best_l_array.append(cv_outputs[3])
+                        predictions_array.append(cv_outputs[4])
+
+
+
+            outpath = os.path.join(self.save_path, self.module_name, self.model_name)
+            if not os.path.isdir(outpath):
+                os.makedirs(outpath)
+            full_model_name = self.generate_full_model_name(subj)
+
+            pickle.dump(
+                corrs_array, open(os.path.join(outpath, "corr_{}.p".format(full_model_name)), "wb")
+            )
+
+            if len(cv_outputs) > 0:
                 pickle.dump(
-                    corrs,
-                    open(
-                        os.path.join(full_save_path, "permutation_test_on_test_data_corr{}.p".format(roi)),
-                        "wb",
-                    ),
+                    cv_outputs[0], open(outpath + "rsq_{}.p".format(full_model_name), "wb")
+                )
+                pickle.dump(
+                    cv_outputs[1],
+                    open(outpath + "cv_score_{}.p".format(full_model_name), "wb"),
+                )
+                pickle.dump(
+                    cv_outputs[2],
+                    open(outpath + "l_score_{}.p".format(full_model_name), "wb"),
+                )
+                pickle.dump(
+                    cv_outputs[3],
+                    open(outpath + "best_l_{}.p".format(full_model_name), "wb"),
                 )
 
-                pickle.dump(
-                    cv_outputs[0],
-                    open(
-                        os.path.join(full_save_path, "permutation_test_on_test_data_pvalue_{}.p".format(roi)),
-                        "wb",
-                    ),
-                )
+                if self.fix_testing:
+                    pickle.dump(
+                        cv_outputs[4],
+                        open(outpath + "pred_{}.p".format(full_model_name), "wb"),
+                    )
+
+
+    def generate_full_model_name(self, subj):
+        return "subj{}_TR{}_{}_{}_{}".format(subj,
+                                             "".join([str(tr) for tr in self.TR]),
+                                             "pca" if self.do_pca else "nopca",
+                                             "fixtesting" if self.fix_testing else "nofixtesting",
+                                             "cv" if self.do_cv else "nocv",
+                                             )
+
 
 
 

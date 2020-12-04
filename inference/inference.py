@@ -117,12 +117,12 @@ def parse_args() -> argparse.ArgumentParser():
     parser_.add_argument("--model", default="all", type=str,
                          help="specify, which model of the module to use; refer to the respective csv files, to get "
                               "valid model names; \n"
-                              "'all' can be used, generate features for all models")
+                              "'all' can be used, to generate features for all models")
 
     parser_.add_argument("--layer", default=None, type=str,
                          help="specify a layer name, for which the features should be extracted. "
                               "This parameter is ignored when using 'all' keyword in model selection. Instead the last"
-                              "layer will from the backbone will be extracted. \n"
+                              "available layer from the backbone will be extracted. \n"
                               "For information on extractable layers, please refer to the respective csv files")
 
     if "inference/inference.py" in sys.argv:
@@ -143,6 +143,9 @@ if __name__ == "__main__":
 
     if parser.model == 'all':
         models = module.viable_models
+        if parser.layer is not None:
+            print("All models were selected. Specified layer name cannot be guaranteed for all models. Defaulting"
+                  "to last layer of the backbone.")
         layer = None
     else:
         models = [parser.model]
