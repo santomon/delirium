@@ -99,8 +99,8 @@ def main():
 
             encodingmodel = delirium.EncodingModel(
                                                     data_path=args.data_path,
-                                                    module_name= args.module,
-                                                    model_name= args.model,
+                                                    module_name= module_name,
+                                                    model_name= model_name,
                                                     save_path=args.save_path,
                                                     do_pca=args.do_pca,
                                                     fix_testing=args.fix_testing,
