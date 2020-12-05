@@ -105,8 +105,9 @@ def saver(data_: t.Dict[str, np.ndarray], path: str, file_name: str) -> t.NoRetu
 
 def select_model(model_name: str):
 
-    global model_, cfg, transformer
+    global model_, cfg, transformer, currently_selected_model
 
+    currently_selected_model = model_name
     if 'SSF' in model_name:
         _download_SSF_model(model_name)
 
