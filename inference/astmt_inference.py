@@ -1,8 +1,9 @@
 import sys
-sys.path.append("./astmt")
+import os
+sys.path.append(os.path.abspath("./astmt"))
 
 import typing as t
-import os
+
 
 import numpy as np
 import pandas as pd
@@ -10,7 +11,7 @@ import gdown
 import torch
 from PIL import Image
 
-from experiments.dense_predict.pascal_resnet import config as pascal_config
+from astmt.experiments.dense_predict.pascal_resnet import config as pascal_config
 from astmt.experiments.dense_predict.nyud_resnet import config as nyud_config
 
 from astmt.fblib.mypath import Path
