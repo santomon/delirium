@@ -10,7 +10,7 @@ import gdown
 import torch
 from PIL import Image
 
-from astmt.experiments.dense_predict.pascal_resnet import config as pascal_config
+from experiments.dense_predict.pascal_resnet import config as pascal_config
 from astmt.experiments.dense_predict.nyud_resnet import config as nyud_config
 
 from astmt.fblib.mypath import Path
