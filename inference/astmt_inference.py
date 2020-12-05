@@ -81,9 +81,12 @@ def postprocessor(data_: t.Dict[str, torch.Tensor], compress=True):
     # TODO?: no compression for now
 
     if compress:
-        pass
+        return {task: np.float16(
+            torch.nn.AvgPool2d(3)(features.unsqueeze(0)).to('cpu')
+                                ) for task, features in data_.items()}
 
-    return {task: np.float32(features.to('cpu')) for task, features in data_.items()}
+    else:
+        return {task: np.float32(features.to('cpu')) for task, features in data_.items()}
 
 
 def generate_file_name(old_file_name, task):
@@ -98,7 +101,7 @@ def saver(data_: t.Dict[str, np.ndarray], path: str, file_name: str) -> t.NoRetu
         full_path = os.path.join(path, module_name, currently_selected_model)
         if not os.path.isdir(full_path):
             os.makedirs(full_path)
-        np.save(os.path.join(full_path, generate_file_name(file_name, task)), data_) # first 32 are high features
+        np.save(os.path.join(full_path, generate_file_name(file_name, task)), data_[task]) # first 32 are high features
 
 
 
@@ -173,7 +176,3 @@ def _create_parse_string(cfg: t.Dict):
             else:
                 args.append(str(value))
     return args
-
-
-select_model(default_model)
-
