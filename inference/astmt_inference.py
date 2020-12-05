@@ -63,17 +63,18 @@ def preprocessor(data_):
 
 def model_call(data_, layer: str):
 
-    if layer == 'high' or layer is None:
-        return {task: model_.forward(data_, task)[1][0][:32] for task in model_.tasks} # model.forward return is a tuple with [0] being the output
-                                                                        # and [1] the features
-                                                                        # features is at this point a 4dim tensor with
-                                                                        # 64 entries, last 32 belonging to low level output,
-                                                                        # first 32 belonging to high level output
-    elif layer == 'low':
-        return {task: model_.forward(data_, task)[1][0][32:] for task in model_.tasks}
-    else:
-        print("layer could not be found")
-        print("available layers: ", layer_choices)
+    with torch.no_grad():
+        if layer == 'high' or layer is None:
+            return {task: model_.forward(data_, task)[1][0][:32] for task in model_.tasks} # model.forward return is a tuple with [0] being the output
+                                                                            # and [1] the features
+                                                                            # features is at this point a 4dim tensor with
+                                                                            # 64 entries, last 32 belonging to low level output,
+                                                                            # first 32 belonging to high level output
+        elif layer == 'low':
+            return {task: model_.forward(data_, task)[1][0][32:] for task in model_.tasks}
+        else:
+            print("layer could not be found")
+            print("available layers: ", layer_choices)
 
 def postprocessor(data_: t.Dict[str, torch.Tensor], compress=True):
 
