@@ -89,7 +89,7 @@ def saver(data_: t.Dict[str, np.ndarray], path: str, file_name: str) -> t.NoRetu
         full_path = os.path.join(path, module_name, currently_selected_model)
         if not os.path.isdir(full_path):
             os.makedirs(full_path)
-        np.save(os.path.join(full_path, generate_file_name(file_name, task)), data_[32:])
+        np.save(os.path.join(full_path, generate_file_name(file_name, task)), data_[:32]) # first 32 are high features
 
 
 
@@ -106,11 +106,11 @@ def select_model(model_name: str):
     if 'nyud' in model_name:
         cfg = nyud_config.create_config(parse_string)
         model_ = nyud_config.get_net_resnet(cfg)
-        transformer = nyud_config.get_transformations(cfg)
+        _, _, transformer = nyud_config.get_transformations(cfg)
     elif 'pascal' in model_name:
         cfg = pascal_config.create_config(parse_string)
         model_ = pascal_config.get_net_resnet(cfg)
-        transformer = pascal_config.get_transformations(cfg)
+        _, _, transformer = pascal_config.get_transformations(cfg)
     else:
         raise NotImplementedError("model name should either contain 'nyud' or 'pascal'")
 

@@ -19,9 +19,10 @@ from sklearn.decomposition import PCA
 import utility
 import delirium_config as config
 import tqdm
-from NeuralTaskonomy.code.encodingmodel.encoding_model import ridge_cv
 
 sys.path.append(os.path.join(config.NT_PATH, "code"))
+from NeuralTaskonomy.code.encodingmodel.encoding_model import ridge_cv
+
 
 # import encodingmodel.encoding_model
 
