@@ -20,7 +20,7 @@ import utility
 import delirium_config as config
 import tqdm
 
-sys.path.append(os.path.join(config.NT_PATH, "code"))
+sys.path.append(os.path.abspath(os.path.join(config.NT_PATH, "code")))
 from NeuralTaskonomy.code.encodingmodel.encoding_model import ridge_cv
 
 
@@ -134,7 +134,7 @@ def load_nn_data(
     for img_name in tqdm.tqdm(stim_list):
         data_path = os.path.join(full_nn_data_path, module.generate_file_name(img_name, *fname_spec))
         data_.append(np.load(data_path, allow_pickle=True).flatten())
-    data_: np.ndarray = np.array(data_)
+    data_: np.ndarray = np.array(data_, np.float32)
     assert len(data_.shape) == 2, "Error: not all datapoints have the same number of parameters!"
     return data_
 
@@ -312,33 +312,6 @@ class EncodingModel:
                                              "fixtesting" if self.fix_testing else "nofixtesting",
                                              "cv" if self.do_cv else "nocv",
                                              )
-
-
-
-
-
-def copy_astmt_model(model_dir: str, target_base_dir: str=".") -> t.NoReturn:
-    # Deprecated:
-    # TODO: error on gdrive, when too many files; which can happen, if results have already been computed
-
-    for model_name in DEFINED_ASTMT_MODELS:
-        if model_name in model_dir:
-            base_model = model_name
-            break
-    else:
-        raise ValueError("no astmt model that fits the selected directory")
-
-    base_index = model_dir.index(base_model)
-    target_dir = os.path.join(target_base_dir, model_dir[base_index:])
-    print(target_dir)
-
-    import shutil
-
-    if not os.path.isdir(target_dir):
-        os.makedirs(target_dir)
-    if os.path.isdir(target_dir):
-        os.rmdir(target_dir)
-    shutil.copytree(model_dir, target_dir)
 
 
 if __name__ == "__main__":
