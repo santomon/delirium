@@ -82,7 +82,7 @@ def postprocessor(data_: t.Dict[str, torch.Tensor], compress=True):
 
     if compress:
         return {task: np.float16(
-            torch.nn.AvgPool2d(3)(features.unsqueeze(0)).to('cpu')
+            torch.nn.AvgPool2d(3)(features.unsqueeze(0))[0].to('cpu')
                                 ) for task, features in data_.items()}
 
     else:

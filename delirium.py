@@ -118,6 +118,7 @@ def load_nn_data(
         stim_list: t.List[str],
         full_nn_data_path: str,
         module_name: str,
+        fname_spec: t.List
 ) -> np.ndarray:
     """
     TODO:doc
@@ -131,7 +132,7 @@ def load_nn_data(
 
     data_: t.List[np.ndarray] = []
     for img_name in tqdm.tqdm(stim_list):
-        data_path = os.path.join(full_nn_data_path, module.generate_file_name(img_name))
+        data_path = os.path.join(full_nn_data_path, module.generate_file_name(img_name, *fname_spec))
         data_.append(np.load(data_path, allow_pickle=True).flatten())
     data_: np.ndarray = np.array(data_)
     assert len(data_.shape) == 2, "Error: not all datapoints have the same number of parameters!"
@@ -176,8 +177,9 @@ class EncodingModel:
                  BOLD5000_ROI_path: str,
                  BOLD5000_Stimuli_path: str,
                  do_cv: bool,
+                 fname_spec: t.List,
                  subjects: t.List[int] = [1, 2, 3],
-                 TR: t.List[int] = [3, 4]
+                 TR: t.List[int] = [3, 4],
                  ):
 
         self.data_path = data_path
@@ -189,6 +191,8 @@ class EncodingModel:
         self.subjects = subjects
         self.TR = TR
         self.do_cv = do_cv
+
+        self.fname_spec = fname_spec
 
         self.brain_data = [load_brain_data(subject=i, tr=TR) for i in subjects]
         self.stim_lists = load_stim_lists(subjects=subjects)
@@ -222,7 +226,8 @@ class EncodingModel:
             data = load_nn_data(
                 stim_list=self.stim_lists[subj - 1],
                 full_nn_data_path=os.path.join(self.data_path, self.module_name, self.model_name),
-                module_name=self.module_name
+                module_name=self.module_name,
+                fname_spec=self.fname_spec,
             )
 
             ridged_brain_data_single = dict()
