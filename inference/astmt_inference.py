@@ -156,8 +156,12 @@ def _create_parse_string(cfg: t.Dict):
         args.append("--" + key)
 
         if value != "":
-            args.append(str(value))
+            if isinstance(value, list):
+                for arg in value:
 
+                    args.append(str(arg))
+            else:
+                args.append(str(value))
     return args
 
 
