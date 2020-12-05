@@ -59,7 +59,7 @@ def loader(path: str):
 def preprocessor(data_):
 
     tmp = transformer({'image': data_})
-    return tmp['image'].to(device)
+    return tmp['image'].unsqueeze(0).to(device)  # def sus, that we have to unsqueeze; in astmt main project this was not necessary
 
 def model_call(data_, layer: str):
 
