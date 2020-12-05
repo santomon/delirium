@@ -40,6 +40,8 @@ SSF_model_urls = {
     'nyud_normals_pretr_SSF':"",
 }
 
+layer_choices = ['high', 'low']
+
 viable_models = model_params.keys()
 default_model = 'pascal_edge_scratch_SSF'
 
@@ -59,13 +61,16 @@ def preprocessor(data_):
     tmp = transformer({'image': data_})
     return tmp['image'].to(device)
 
-def model_call(data_):
+def model_call(data_, layer: str):
 
-    return {task: model_.forward(data_, task)[1] for task in model_.tasks} # model.forward return is a tuple with [0] being the output
+    if layer == 'high':
+        return {task: model_.forward(data_, task)[1][0][:32] for task in model_.tasks} # model.forward return is a tuple with [0] being the output
                                                                         # and [1] the features
                                                                         # features is at this point a 4dim tensor with
                                                                         # 64 entries, last 32 belonging to low level output,
                                                                         # first 32 belonging to high level output
+    elif layer == 'low':
+        return {task: model_.forward(data_, task)[1][0][32:] for task in model_.tasks}
 
 def postprocessor(data_: t.Dict[str, torch.Tensor], compress=True):
 
@@ -74,7 +79,7 @@ def postprocessor(data_: t.Dict[str, torch.Tensor], compress=True):
     if compress:
         pass
 
-    return {task: np.float32(features.to('cpu')[0]) for task, features in data_.items()}
+    return {task: np.float32(features.to('cpu')) for task, features in data_.items()}
 
 
 def generate_file_name(old_file_name, task):
@@ -89,7 +94,7 @@ def saver(data_: t.Dict[str, np.ndarray], path: str, file_name: str) -> t.NoRetu
         full_path = os.path.join(path, module_name, currently_selected_model)
         if not os.path.isdir(full_path):
             os.makedirs(full_path)
-        np.save(os.path.join(full_path, generate_file_name(file_name, task)), data_[:32]) # first 32 are high features
+        np.save(os.path.join(full_path, generate_file_name(file_name, task)), data_) # first 32 are high features
 
 
 
