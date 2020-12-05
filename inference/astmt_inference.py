@@ -151,7 +151,14 @@ def _download_SSF_model(model_name: str):
 
 def _create_parse_string(cfg: t.Dict):
 
-    return [" ".join(["--"+str(key) + " " + str(value) for key, value in cfg.items()])]
+    args = []
+    for key, value in cfg.items():
+        args.append("--" + key)
+
+        if value != "":
+            args.append(value)
+
+    return args
 
 
 select_model(default_model)
