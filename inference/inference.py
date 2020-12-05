@@ -1,6 +1,8 @@
 """
 
 TODO: doc, testing
+
+'framework' is honestly a bit silly; it does literally nothing, lmao
 """
 
 import argparse

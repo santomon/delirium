@@ -289,7 +289,7 @@ class EncodingModel:
                 )
                 pickle.dump(
                     cv_outputs[3],
-                    open(os.path.join(outpath , "best_l_{}.p".format(full_model_name)), "wb"),
+                    open(os.path.join(outpath, "best_l_{}.p".format(full_model_name)), "wb"),
                 )
 
                 if self.fix_testing:

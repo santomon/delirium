@@ -4,6 +4,7 @@
 		"resume_epoch": 3,
 		"pretr": "scratch",
 		"active_tasks": "1 0 0 0 0",
+		"arch": "se_res50",
 		"SSF": ""
 	},
 	"pascal_semseg_scratch_SSF": {
@@ -11,6 +12,7 @@
 		"resume_epoch": 250,
 		"pretr": "scratch",
 		"active_tasks": "0 1 0 0 0",
+				"arch": "se_res50",
 		"SSF": ""
 	},
 	"pascal_normals_scratch_SSF": {
@@ -18,6 +20,7 @@
 		"resume_epoch": 100,
 		"pretr": "scratch",
 		"active_tasks": "0 0 0 1 0",
+				"arch": "se_res50",
 		"SSF": ""
 	},
 	"pascal_edge_pretr_SSF": {
@@ -25,6 +28,7 @@
 		"resume_epoch": 10,
 		"pretr": "imagenet",
 		"active_tasks": "1 0 0 0 0",
+				"arch": "se_res50",
 		"SSF": ""
 	},
 	"pascal_semseg_pretr_SSF": {
@@ -32,6 +36,7 @@
 		"resume_epoch": 100,
 		"pretr": "imagenet",
 		"active_tasks": "0 1 0 0 0",
+				"arch": "se_res50",
 		"SSF": ""
 	},
 	"pascal_normals_pretr_SSF": {
@@ -39,6 +44,7 @@
 		"resume_epoch": 100,
 		"pretr": "imagenet",
 		"active_tasks": "0 0 0 1 0",
+				"arch": "se_res50",
 		"SSF": ""
 	},
 	"nyud_edge_scratch_SSF": {
@@ -46,6 +52,7 @@
 		"resume_epoch": 20,
 		"pretr": "scratch",
 		"active_tasks": "1 0 0 0",
+				"arch": "se_res50",
 		"SSF": ""
 	},
 	"nyud_semseg_scratch_SSF": {
@@ -53,6 +60,7 @@
 		"resume_epoch": 350,
 		"pretr": "scratch",
 		"active_tasks": "0 1 0 0",
+				"arch": "se_res50",
 		"SSF": ""
 	},
 	"nyud_normals_scratch_SSF": {
@@ -60,6 +68,7 @@
 		"resume_epoch": 350,
 		"pretr": "scratch",
 		"active_tasks": "0 0 1 0",
+				"arch": "se_res50",
 		"SSF": ""
 	},
 	"nyud_edge_pretr_SSF": {
@@ -67,6 +76,7 @@
 		"resume_epoch": 20,
 		"pretr": "iamgenet",
 		"active_tasks": "1 0 0 0",
+				"arch": "se_res50",
 		"SSF": ""
 	},
 	"nyud_semseg_pretr_SSF": {
@@ -74,6 +84,7 @@
 		"resume_epoch": 200,
 		"pretr": "iamgenet",
 		"active_tasks": "0 1 0 0",
+				"arch": "se_res50",
 		"SSF": ""
 	},
 	"nyud_normals_pretr_SSF": {
@@ -81,6 +92,7 @@
 		"resume_epoch": 200,
 		"pretr": "iamgenet",
 		"active_tasks": "0 0 1 0",
+				"arch": "se_res50",
 		"SSF": ""
 	}
 }
