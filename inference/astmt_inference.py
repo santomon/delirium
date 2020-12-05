@@ -27,17 +27,17 @@ model_params: t.Dict[str, t.Any] = pd.read_json("inference/astmt_model_params.js
 
 SSF_model_urls = {
     'pascal_edge_scratch_SSF': "https://drive.google.com/u/0/uc?id=1dOOIZFJUfiegnfeaG-YdX2JwAOxqRNT9",
-    'pascal_semseg_scratch_SSF':"",
-    'pascal_normals_scratch_SSF':"",
-    'pascal_edge_pretr_SSF':"",
-    'pascal_semseg_pretr_SSF':"",
-    'pascal_normals_pretr_SSF':"",
-    'nyud_edge_scratch_SSF':"",
-    'nyud_semseg_scratch_SSF':"",
-    'nyud_normals_scratch_SSF':"",
-    'nyud_edge_pretr_SSF':"",
-    'nyud_semseg_pretr_SSF':"",
-    'nyud_normals_pretr_SSF':"",
+    'pascal_semseg_scratch_SSF':"https://drive.google.com/u/0/uc?id=1-ERrxEWSU2fS2elra8I2gItnGS40Nc0P",
+    'pascal_normals_scratch_SSF':"https://drive.google.com/u/0/uc?id=1-3XuBx-g8-vEpa3_84sQ97i1wNhDQWBU",
+    'pascal_edge_imagenet_SSF':"https://drive.google.com/u/0/uc?id=1-4UqQQXi-C0f7aMFIbEKXNGZuxgcweba",
+    'pascal_semseg_imagenet_SSF':"https://drive.google.com/u/0/uc?id=1-5RRRVLemxNTAo_neSNMbXEZk8UxPaqW",
+    'pascal_normals_imagenet_SSF':"https://drive.google.com/u/0/uc?id=1--3za_W8vP95XhR459DVlSCoUya_P5p5",
+    'nyud_edge_scratch_SSF':"https://drive.google.com/u/0/uc?id=1-UTjE0lMFOkoEw-b3FGCSdpY5AA9TtGL",
+    'nyud_semseg_scratch_SSF':"https://drive.google.com/u/0/uc?id=1-ey7AbX7P1wiaQBYSoacWPp7BOHXZXRq",
+    'nyud_normals_scratch_SSF':"https://drive.google.com/u/0/uc?id=1-XGar4UVorpqH3ZxGipDqYFA_1AisgT-",
+    'nyud_edge_imagenet_SSF':"https://drive.google.com/u/0/uc?id=1-KXR-ZUlYaNbD4jFRnpD_2TTFrk_zW03",
+    'nyud_semseg_imagenet_SSF':"https://drive.google.com/u/0/uc?id=1-awtoMPc9rYeytxQazlV7QDIdaA5iLch",
+    'nyud_normals_imagenet_SSF':"https://drive.google.com/u/0/uc?id=1-UZG6basLaa8zAIM30fXrjNOAs4RJb0z",
 }
 
 layer_choices = ['high', 'low']
