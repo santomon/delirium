@@ -19,7 +19,7 @@ from astmt.fblib.util.mypath import Path
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 module_name = 'astmt_inference'
-model_params: t.Dict[str, t.Any] = pd.read_json("astmt_model_params.json")
+model_params: t.Dict[str, t.Any] = pd.read_json("inference/astmt_model_params.json")
 
 # models marked with SSF have been trained by us and will be attempted to be downloaded from the web
 # you can use your own trained models by making an appropriate entry in the model_params dictionary
