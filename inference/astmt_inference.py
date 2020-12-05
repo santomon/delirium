@@ -14,7 +14,7 @@ from PIL import Image
 from astmt.experiments.dense_predict.pascal_resnet import config as pascal_config
 from astmt.experiments.dense_predict.nyud_resnet import config as nyud_config
 
-from astmt.fblib.mypath import Path
+from astmt.fblib.util.mypath import Path
 
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
