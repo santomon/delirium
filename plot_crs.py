@@ -86,6 +86,8 @@ class Plotter:
             palette=sns.color_palette("colorblind"),
         )
 
+        plt.show()
+
 
 
 
