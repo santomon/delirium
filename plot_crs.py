@@ -5,7 +5,7 @@ import typing as t
 
 import pandas as pd
 import seaborn as sns
-from matplotlib import pyplot as plt
+import matplotlib.pyplot as plt
 
 import delirium_config
 
@@ -29,25 +29,26 @@ class Plotter:
     def __init__(self):
         self.data = pd.DataFrame(columns = ["module_name", "model_name", "subj", "correlation", "ROI", "Hemisphere"])
 
-    def _load_corr(self, subj: int,  module_name: str, model_name: str, did_pca: bool, fixed_testing: bool, did_cv: bool,
-                  TR: t.List, result_path= delirium_config.NN_RESULT_PATH,  *fname_spec):
-
-        _file_name = self._get_filename(subj, module_name, model_name, did_pca, fixed_testing, did_cv, TR, result_path, *fname_spec)
-        _path = os.path.join(result_path, module_name, model_name, _file_name)
-
-        with open(_path, "rb") as f:
-            _data = pickle.load(f)
-        self._append_data(_data, module_name, _file_name[:-2])
-        return _data
-
-
     def load_corrs(self, module_name, model_name, did_pca, fixed_testing, did_cv, TR, result_path=delirium_config.NN_RESULT_PATH, *fname_spec):
         return [self._load_corr(subj, module_name, model_name, did_pca, fixed_testing, did_cv, TR, result_path, *fname_spec) for subj in range(1, 4)]
 
 
-
     def load_NT_corrs(self, task: str):
         return [self._load_NT_corr(subj, task) for subj in range(1, 4)]
+
+
+    def plot_bar(self):
+        fig = plt.figure(figsize=((40, 9)))
+        ax = fig.add_subplot(1, 1, 1)
+        sns.barplot(
+            x="ROI",
+            y="correlation",
+            hue="features",
+            data=self.data,
+            ax=ax,
+            palette=sns.color_palette("colorblind"),
+        )
+
 
     def _load_NT_corr(self,subj: int, task: str):
 
@@ -61,9 +62,19 @@ class Plotter:
             _data = pickle.load(f)
 
         self._append_data(_data, "NeuralTaskonomy", task)
-
         return _data
 
+
+    def _load_corr(self, subj: int,  module_name: str, model_name: str, did_pca: bool, fixed_testing: bool, did_cv: bool,
+                  TR: t.List, result_path= delirium_config.NN_RESULT_PATH,  *fname_spec):
+
+        _file_name = self._get_filename(subj, module_name, model_name, did_pca, fixed_testing, did_cv, TR, result_path, *fname_spec)
+        _path = os.path.join(result_path, module_name, model_name, _file_name)
+
+        with open(_path, "rb") as f:
+            _data = pickle.load(f)
+        self._append_data(_data, module_name, _file_name[:-2])
+        return _data
 
     def _append_data(self, _data, module_name, model_name):
 
