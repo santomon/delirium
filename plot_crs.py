@@ -39,6 +39,6 @@ class Plotter:
                      "corr_taskrepr_{}__TRavg.p".format(task))
 
         with open(_path, "rb") as f:
-            data = pickle.load(_path)
+            data = pickle.load(f)
 
         return data
