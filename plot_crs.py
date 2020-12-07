@@ -87,6 +87,22 @@ class Plotter:
             palette=sns.color_palette("colorblind"),
         )
 
+        grid.set_axis_labels("ROI", "Correlations (r)")
+
+        handles = grid._legend_data.values()
+        labels = grid._legend_data.keys()
+        grid.fig.legend(
+            title="Tasks",
+            handles=handles,
+            labels=labels,
+            loc="lower center",
+            ncol=5,
+            bbox_to_anchor=(0.49, 0.97),
+            frameon=False,
+        )
+        ax = grid.axes
+        sns.despine(fig=grid.fig, ax=ax, left=True, bottom=True)
+
         plt.show()
 
 
