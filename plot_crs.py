@@ -61,8 +61,32 @@ class Plotter:
         with open(_path, "rb") as f:
             _data = pickle.load(f)
 
-        self._append_data(_data, "NeuralTaskonomy", task)
+        self._append_data(_data, "NeuralTaskonomy", task, subj)
         return _data
+
+    def facet_bar_plot(self):
+        grid = sns.FacetGrid(
+            self.data,
+            row="subj",
+            row_order=["1", "2", "3"],
+            # legend_out=True,
+            despine=True,
+            height=3,
+            aspect=5,
+            dropna=False,
+        )
+
+        grid.map_dataframe(
+            sns.barplot,
+            "ROI",
+            "correlation",
+            hue="model_name",
+            hue_order=["edge2d","nyud_edge_scratch_SSF", "nyud_edge_imagenet_SSF",
+             "pascal_edge_scratch_SSF", "pascal_edge_imagenet_SSF"],
+            palette=sns.color_palette("colorblind"),
+        )
+
+
 
 
     def _load_corr(self, subj: int,  module_name: str, model_name: str, did_pca: bool, fixed_testing: bool, did_cv: bool,
@@ -73,10 +97,10 @@ class Plotter:
 
         with open(_path, "rb") as f:
             _data = pickle.load(f)
-        self._append_data(_data, module_name, model_name + "" if len(fname_spec)==0 else "_"+ "_".join(fname_spec))
+        self._append_data(_data, module_name, model_name + "" if len(fname_spec)==0 else "_"+ "_".join(fname_spec), subj)
         return _data
 
-    def _append_data(self, _data, module_name, model_name):
+    def _append_data(self, _data, module_name, model_name,subj):
 
         for i, corr in enumerate(_data):
             for j, r in enumerate(corr):
@@ -86,6 +110,7 @@ class Plotter:
                 vd["hemisphere"] = delirium_config.ROI_LABELS[i][0:2]
                 vd["module_name"] = module_name
                 vd["model_name"] = model_name
+                vd["subj"] = subj
 
                 self.data = self.data.append(vd, ignore_index=True)
 
