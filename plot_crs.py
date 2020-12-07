@@ -27,8 +27,7 @@ def parse_args():
 class Plotter:
 
     def __init__(self):
-        self.data = pd.DataFrame()
-        self.data.columns = ["module_name", "model_name", "subj", "correlation", "ROI", "Hemisphere"]
+        self.data = pd.DataFrame(columns = ["module_name", "model_name", "subj", "correlation", "ROI", "Hemisphere"])
 
     def _load_corr(self, subj: int,  module_name: str, model_name: str, did_pca: bool, fixed_testing: bool, did_cv: bool,
                   TR: t.List, result_path= delirium_config.NN_RESULT_PATH,  *fname_spec):
