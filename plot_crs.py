@@ -37,12 +37,14 @@ class Plotter:
         return [self._load_NT_corr(subj, task) for subj in range(1, 4)]
 
 
-    def plot_bar(self):
+    def plot_bar(self, hue_order):
         fig = plt.figure(figsize=((40, 9)))
         ax = fig.add_subplot(1, 1, 1)
         sns.barplot(
             x="ROI",
             y="correlation",
+            hue="model_name",
+            hue_order=hue_order,
             data=self.data,
             ax=ax,
             palette=sns.color_palette("colorblind"),
@@ -64,11 +66,11 @@ class Plotter:
         self._append_data(_data, "NeuralTaskonomy", task, subj)
         return _data
 
-    def facet_bar_plot(self):
+    def facet_bar_plot(self, hue_order):
         grid = sns.FacetGrid(
             self.data,
             row="subj",
-            row_order=["1", "2", "3"],
+            row_order=[1, 2, 3],
             # legend_out=True,
             despine=True,
             height=3,
@@ -81,8 +83,7 @@ class Plotter:
             "ROI",
             "correlation",
             hue="model_name",
-            hue_order=["edge2d","nyud_edge_scratch_SSF", "nyud_edge_imagenet_SSF",
-             "pascal_edge_scratch_SSF", "pascal_edge_imagenet_SSF"],
+            hue_order= hue_order,
             palette=sns.color_palette("colorblind"),
         )
 
