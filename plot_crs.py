@@ -31,7 +31,7 @@ class Plotter:
     def load_corr(self, subj: int,  module_name: str, model_name: str, did_pca: bool, fixed_testing: bool, did_cv: bool,
                   TR: t.List, result_path= delirium_config.NN_RESULT_PATH,  *fname_spec):
 
-        _file_name = "corr_subj{}_TR{}_{}_{}_{}_{}".format(subj,
+        _file_name = "corr_subj{}_TR{}_{}_{}_{}_{}.p".format(subj,
                                              "".join([str(tr) for tr in TR]),
                                              "pca" if did_pca else "nopca",
                                              "fixtesting" if fixed_testing else "nofixtesting",
