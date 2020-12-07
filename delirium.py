@@ -21,7 +21,7 @@ import delirium_config as config
 import tqdm
 
 sys.path.append(os.path.abspath(os.path.join(config.NT_PATH, "code")))
-from NeuralTaskonomy.code.encodingmodel.encoding_model import ridge_cv
+from encodingmodel.encoding_model import ridge_cv
 
 
 # import encodingmodel.encoding_model
@@ -306,11 +306,12 @@ class EncodingModel:
 
 
     def generate_full_model_name(self, subj):
-        return "subj{}_TR{}_{}_{}_{}".format(subj,
+        return "subj{}_TR{}_{}_{}_{}_{}".format(subj,
                                              "".join([str(tr) for tr in self.TR]),
                                              "pca" if self.do_pca else "nopca",
                                              "fixtesting" if self.fix_testing else "nofixtesting",
                                              "cv" if self.do_cv else "nocv",
+                                             "_".join(self.fname_spec)
                                              )
 
 
