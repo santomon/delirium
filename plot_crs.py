@@ -3,6 +3,7 @@ import os
 import pickle
 import typing as t
 
+import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
 
@@ -26,26 +27,30 @@ def parse_args():
 class Plotter:
 
     def __init__(self):
-        pass
+        self.data = pd.DataFrame()
+        self.data.columns = ["module_name", "model_name", "subj", "correlation", "ROI", "Hemisphere"]
 
-    def load_corr(self, subj: int,  module_name: str, model_name: str, did_pca: bool, fixed_testing: bool, did_cv: bool,
+    def _load_corr(self, subj: int,  module_name: str, model_name: str, did_pca: bool, fixed_testing: bool, did_cv: bool,
                   TR: t.List, result_path= delirium_config.NN_RESULT_PATH,  *fname_spec):
 
-        _file_name = "corr_subj{}_TR{}_{}_{}_{}{}.p".format(subj,
-                                             "".join([str(tr) for tr in TR]),
-                                             "pca" if did_pca else "nopca",
-                                             "fixtesting" if fixed_testing else "nofixtesting",
-                                             "cv" if did_cv else "nocv",
-                                             "" if len(fname_spec) == 0 else "_" + "_".join(fname_spec)
-                                             )
+        _file_name = self._get_filename(subj, module_name, model_name, did_pca, fixed_testing, did_cv, TR, result_path, *fname_spec)
         _path = os.path.join(result_path, module_name, model_name, _file_name)
 
         with open(_path, "rb") as f:
             _data = pickle.load(f)
+        self._append_data(_data, module_name, _file_name[:-2])
         return _data
 
 
-    def load_NT_corr(self, task: str, subj: int):
+    def load_corrs(self, module_name, model_name, did_pca, fixed_testing, did_cv, TR, result_path=delirium_config.NN_RESULT_PATH, *fname_spec):
+        return [self._load_corr(subj, module_name, model_name, did_pca, fixed_testing, did_cv, TR, result_path, *fname_spec) for subj in range(1, 4)]
+
+
+
+    def load_NT_corrs(self, task: str):
+        return [self._load_NT_corr(subj, task) for subj in range(1, 4)]
+
+    def _load_NT_corr(self,subj: int, task: str):
 
         _path = os.path.join(delirium_config.NT_PATH,
                      "outputs",
@@ -56,4 +61,33 @@ class Plotter:
         with open(_path, "rb") as f:
             _data = pickle.load(f)
 
+        self._append_data(_data, "NeuralTaskonomy", task)
+
         return _data
+
+
+    def _append_data(self, _data, module_name, model_name):
+
+        for i, corr in enumerate(_data):
+            for j, r in enumerate(corr):
+                vd = dict()
+                vd["correlation"] = r[0]
+                vd["ROI"] = delirium_config.ROI_LABELS[i][2:]
+                vd["hemisphere"] = delirium_config.ROI_LABELS[i][0:2]
+                vd["module_name"] = module_name
+                vd["model_name"] = model_name
+
+                self.data = self.data.append(vd, ignore_index=True)
+
+    def _get_filename(self, subj, module_name, model_name, did_pca, fixed_testing, did_cv, TR, result_path=delirium_config.NN_RESULT_PATH, *fname_spec):
+        return "corr_subj{}_TR{}_{}_{}_{}{}.p".format(subj,
+                                             "".join([str(tr) for tr in TR]),
+                                             "pca" if did_pca else "nopca",
+                                             "fixtesting" if fixed_testing else "nofixtesting",
+                                             "cv" if did_cv else "nocv",
+                                             "" if len(fname_spec) == 0 else "_" + "_".join(fname_spec)
+                                             )
+
+
+
+
