@@ -43,7 +43,6 @@ class Plotter:
         sns.barplot(
             x="ROI",
             y="correlation",
-            hue="features",
             data=self.data,
             ax=ax,
             palette=sns.color_palette("colorblind"),
