@@ -73,7 +73,7 @@ class Plotter:
 
         with open(_path, "rb") as f:
             _data = pickle.load(f)
-        self._append_data(_data, module_name, _file_name[:-2])
+        self._append_data(_data, module_name, model_name + "" if len(fname_spec)==0 else "_"+ "_".join(fname_spec))
         return _data
 
     def _append_data(self, _data, module_name, model_name):
