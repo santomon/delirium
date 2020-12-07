@@ -48,6 +48,7 @@ class Plotter:
             ax=ax,
             palette=sns.color_palette("colorblind"),
         )
+        plt.show()
 
 
     def _load_NT_corr(self,subj: int, task: str):
