@@ -36,7 +36,7 @@ class Plotter:
                      "outputs",
                      "encoding_results",
                      "subj{}".format(subj),
-                     "corr_taskrepr_{}_TRavg.p".format(task))
+                     "corr_taskrepr_{}__TRavg.p".format(task))
 
         with open(_path, "rb") as f:
             data = pickle.load(_path)
