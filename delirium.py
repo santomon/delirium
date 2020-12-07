@@ -306,12 +306,12 @@ class EncodingModel:
 
 
     def generate_full_model_name(self, subj):
-        return "subj{}_TR{}_{}_{}_{}_{}".format(subj,
+        return "subj{}_TR{}_{}_{}_{}{}".format(subj,
                                              "".join([str(tr) for tr in self.TR]),
                                              "pca" if self.do_pca else "nopca",
                                              "fixtesting" if self.fix_testing else "nofixtesting",
                                              "cv" if self.do_cv else "nocv",
-                                             "_".join(self.fname_spec)
+                                             "" if len(self.fname_spec) == 0 else "_" + "_".join(self.fname_spec)
                                              )
 
 
