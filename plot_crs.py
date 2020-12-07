@@ -1,6 +1,7 @@
 import argparse
 import os
 import pickle
+import typing as t
 
 import seaborn as sns
 from matplotlib import pyplot as plt
@@ -27,8 +28,22 @@ class Plotter:
     def __init__(self):
         pass
 
-    def load_corr(self):
-        pass
+    def load_corr(self, subj: int,  module_name: str, model_name: str, did_pca: bool, fixed_testing: bool, did_cv: bool,
+                  TR: t.List, result_path= delirium_config.NN_RESULT_PATH,  *fname_spec):
+
+        _file_name = "corr_subj{}_TR{}_{}_{}_{}_{}".format(subj,
+                                             "".join([str(tr) for tr in TR]),
+                                             "pca" if did_pca else "nopca",
+                                             "fixtesting" if fixed_testing else "nofixtesting",
+                                             "cv" if did_cv else "nocv",
+                                             "_".join(fname_spec)
+                                             )
+        _path = os.path.join(result_path, module_name, model_name, _file_name)
+
+        with open(_path, "rb") as f:
+            _data = pickle.load(f)
+        return _data
+
 
     def load_NT_corr(self, task: str, subj: int):
 
@@ -39,6 +54,6 @@ class Plotter:
                      "corr_taskrepr_{}__TRavg.p".format(task))
 
         with open(_path, "rb") as f:
-            data = pickle.load(f)
+            _data = pickle.load(f)
 
-        return data
+        return _data
