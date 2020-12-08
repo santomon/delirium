@@ -94,5 +94,12 @@
 		"active_tasks": [0, 0, 1, 0],
 		"arch": "se_res50",
 		"SSF": ""
-	}
+	},
+	"imagenet_pretr": {
+		"epochs": 1,
+		"resume_epoch": 0,
+		"pretr": "imagenet",
+		"active_tasks": [1, 0, 0, 0],
+		"arch": "se_res50",
+		"SSF": ""
 }
