@@ -9,6 +9,9 @@ import matplotlib.pyplot as plt
 
 import delirium_config
 
+sns.set_style("whitegrid")
+
+
 def parse_args():
     _parser = argparse.ArgumentParser()
 

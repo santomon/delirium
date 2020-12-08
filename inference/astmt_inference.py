@@ -38,6 +38,7 @@ SSF_model_urls = {
     'nyud_edge_imagenet_SSF':"https://drive.google.com/u/0/uc?id=1-KXR-ZUlYaNbD4jFRnpD_2TTFrk_zW03",
     'nyud_semseg_imagenet_SSF':"https://drive.google.com/u/0/uc?id=1-awtoMPc9rYeytxQazlV7QDIdaA5iLch",
     'nyud_normals_imagenet_SSF':"https://drive.google.com/u/0/uc?id=1-UZG6basLaa8zAIM30fXrjNOAs4RJb0z",
+    'imagenet_pretr_SSF': ""
 }
 
 layer_choices = ['high', 'low']
@@ -112,7 +113,7 @@ def select_model(model_name: str):
 
     currently_selected_model = model_name
     if 'SSF' in model_name:
-        _download_SSF_model(model_name)
+            _download_SSF_model(model_name)
 
     parse_string = _create_parse_string(model_params[model_name])
 
