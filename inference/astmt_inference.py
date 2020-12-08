@@ -91,7 +91,9 @@ def postprocessor(data_: t.Dict[str, torch.Tensor], compress=True):
 
 def generate_file_name(old_file_name, task):
 
-    return old_file_name.split(".")[0] + '_features' + '_' + task + '.npy'
+    return old_file_name.split(".")[0] + '_features' + \
+           ('_' + task) if currently_selected_model != "imagenet_pretr" else "" +\
+                                                                             '.npy'
 
 
 
