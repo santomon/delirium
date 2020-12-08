@@ -120,12 +120,12 @@ def select_model(model_name: str):
         cfg = nyud_config.create_config(parse_string)
         model_ = nyud_config.get_net_resnet(cfg)
         _, _, transformer = nyud_config.get_transformations(cfg)
-    elif 'pascal' in model_name:
+    elif 'pascal' in model_name or model_name == "imagenet_pretr":
         cfg = pascal_config.create_config(parse_string)
         model_ = pascal_config.get_net_resnet(cfg)
         _, _, transformer = pascal_config.get_transformations(cfg)
     else:
-        raise NotImplementedError("model name should either contain 'nyud' or 'pascal'")
+        raise NotImplementedError("model name should either contain 'nyud' or 'pascal' or be 'imagenet_pretr")
 
     model_.to(device)
     model_.eval()
