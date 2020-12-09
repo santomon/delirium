@@ -20,8 +20,7 @@ import utility
 import delirium_config as config
 import tqdm
 
-sys.path.append(os.path.abspath(os.path.join(config.NT_PATH, "code")))
-from encodingmodel.encoding_model import ridge_cv
+
 
 
 # import encodingmodel.encoding_model
@@ -210,6 +209,9 @@ class EncodingModel:
 
 
     def fit_encoding_model_SSF(self, do_permutation: int):
+
+        sys.path.append(os.path.abspath(os.path.join(config.NT_PATH, "code")))
+        from encodingmodel.encoding_model import ridge_cv
 
         for subj, brain_data_single in zip(self.subjects, self.brain_data):
 
