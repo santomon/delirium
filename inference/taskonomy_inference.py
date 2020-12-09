@@ -146,7 +146,9 @@ def saver(taskonomy_command_str, save_path: str, old_file_name: str):
 
 
 def generate_file_name(old_file_name):
-    return old_file_name + "_features" + ".npy"
+    return old_file_name + "_features" + ".png"  # saving is actually done by run_img_task2.py from taskonomy
+                                                 # saving format for encoder output will be ".npy"
+                                                 # image from result of network will be .png
 
 
 def _download_model(model_name):
