@@ -54,7 +54,7 @@ def parse_args() -> argparse.Namespace:
                          help="specify, for which subjects the experiments should be run for.")
     _parser.add_argument("--do_cv", default=False, type=bool,
                          help="run cross validation")
-    _parser.add_argument("--fname_spec", type=str, nargs="*",
+    _parser.add_argument("--fname_spec", type=str, nargs="*", default=[],
                          help="optional arguments to supply to filename generation; e.g. task name for astmt models")
 
 
