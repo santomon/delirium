@@ -112,8 +112,8 @@ def parse_args() -> argparse.ArgumentParser():
                          type=str,
                          help="directory of the dataset; if none is provided, delirium_config specification will be used")
 
-    parser_.add_argument("--save_path", default=delirium_config.NN_SAVE_PATH, type=str,
-                        help="path, where the results of inference will be saved; if none is provided,"
+    parser_.add_argument("--save_path", default=delirium_config.NN_DATA_PATH, type=str,
+                         help="path, where the results of inference will be saved; if none is provided,"
                             "delirium_config.NN_SAVE_PATH will be used")
 
     parser_.add_argument("--model", default="all", type=str,
@@ -126,6 +126,9 @@ def parse_args() -> argparse.ArgumentParser():
                               "This parameter is ignored when using 'all' keyword in model selection. Instead the last"
                               "available layer from the backbone will be extracted. \n"
                               "For information on extractable layers, please refer to the respective csv files")
+
+    parser_.add_argument("--skip_existing", default=False, action="store_true",
+                         help="if passed, inference will be skipped, if a file with the result name already exists in folder")
 
     if "inference/inference.py" in sys.argv:
         return parser_.parse_args()
@@ -165,7 +168,8 @@ if __name__ == "__main__":
             module.model_call,
             module.postprocessor,
             module.saver,
-            layer
+            layer,
+
         )
 
     print("Finished extracting features for all models")

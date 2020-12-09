@@ -40,10 +40,19 @@ class Plotter:
         return [self._load_NT_corr(subj, task) for subj in range(1, 4)]
 
 
-    def plot_bar(self, hue_order):
+    def plot_average_for_all_subjects(self, hue_order, plot):
+        if plot == sns.barplot or plot == "bar":
+            plot = sns.barplot
+        elif plot == sns.violinplot or plot == 'violin':
+            plot = sns.violinplot
+        elif plot == sns.boxplot or plot =="box":
+            plot = sns.boxplot
+        else:
+            print("plot should be one of bar, violin or box")
+
         fig = plt.figure(figsize=((40, 9)))
         ax = fig.add_subplot(1, 1, 1)
-        sns.barplot(
+        plot(
             x="ROI",
             y="correlation",
             hue="model_name",
@@ -69,7 +78,17 @@ class Plotter:
         self._append_data(_data, "NeuralTaskonomy", task, subj)
         return _data
 
-    def facet_bar_plot(self, hue_order):
+    def plot_for_subjects_individually(self, hue_order, plot):
+
+        if plot == sns.barplot or plot == "bar":
+            plot = sns.barplot
+        elif plot == sns.violinplot or plot == 'violin':
+            plot = sns.violinplot
+        elif plot == sns.boxplot or plot =="box":
+            plot = sns.boxplot
+        else:
+            print("plot should be one of bar, violin or box")
+
         grid = sns.FacetGrid(
             self.data,
             row="subj",
@@ -82,7 +101,7 @@ class Plotter:
         )
 
         grid.map_dataframe(
-            sns.barplot,
+            plot,
             "ROI",
             "correlation",
             hue="model_name",

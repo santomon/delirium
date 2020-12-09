@@ -141,7 +141,7 @@ def saver(taskonomy_command_str, save_path: str, old_file_name: str):
     full_path = os.path.join(save_path, module_name, currently_selected_model)
     if not os.path.isdir(full_path):
         os.makedirs(full_path)
-    command_dict['path_to_out'] = os.path.join(full_path, generate_file_name(old_file_name))
+    command_dict['path_to_out'] = os.path.join(full_path, generate_file_name_for_taskonomy(old_file_name))
 
 
     os.system(taskonomy_command_str.format(**command_dict))
@@ -150,10 +150,15 @@ def saver(taskonomy_command_str, save_path: str, old_file_name: str):
     os.system("cls" if os.name=="nt" else "clear")
 
 
-def generate_file_name(old_file_name):
-    return old_file_name.split(".")[0] + "_features" + ".png"  # saving is actually done by run_img_task2.py from taskonomy
-                                                 # saving format for encoder output will be ".npy"
-                                                 # image from result of network will be .png
+def generate_file_name_for_taskonomy(old_file_name: str):
+    return old_file_name.split(".")[0] + "_features" + ".png"
+# saving is actually done by run_img_task2.py from taskonomy
+# saving format for encoder output will be ".npy"
+# image from result of network will be .png
+
+
+def generate_file_name(old_file_name: str):
+    return old_file_name.split(".")[0] + "_features" + ".npy"
 
 
 def _download_model(model_name):
