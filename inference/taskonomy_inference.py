@@ -138,15 +138,12 @@ def saver(taskonomy_command_str, save_path: str, old_file_name: str):
     command_dict['path_to_out'] = os.path.join(full_path, generate_file_name(old_file_name))
     os.system(taskonomy_command_str.format(**command_dict))
 
-    try:
-        from google.colab import output
-        output.clear()
-    except ModuleNotFoundError:
-        os.system("cls" if os.name=="nt" else "clear")
+
+    os.system("cls" if os.name=="nt" else "clear")
 
 
 def generate_file_name(old_file_name):
-    return old_file_name + "_features" + ".png"  # saving is actually done by run_img_task2.py from taskonomy
+    return old_file_name.split(".")[0] + "_features" + ".png"  # saving is actually done by run_img_task2.py from taskonomy
                                                  # saving format for encoder output will be ".npy"
                                                  # image from result of network will be .png
 
