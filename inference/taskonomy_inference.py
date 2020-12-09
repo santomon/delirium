@@ -124,7 +124,7 @@ def model_call(taskonomy_command_str, layer: str):
 
 def postprocessor(taskonomy_command_str, compress=True):
     if compress:
-        command_dict['compress'] = '--compress-rep'
+        command_dict['compress'] = '--compress_rep'
     else:
         command_dict['compress'] = ""
 
@@ -164,7 +164,7 @@ def _download_model(model_name):
 
 
 
-select_model(default_model)
+# select_model(default_model)
 
 
 
