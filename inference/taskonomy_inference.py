@@ -95,6 +95,21 @@ run_img_task_loc = os.path.join(path_to_taskonomy, "taskbank", "tools", "run_img
 
 command_dict: t.Dict = None
 
+
+from contextlib import contextmanager
+import sys, os
+
+@contextmanager  # src: http://thesmithfam.org/blog/2012/10/25/temporarily-suppress-console-output-in-python/ 09.12.20
+def suppress_stdout():
+    with open(os.devnull, "w") as devnull:
+        old_stdout = sys.stdout
+        sys.stdout = devnull
+        try:
+            yield
+        finally:
+            sys.stdout = old_stdout
+
+
 def select_model(model_name):
     global currently_selected_model, command_dict
     if model_name in viable_models:
@@ -136,7 +151,9 @@ def saver(taskonomy_command_str, save_path: str, old_file_name: str):
     if not os.path.isdir(full_path):
         os.makedirs(full_path)
     command_dict['path_to_out'] = os.path.join(full_path, generate_file_name(old_file_name))
-    os.system(taskonomy_command_str.format(**command_dict))
+
+    with suppress_stdout():
+        os.system(taskonomy_command_str.format(**command_dict))
 
 
     os.system("cls" if os.name=="nt" else "clear")
