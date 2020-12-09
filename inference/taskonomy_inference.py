@@ -138,6 +138,12 @@ def saver(taskonomy_command_str, save_path: str, old_file_name: str):
     command_dict['path_to_out'] = os.path.join(full_path, generate_file_name(old_file_name))
     os.system(taskonomy_command_str.format(**command_dict))
 
+    try:
+        from google.colab import output
+        output.clear()
+    except ModuleNotFoundError:
+        os.system("cls" if os.name=="nt" else "clear")
+
 
 def generate_file_name(old_file_name):
     return old_file_name + "_features" + ".npy"
