@@ -1,6 +1,8 @@
 import os
 import typing as t
 
+import gdown
+
 viable_output_layers = ['encoder/conv1',
                         'encoder/block1/unit_1/bottleneck_v1/shortcut',
                         'encoder/block1/unit_1/bottleneck_v1/conv1',
@@ -88,7 +90,8 @@ default_model = "edge2d"
 default_output_layer = "encoder_output"
 
 currently_selected_model: str = None
-run_img_task_loc = "./taskonomy/taskbank/tools/run_img_task2.py"  # exptects cd to be delirium
+path_to_taskonomy = "./taskonomy"
+run_img_task_loc = os.path.join(path_to_taskonomy, "taskbank", "tools", "run_img_task2.py")  # exptects cd to be delirium
 
 command_dict: t.Dict = None
 
@@ -99,6 +102,7 @@ def select_model(model_name):
         command_dict = dict()
         command_dict['model_name'] = model_name
         command_dict['run_img_task_loc'] = run_img_task_loc
+        _download_model(model_name)
     else:
         raise NotImplementedError("a task of this name is not available; refer to list_of_tasks for a list of viable tasks")
 
@@ -137,6 +141,27 @@ def saver(taskonomy_command_str, save_path: str, old_file_name: str):
 
 def generate_file_name(old_file_name):
     return old_file_name + "_features" + ".npy"
+
+
+def _download_model(model_name):
+
+    f1 = os.path.join(path_to_taskonomy, "taskbank", "temp", model_name, "model.permanent-ckpt.data-00000-of-00001")
+    f2 = os.path.join(path_to_taskonomy, "taskbank", "temp", model_name, "model.permanent-ckpt.meta")
+    f3 = os.path.join(path_to_taskonomy, "taskbank", "temp", model_name, "model.permanent-ckpt.index")
+
+    if not os.path.isdir(os.path.join(path_to_taskonomy, "taskbank", "temp", model_name)):
+        os.makedirs(os.path.join(path_to_taskonomy, "taskbank", "temp", model_name))
+
+    if not os.path.isfile(f1):
+        gdown.download("http://downloads.cs.stanford.edu/downloads/taskonomy_taskbankv1_models/{}/model.permanent-ckpt.data-00000-of-00001".format(model_name),
+              f1, quiet=False)
+    if not os.path.isfile(f2):
+        gdown.download("http://downloads.cs.stanford.edu/downloads/taskonomy_taskbankv1_models/{}/model.permanent-ckpt.meta".format(model_name),
+              f2, quiet=False)
+    if not os.path.isfile(f3):
+        gdown.download("http://downloads.cs.stanford.edu/downloads/taskonomy_taskbankv1_models/{}/model.permanent-ckpt.index".format(model_name),
+              f3, quiet=False)
+
 
 
 select_model(default_model)
