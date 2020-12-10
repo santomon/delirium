@@ -30,7 +30,7 @@ def parse_args():
 class Plotter:
 
     def __init__(self):
-        self.data = pd.DataFrame(columns = ["module_name", "model_name", "subj", "correlation", "ROI", "Hemisphere"])
+        self.data = pd.DataFrame(columns = ["module_name", "model_name", "subj", "correlation", "ROI", "Hemisphere", "did_pca"])
 
     def load_corrs(self, module_name, model_name, did_pca, fixed_testing, did_cv, TR, result_path=delirium_config.NN_RESULT_PATH, *fname_spec):
         return [self._load_corr(subj, module_name, model_name, did_pca, fixed_testing, did_cv, TR, result_path, *fname_spec) for subj in range(1, 4)]
@@ -135,7 +135,7 @@ class Plotter:
         with open(_path, "rb") as f:
             _data = pickle.load(f)
 
-        self._append_data(_data, "NeuralTaskonomy", task, subj)
+        self._append_data(_data, "NeuralTaskonomy", task, subj, did_pca=False)
         return _data
 
 
@@ -147,10 +147,10 @@ class Plotter:
 
         with open(_path, "rb") as f:
             _data = pickle.load(f)
-        self._append_data(_data, module_name, model_name + ("" if len(fname_spec)==0 else "_"+ "_".join(fname_spec)), subj)
+        self._append_data(_data, module_name, model_name + ("" if len(fname_spec)==0 else "_"+ "_".join(fname_spec)), subj, did_pca=did_pca)
         return _data
 
-    def _append_data(self, _data, module_name, model_name,subj):
+    def _append_data(self, _data, module_name, model_name, subj, did_pca):
 
         for i, corr in enumerate(_data):
             for j, r in enumerate(corr):
@@ -161,6 +161,7 @@ class Plotter:
                 vd["module_name"] = module_name
                 vd["model_name"] = model_name
                 vd["subj"] = subj
+                vd["did_pca"] = did_pca
 
                 self.data = self.data.append(vd, ignore_index=True)
 
