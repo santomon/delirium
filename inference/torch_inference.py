@@ -218,4 +218,4 @@ def _update_viable_models():
 ##############################################
 
 select_default_model = lambda: select_model(default_model)
-select_default_model()
+# select_default_model()
