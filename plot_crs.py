@@ -50,7 +50,7 @@ class Plotter:
         else:
             print("plot should be one of bar, violin or box")
 
-        if kwargs['palette'] is None:
+        if 'palette' not in kwargs.keys():
             kwargs['palette'] = sns.color_palette("colorblind")
 
         fig = plt.figure(figsize=((40, 9)))
@@ -80,7 +80,7 @@ class Plotter:
         else:
             print("plot should be one of bar, violin or box")
 
-        if kwargs['palette'] is None:
+        if 'palette' not in kwargs.keys():
             kwargs['palette'] = sns.color_palette("colorblind")
 
         grid = sns.FacetGrid(
