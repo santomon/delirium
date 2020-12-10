@@ -40,7 +40,7 @@ class Plotter:
         return [self._load_NT_corr(subj, task) for subj in range(1, 4)]
 
 
-    def plot_average_for_all_subjects(self, hue_order, plot):
+    def plot_average_for_all_subjects(self, hue_order, plot, **kwargs):
         if plot == sns.barplot or plot == "bar":
             plot = sns.barplot
         elif plot == sns.violinplot or plot == 'violin':
@@ -49,6 +49,9 @@ class Plotter:
             plot = sns.boxplot
         else:
             print("plot should be one of bar, violin or box")
+
+        if kwargs['palette'] is None:
+            kwargs['palette'] = sns.color_palette("colorblind")
 
         fig = plt.figure(figsize=((40, 9)))
         ax = fig.add_subplot(1, 1, 1)
@@ -59,26 +62,14 @@ class Plotter:
             hue_order=hue_order,
             data=self.data,
             ax=ax,
-            palette=sns.color_palette("colorblind"),
+            **kwargs
         )
         plt.show()
 
 
-    def _load_NT_corr(self,subj: int, task: str):
 
-        _path = os.path.join(delirium_config.NT_PATH,
-                     "outputs",
-                     "encoding_results",
-                     "subj{}".format(subj),
-                     "corr_taskrepr_{}__TRavg.p".format(task))
 
-        with open(_path, "rb") as f:
-            _data = pickle.load(f)
-
-        self._append_data(_data, "NeuralTaskonomy", task, subj)
-        return _data
-
-    def plot_for_subjects_individually(self, hue_order, plot):
+    def plot_for_all_subjects_individually(self, hue_order, plot, **kwargs):
 
         if plot == sns.barplot or plot == "bar":
             plot = sns.barplot
@@ -88,6 +79,9 @@ class Plotter:
             plot = sns.boxplot
         else:
             print("plot should be one of bar, violin or box")
+
+        if kwargs['palette'] is None:
+            kwargs['palette'] = sns.color_palette("colorblind")
 
         grid = sns.FacetGrid(
             self.data,
@@ -106,7 +100,7 @@ class Plotter:
             "correlation",
             hue="model_name",
             hue_order= hue_order,
-            palette=sns.color_palette("colorblind"),
+            **kwargs
         )
 
         grid.set_axis_labels("ROI", "Correlations (r)")
@@ -128,6 +122,21 @@ class Plotter:
         plt.show()
 
 
+
+
+    def _load_NT_corr(self,subj: int, task: str):
+
+        _path = os.path.join(delirium_config.NT_PATH,
+                     "outputs",
+                     "encoding_results",
+                     "subj{}".format(subj),
+                     "corr_taskrepr_{}__TRavg.p".format(task))
+
+        with open(_path, "rb") as f:
+            _data = pickle.load(f)
+
+        self._append_data(_data, "NeuralTaskonomy", task, subj)
+        return _data
 
 
     def _load_corr(self, subj: int,  module_name: str, model_name: str, did_pca: bool, fixed_testing: bool, did_cv: bool,

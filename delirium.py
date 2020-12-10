@@ -213,7 +213,7 @@ class EncodingModel:
         sys.path.append(os.path.abspath(os.path.join(config.NT_PATH, "code")))
         from encodingmodel.encoding_model import ridge_cv
 
-        for subj, brain_data_single in zip(self.subjects, self.brain_data):
+        for i, brain_data_single in enumerate(self.brain_data):
 
             corrs_array, rsqs_array, cv_array, l_score_array, best_l_array, predictions_array = (
                 [],
@@ -226,7 +226,7 @@ class EncodingModel:
 
 
             data = load_nn_data(
-                stim_list=self.stim_lists[subj - 1],
+                stim_list=self.stim_lists[i],
                 full_nn_data_path=os.path.join(self.data_path, self.module_name, self.model_name),
                 module_name=self.module_name,
                 fname_spec=self.fname_spec,
