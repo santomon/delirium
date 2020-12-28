@@ -89,7 +89,9 @@ def postprocessor(data_: t.Dict[str, torch.Tensor], compress=True):
         return {task: np.float32(features.to('cpu')) for task, features in data_.items()}
 
 
-def generate_file_name(old_file_name, task):
+def generate_file_name(old_file_name, task="no_task"):
+
+    assert task != "no_task" or currently_selected_model == "imagenet_pretr"  # a task has to be specified, unless when using imagenet pretr only
 
     return old_file_name.split(".")[0] + '_features' + \
            ('_' + task if currently_selected_model != "imagenet_pretr" else "") +\
