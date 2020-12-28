@@ -117,6 +117,7 @@ def load_nn_data(
         stim_list: t.List[str],
         full_nn_data_path: str,
         module_name: str,
+        model_name: str,
         fname_spec: t.List
 ) -> np.ndarray:
     """
@@ -128,6 +129,7 @@ def load_nn_data(
 
     #VULNERABLE:
     module = importlib.import_module("inference." + module_name)
+    module.select_model(model_name)
 
     data_: t.List[np.ndarray] = []
     for img_name in tqdm.tqdm(stim_list):
@@ -229,6 +231,7 @@ class EncodingModel:
                 stim_list=self.stim_lists[i],
                 full_nn_data_path=os.path.join(self.data_path, self.module_name, self.model_name),
                 module_name=self.module_name,
+                model_name=self.model_name,
                 fname_spec=self.fname_spec,
             )
 
