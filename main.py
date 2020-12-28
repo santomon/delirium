@@ -42,10 +42,11 @@ def parse_args() -> argparse.Namespace:
                               "with randomised train-test-splits; and stored in: \n"
                               "<save_path>/<module>/<model>/permutations")
 
-    _parser.add_argument("--do_pca", action="store_true",
+    _parser.add_argument("--do_pca", default=0, type=int,
                          help="specify, if PCA should be applied on the data, before running a given experiment;\n"
-                              "this is highly recommended, as feature spaces can be really large and potentially cause"
-                              "your RAM to explode")
+                              "default: 0: no PCA\n"
+                              "        -1: PCA with maximum number of components\n"
+                              "         n: PCA with n components")
 
     _parser.add_argument("--TR", default=[3, 4], type=int, nargs="*",
                          help="specify, which TRs you want to use, if multiple are chosen, the average over them will"
