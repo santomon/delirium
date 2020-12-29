@@ -99,7 +99,7 @@ class Plotter:
             "ROI",
             "correlation",
             hue=hue,
-            hue_order= hue_order,
+            hue_order=hue_order,
             **kwargs
         )
 

@@ -288,24 +288,24 @@ class EncodingModel:
 
             if len(cv_outputs) > 0:  # happens if no permutations
                 pickle.dump(
-                    cv_outputs[0], open(os.path.join(outpath, "rsq_{}.p".format(full_model_name)), "wb")
+                    rsqs_array, open(os.path.join(outpath, "rsq_{}.p".format(full_model_name)), "wb")
                 )
                 pickle.dump(
-                    cv_outputs[1],
+                    cv_array,
                     open(os.path.join(outpath, "cv_score_{}.p".format(full_model_name)), "wb"),
                 )
                 pickle.dump(
-                    cv_outputs[2],
+                    l_score_array,
                     open(os.path.join(outpath, "l_score_{}.p".format(full_model_name)), "wb"),
                 )
                 pickle.dump(
-                    cv_outputs[3],
+                    best_l_array,
                     open(os.path.join(outpath, "best_l_{}.p".format(full_model_name)), "wb"),
                 )
 
                 if self.fix_testing:
                     pickle.dump(
-                        cv_outputs[4],
+                        predictions_array,
                         open(os.path.join(outpath, "pred_{}.p".format(full_model_name)), "wb"),
                     )
 
