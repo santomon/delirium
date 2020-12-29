@@ -1,7 +1,7 @@
 {
 	"pascal_edge_scratch_SSF": {
-		"epochs": 3,
-		"resume_epoch": 3,
+		"epochs": 100,
+		"resume_epoch": 10,
 		"pretr": "scratch",
 		"active_tasks": [1, 0, 0, 0, 0],
 		"arch": "se_res50",

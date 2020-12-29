@@ -26,7 +26,8 @@ model_params: t.Dict[str, t.Any] = pd.read_json("inference/astmt_model_params.js
 # the key will of your entry will be considered the "model_name" when running an inference task
 
 SSF_model_urls = {
-    'pascal_edge_scratch_SSF': "https://drive.google.com/u/0/uc?id=1dOOIZFJUfiegnfeaG-YdX2JwAOxqRNT9",
+    # 'pascal_edge_scratch_SSF': "https://drive.google.com/u/0/uc?id=1dOOIZFJUfiegnfeaG-YdX2JwAOxqRNT9",
+    'pascal_edge_scratch_SSF': "https://drive.google.com/u/0/uc?id=17rYmh4-CzgsLOptDDmRGDvdjOpDZ8Aym",
     'pascal_semseg_scratch_SSF':"https://drive.google.com/u/0/uc?id=1-ERrxEWSU2fS2elra8I2gItnGS40Nc0P",
     'pascal_normals_scratch_SSF':"https://drive.google.com/u/0/uc?id=1-3XuBx-g8-vEpa3_84sQ97i1wNhDQWBU",
     'pascal_edge_imagenet_SSF':"https://drive.google.com/u/0/uc?id=1-4UqQQXi-C0f7aMFIbEKXNGZuxgcweba",
