@@ -84,7 +84,8 @@ def _permute_single(data: pd.DataFrame, repeats: int):
 
     ylabel = np.array(list(data["ylabel"]))
     corrs_dist = []
-    original_corrs = [pearsonr(ylabel[:, i], yhat[:, i]) for i in range(ylabel.shape[1])]  # tuple of corrs and pvalues
+    original_corrs = [pearsonr(ylabel[:, i], yhat[:, i]) for i in range(ylabel.shape[1])]  #list tuple of corrs and pvalues
+    corrs_only = [r[0] for r in original_corrs]
 
     label_idx = np.arange(ylabel.shape[0])
     for _ in range(repeats):
@@ -92,7 +93,7 @@ def _permute_single(data: pd.DataFrame, repeats: int):
         y_test_perm = ylabel[label_idx, :]
         perm_corrs = pearson_corr(y_test_perm, yhat, rowvar=False)
         corrs_dist.append(perm_corrs)
-    p = empirical_p(original_corrs[0], np.array(corrs_dist))
+    p = empirical_p(corrs_only, np.array(corrs_dist))
 
     assert len(p) == ylabel.shape[1], "length of p is not equal to the number of voxels"
 
