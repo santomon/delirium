@@ -94,7 +94,7 @@ def _permute_single(data: pd.DataFrame, repeats: int):
         corrs_dist.append(perm_corrs)
     p = empirical_p(original_corrs[0], np.array(corrs_dist))
 
-    assert len(p) == ylabel.shape[1]
+    assert len(p) == ylabel.shape[1], "length of p is not equal to the number of voxels"
 
     return pd.Series([p], index=["empirical_ps"])
 
