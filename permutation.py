@@ -51,8 +51,7 @@ class Permutator():
 
     def _append_data(self, _data, module_name, model_name, subj, did_pca):
         for i, (roi, roi_data) in enumerate(zip(delirium_config.ROI_LABELS, _data)):
-            print(len(roi_data[0]), len(roi_data[1]))
-
+            
             _len = len(roi_data[0])
             _data_dict = {
                 "module_name": [module_name for i in range(_len)],
