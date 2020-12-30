@@ -114,7 +114,7 @@ class FeatureExtractor:
 
     def preprocess_image(self, batched_inputs):
         # all models from detectron2 preprocess the images the same way
-        # this could change in the future; fingers crossed that fbresearch stays consistent
+        # this could change in the future; fingers crossed
         # reference: https://github.com/facebookresearch/detectron2/tree/master/detectron2/modeling/meta_arch  # last checked: 23.11.20
 
         images = [x["image"].to(self.model.device) for x in batched_inputs]
