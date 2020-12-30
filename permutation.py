@@ -32,7 +32,7 @@ class Permutator():
                    TR: t.List, result_path=delirium_config.NN_RESULT_PATH, *fname_spec):
 
 
-        _file_name = self._get_filename(subj, module_name, model_name, did_pca, fixed_testing, did_cv, TR, result_path, *fname_spec)
+        _file_name = self._get_filename(subj, did_pca, fixed_testing, did_cv, TR, *fname_spec)
         _path = os.path.join(result_path, module_name, model_name, _file_name)
 
         with open(_path, "rb") as f:
