@@ -27,6 +27,8 @@ class Permutator():
         grouped = self.data.groupby(list(set(self.data.columns) - set(["yhat", "ylabel"])), axis=1)
         grouped.apply(_permute_single, self.repeats)
 
+        self.grouped = grouped
+
 
     def load_predictions(self, module_name, model_name: str, did_pca: bool, fixed_testing: bool, did_cv: bool, TR: t.List,
                          result_path: str = delirium_config.NN_RESULT_PATH, *fname_spec):
