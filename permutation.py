@@ -25,9 +25,9 @@ class Permutator():
 
     def permute(self):
         grouped = self.data.groupby(list(set(self.data.columns) - set(["yhat", "ylabel"])))
-        grouped.apply(_permute_single, self.repeats)
+        self.grouped_result = grouped.apply(_permute_single, self.repeats)
 
-        self.grouped = grouped
+
 
 
     def load_predictions(self, module_name, model_name: str, did_pca: bool, fixed_testing: bool, did_cv: bool, TR: t.List,
@@ -79,6 +79,7 @@ class Permutator():
 
 def _permute_single(data: pd.DataFrame, repeats: int):
     # expected keys are: "yhat", "ylabel"
+    # to be used on grouped data
 
     yhat= np.array(list(data["yhat"]))
 
