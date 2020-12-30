@@ -83,7 +83,7 @@ def _permute_single(data: pd.DataFrame, repeats: int):
     yhat: pd.DataFrame = data["yhat"]
     ylabel: pd.DataFrame = data["ylabel"]
     corrs_dist = []
-    original_corrs = [pearsonr(ylabel[:, i], yhat[:, i]) for i in range(ylabel[0].shape)]
+    original_corrs = [pearsonr(ylabel[:, i], yhat[:, i]) for i in range(ylabel[0].shape[0])]
 
     label_idx = np.arange(ylabel.shape[0])
     for _ in range(repeats):
