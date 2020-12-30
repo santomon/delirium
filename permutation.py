@@ -24,7 +24,7 @@ class Permutator():
 
 
     def permute(self):
-        grouped = self.data.reindex().groupby(list(set(self.data.columns) - set(["yhat", "ylabel"])), axis=1)
+        grouped = self.data.groupby(set(self.data.columns) - set(["yhat", "ylabel"]))
         grouped.apply(_permute_single, self.repeats)
 
         self.grouped = grouped
