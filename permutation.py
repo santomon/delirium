@@ -80,11 +80,11 @@ class Permutator():
 def _permute_single(data: pd.DataFrame, repeats: int):
     # expected keys are: "yhat", "ylabel"
 
-    yhat: pd.DataFrame = data["yhat"]
-    print(yhat)
-    ylabel: pd.DataFrame = data["ylabel"]
+    yhat= np.array(data["yhat"])
+
+    ylabel = np.array(data["ylabel"])
     corrs_dist = []
-    original_corrs = [pearsonr(ylabel[:, i], yhat[:, i]) for i in range(ylabel[0].shape[0])]
+    original_corrs = [pearsonr(ylabel[:, i], yhat[:, i]) for i in range(ylabel.shape[1])]
 
     label_idx = np.arange(ylabel.shape[0])
     for _ in range(repeats):
