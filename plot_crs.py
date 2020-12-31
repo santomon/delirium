@@ -63,7 +63,7 @@ class Plotter:
         if 'palette' not in kwargs.keys():
             kwargs['palette'] = sns.color_palette("colorblind")
 
-        fig: plt.Figure = plt.figure(figsize=((6, 4)))
+        fig: plt.Figure = plt.figure(figsize=((6, 3)))
         ax: plt.Axes = fig.add_subplot(1, 1, 1)
         plot(
             x="ROI",
@@ -74,7 +74,7 @@ class Plotter:
         )
         handles, legend_labels = ax.get_legend_handles_labels()
         ax.legend().set_visible(False)
-        ax.set_xlabel("Correlation (r)")
+        ax.set_ylabel("Correlation (r)")
         fig.legend(
             title="Models" if "legend_title" not in kwargs.keys() else kwargs["legend_title"],
             handles=handles,
