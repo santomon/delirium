@@ -63,7 +63,7 @@ class Plotter:
         if 'palette' not in kwargs.keys():
             kwargs['palette'] = sns.color_palette("colorblind")
 
-        fig: plt.Figure = plt.figure(figsize=((6, 3)))
+        fig: plt.Figure = plt.figure()
         ax: plt.Axes = fig.add_subplot(1, 1, 1)
 
         plot(
