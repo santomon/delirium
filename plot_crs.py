@@ -63,7 +63,7 @@ class Plotter:
         if 'palette' not in kwargs.keys():
             kwargs['palette'] = sns.color_palette("colorblind")
 
-        fig: plt.Figure = plt.figure()
+        fig: plt.Figure = plt.figure(figsize=(6, 3))
         ax: plt.Axes = fig.add_subplot(1, 1, 1)
 
         plot(
@@ -75,6 +75,7 @@ class Plotter:
         )
         handles, legend_labels = ax.get_legend_handles_labels()
         ax.set_ylabel("Correlation (r)")
+
         ax.legend(
             title="Models" if "legend_title" not in kwargs.keys() else kwargs["legend_title"],
             handles=handles,
@@ -90,7 +91,8 @@ class Plotter:
         fig.savefig("xd.pgf", bbox_inches='tight')
 
         if "show" in kwargs.keys():
-            plt.show()
+            if kwargs['show']:
+                plt.show()
 
 
 
@@ -127,7 +129,6 @@ class Plotter:
             **_only_sns_kwargs(kwargs)
         )
 
-
         grid.set_axis_labels("ROI", "Correlations (r)")
 
         handles = grid._legend_data.values()
@@ -136,18 +137,20 @@ class Plotter:
             title="Models" if "legend_title" not in kwargs.keys() else kwargs['legend_title'],
             handles=handles,
             labels=legend_labels if "legend_labels" not in kwargs.keys() else kwargs['legend_labels'],
-            loc="lower center",
-            ncol=5,
-            bbox_to_anchor=(0.49, 0.97),
-            frameon=False,
+            loc="lower left",
+            bbox_to_anchor=(0., 1.02, 1., .102),
+            ncol=2,
+            mode="expand",
+            borderaxespad=0.
         )
         ax = grid.axes
         sns.despine(fig=grid.fig, ax=ax, left=True, bottom=True)
 
+        grid.savefig("lmao.pgf", bbox_inches='tight')
 
-        grid.savefig("lmao.pgf")
         if "show" in kwargs.keys():
-            plt.show()
+            if kwargs['show']:
+                plt.show()
 
 
 
