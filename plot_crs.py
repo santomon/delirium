@@ -153,13 +153,12 @@ class Plotter:
     def _append_data(self, _data, module_name, model_name, subj, did_pca):
 
         for i, (roi, roi_data) in enumerate(zip(delirium_config.ROI_LABELS, _data)):
-            _len = len(roi_data[0])
+            _len = len(roi_data)
             _data_dict = {
                 "module_name": [module_name for _ in range(_len)],
                 "model_name": [model_name for _ in range(_len)],
                 "subj": [subj for _ in range(_len)],
-                "yhat": [x for x in roi_data[0]],
-                "ylabel": [x for x in roi_data[1]],
+                "correlation": [r[0] for r in roi_data],
                 "ROI": [roi[2:] for i in range(_len)],
                 "hemisphere": [roi[:2] for _ in range(_len)],
                 "did_pca": [did_pca for _ in range(_len)]
