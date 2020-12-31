@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import delirium_config
 
 sns.set_style("whitegrid")
-non_sns_keywords = ["title", "legend_labels"]
+non_sns_kwargs = ["title", "legend_labels"]
 
 
 def parse_args():
