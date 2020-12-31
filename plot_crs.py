@@ -79,8 +79,8 @@ class Plotter:
             title="Models" if "legend_title" not in kwargs.keys() else kwargs["legend_title"],
             handles=handles,
             labels=legend_labels if "legend_labels" not in kwargs.keys() else kwargs['legend_labels'],
-            loc="upper center",
-            bbox_to_anchor=(0, 0.1),
+            loc="lower center",
+            bbox_to_anchor=(0.5, 1),
             ncol=3,
             frameon=False
         )
