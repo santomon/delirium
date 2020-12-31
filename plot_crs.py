@@ -88,7 +88,7 @@ class Plotter:
         )
 
         fig.set_size_inches(6.30045, fig.get_figheight() * 6.30045 / fig.get_figwidth() + 1)
-        fig.savefig("xd.pgf")
+        fig.savefig("xd.pgf", bbox_inches='tight')
 
         if "show" in kwargs.keys():
             plt.show()
