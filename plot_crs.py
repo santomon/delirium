@@ -83,7 +83,7 @@ class Plotter:
         )
 
         fig.savefig("xd.pgf")
-        
+
         if "show" in kwargs.keys():
             plt.show()
 
