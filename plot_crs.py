@@ -6,11 +6,18 @@ import typing as t
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import matplotlib
 
 import delirium_config
 
 sns.set_style("whitegrid")
 non_sns_kwargs = ["title", "legend_labels"]
+
+font = {'family' : 'normal',
+        'weight' : 'bold',
+        'size'   : 22}
+
+matplotlib.rc('font', **font)
 
 
 def parse_args():
