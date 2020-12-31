@@ -54,6 +54,7 @@ class Plotter:
         if 'palette' not in kwargs.keys():
             kwargs['palette'] = sns.color_palette("colorblind")
 
+
         fig: plt.Figure = plt.figure(figsize=((30, 9)))
         ax :plt.Axes = fig.add_subplot(1, 1, 1)
         plot(
@@ -61,7 +62,7 @@ class Plotter:
             y="correlation",
             data=self.data,
             ax=ax,
-            **kwargs
+            **_kwargs_wo_sns_kwargs(kwargs)
         )
         handles, legend_labels = ax.get_legend_handles_labels()
         fig.legend(
@@ -108,7 +109,7 @@ class Plotter:
             plot,
             "ROI",
             "correlation",
-            **{key: value for key, value in kwargs.items() if key not in non_sns_kwargs}
+            **_kwargs_wo_sns_kwargs(kwargs)
         )
 
 
@@ -186,5 +187,6 @@ class Plotter:
                                              )
 
 
-
+def _kwargs_wo_sns_kwargs(kwargs):
+    return {key: value for key, value in kwargs.items() if key not in non_sns_kwargs}
 
