@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import delirium_config
 
 sns.set_style("whitegrid")
+non_sns_keywords = ["title", "legend_labels"]
 
 
 def parse_args():
@@ -96,8 +97,9 @@ class Plotter:
             plot,
             "ROI",
             "correlation",
-            **kwargs
+            **{key: value for key, value in kwargs.items() if key not in non_sns_kwargs}
         )
+
 
         grid.set_axis_labels("ROI", "Correlations (r)")
 
