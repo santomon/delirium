@@ -82,12 +82,11 @@ class Plotter:
             loc="lower left",
             bbox_to_anchor=(0., 1.02, 1., .102),
             ncol=2,
-            frameon=False,
             mode="expand",
             borderaxespad=0.
         )
 
-        fig.set_size_inches(6.30045, fig.get_figheight() * 6.30045 / fig.get_figwidth() + 1)
+        fig.set_size_inches(6.30045, fig.get_figheight() * 6.30045 / fig.get_figwidth())
         fig.savefig("xd.pgf", bbox_inches='tight')
 
         if "show" in kwargs.keys():
