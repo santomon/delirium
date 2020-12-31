@@ -68,7 +68,7 @@ class Permutator():
                 "yhat": [x for x in roi_data[0]],
                 "ylabel": [x for x in roi_data[1]],
                 "ROI": [roi[2:] for i in range(_len)],
-                "Hemisphere": [roi[:2] for _ in range(_len)],
+                "hemisphere": [roi[:2] for _ in range(_len)],
                 "did_pca": [did_pca for _ in range(_len)]
             }
 

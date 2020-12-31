@@ -142,7 +142,7 @@ class Plotter:
     def _load_corr(self, subj: int,  module_name: str, model_name: str, did_pca: bool, fixed_testing: bool, did_cv: bool,
                   TR: t.List, result_path= delirium_config.NN_RESULT_PATH,  *fname_spec):
 
-        _file_name = self._get_filename(subj, module_name, model_name, did_pca, fixed_testing, did_cv, TR, result_path, *fname_spec)
+        _file_name = self._get_filename(subj,did_pca, fixed_testing, did_cv, TR, *fname_spec)
         _path = os.path.join(result_path, module_name, model_name, _file_name)
 
         with open(_path, "rb") as f:
@@ -152,20 +152,23 @@ class Plotter:
 
     def _append_data(self, _data, module_name, model_name, subj, did_pca):
 
-        for i, corr in enumerate(_data):
-            for j, r in enumerate(corr):
-                vd = dict()
-                vd["correlation"] = r[0]
-                vd["ROI"] = delirium_config.ROI_LABELS[i][2:]
-                vd["hemisphere"] = delirium_config.ROI_LABELS[i][0:2]
-                vd["module_name"] = module_name
-                vd["model_name"] = model_name
-                vd["subj"] = subj
-                vd["did_pca"] = did_pca
+        for i, (roi, roi_data) in enumerate(zip(delirium_config.ROI_LABELS, _data)):
+            _len = len(roi_data[0])
+            _data_dict = {
+                "module_name": [module_name for _ in range(_len)],
+                "model_name": [model_name for _ in range(_len)],
+                "subj": [subj for _ in range(_len)],
+                "yhat": [x for x in roi_data[0]],
+                "ylabel": [x for x in roi_data[1]],
+                "ROI": [roi[2:] for i in range(_len)],
+                "hemisphere": [roi[:2] for _ in range(_len)],
+                "did_pca": [did_pca for _ in range(_len)]
+            }
 
-                self.data = self.data.append(vd, ignore_index=True)
+            rdata = pd.DataFrame(_data_dict)
+            self.data = pd.concat([self.data, rdata], ignore_index=True)
 
-    def _get_filename(self, subj, module_name, model_name, did_pca, fixed_testing, did_cv, TR, result_path=delirium_config.NN_RESULT_PATH, *fname_spec):
+    def _get_filename(self, subj,did_pca, fixed_testing, did_cv, TR, *fname_spec):
         return "corr_subj{}_TR{}_{}_{}_{}{}.p".format(subj,
                                              "".join([str(tr) for tr in TR]),
                                              "pca" if did_pca else "nopca",
