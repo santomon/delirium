@@ -82,6 +82,7 @@ class Plotter:
             ncol=5,
         )
 
+        fig.set_size_inches(6.30045, fig.get_figheight() * 6.30045 / fig.get_figwidth())
         fig.savefig("xd.pgf")
 
         if "show" in kwargs.keys():
@@ -138,6 +139,7 @@ class Plotter:
         )
         ax = grid.axes
         sns.despine(fig=grid.fig, ax=ax, left=True, bottom=True)
+
 
         grid.savefig("lmao.pgf")
         if "show" in kwargs.keys():
