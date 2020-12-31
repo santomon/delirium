@@ -11,7 +11,7 @@ import matplotlib
 import delirium_config
 
 sns.set_style("whitegrid")
-non_sns_kwargs = ["legend_title", "legend_labels", "fig_name"]
+non_sns_kwargs = ["legend_title", "legend_labels", "fig_name", "show"]
 
 matplotlib.use("pgf")  # src: https://timodenk.com/blog/exporting-matplotlib-plots-to-latex/ 31.12.2020
 matplotlib.rcParams.update({
@@ -83,7 +83,9 @@ class Plotter:
         )
 
         fig.savefig("xd.pgf")
-        plt.show()
+        
+        if "show" in kwargs.keys():
+            plt.show()
 
 
 
@@ -138,8 +140,8 @@ class Plotter:
         sns.despine(fig=grid.fig, ax=ax, left=True, bottom=True)
 
         grid.savefig("lmao.pgf")
-        plt.show()
-
+        if "show" in kwargs.keys():
+            plt.show()
 
 
 
