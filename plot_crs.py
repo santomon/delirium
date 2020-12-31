@@ -70,6 +70,7 @@ class Plotter:
             handles=handles,
             labels=legend_labels if "legend_labels" not in kwargs.keys() else kwargs['legend_labels'],
             loc="upper center",
+            ncol=5,
         )
 
         plt.show()
