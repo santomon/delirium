@@ -40,7 +40,7 @@ class Plotter:
         return [self._load_NT_corr(subj, task) for subj in range(1, 4)]
 
 
-    def plot_average_for_all_subjects(self, hue_order, plot, hue="model_name", **kwargs):
+    def plot_average_for_all_subjects(self, plot, **kwargs):
         if plot == sns.barplot or plot == "bar":
             plot = sns.barplot
         elif plot == sns.violinplot or plot == 'violin':
@@ -53,13 +53,11 @@ class Plotter:
         if 'palette' not in kwargs.keys():
             kwargs['palette'] = sns.color_palette("colorblind")
 
-        fig = plt.figure(figsize=((40, 9)))
+        fig = plt.figure(figsize=((30, 9)))
         ax = fig.add_subplot(1, 1, 1)
         plot(
             x="ROI",
             y="correlation",
-            hue=hue,
-            hue_order=hue_order,
             data=self.data,
             ax=ax,
             **kwargs
@@ -69,7 +67,7 @@ class Plotter:
 
 
 
-    def plot_for_all_subjects_individually(self, hue_order, plot, hue="model_name", **kwargs):
+    def plot_for_all_subjects_individually(self, plot, **kwargs):
 
         if plot == sns.barplot or plot == "bar":
             plot = sns.barplot
@@ -98,8 +96,6 @@ class Plotter:
             plot,
             "ROI",
             "correlation",
-            hue=hue,
-            hue_order=hue_order,
             **kwargs
         )
 
