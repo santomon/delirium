@@ -65,6 +65,7 @@ class Plotter:
 
         fig: plt.Figure = plt.figure(figsize=((6, 3)))
         ax: plt.Axes = fig.add_subplot(1, 1, 1)
+
         plot(
             x="ROI",
             y="correlation",
@@ -73,9 +74,8 @@ class Plotter:
             **_only_sns_kwargs(kwargs)
         )
         handles, legend_labels = ax.get_legend_handles_labels()
-        ax.legend().set_visible(False)
         ax.set_ylabel("Correlation (r)")
-        fig.legend(
+        ax.legend(
             title="Models" if "legend_title" not in kwargs.keys() else kwargs["legend_title"],
             handles=handles,
             labels=legend_labels if "legend_labels" not in kwargs.keys() else kwargs['legend_labels'],
@@ -87,7 +87,7 @@ class Plotter:
             borderaxespad=0.
         )
 
-        fig.set_size_inches(6.30045, fig.get_figheight() * 6.30045 / fig.get_figwidth() + 2)
+        fig.set_size_inches(6.30045, fig.get_figheight() * 6.30045 / fig.get_figwidth())
         fig.savefig("xd.pgf")
 
         if "show" in kwargs.keys():
