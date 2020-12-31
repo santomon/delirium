@@ -74,8 +74,8 @@ def model_call(data_, layer: str):
         elif layer == 'low':
             return {task: model_.forward(data_, task)[1][0][32:] for task in model_.tasks}
         else:
-            print("layer could not be found")
-            print("available layers: ", layer_choices)
+            raise NotImplementedError("layer could not be found\n"
+                                "available layers: ", layer_choices)
 
 def postprocessor(data_: t.Dict[str, torch.Tensor], compress=True):
 
@@ -92,7 +92,7 @@ def postprocessor(data_: t.Dict[str, torch.Tensor], compress=True):
 
 def generate_file_name(old_file_name, task="no_task"):
 
-    assert task != "no_task" or currently_selected_model == "imagenet_pretr"  # a task has to be specified, unless when using imagenet pretr only
+    assert task != "no_task" or currently_selected_model == "imagenet_pretr"  # a task has to be specified, except with imagenet pretr
 
     return old_file_name.split(".")[0] + '_features' + \
            ('_' + task if currently_selected_model != "imagenet_pretr" else "") +\

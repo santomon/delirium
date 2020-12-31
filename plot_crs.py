@@ -106,11 +106,11 @@ class Plotter:
         grid.set_axis_labels("ROI", "Correlations (r)")
 
         handles = grid._legend_data.values()
-        labels = grid._legend_data.keys()
+        legend_labels = grid._legend_data.keys()
         grid.fig.legend(
-            title="Tasks",
+            title="Models" if "title" not in kwargs.keys() else kwargs['title'],
             handles=handles,
-            labels=labels,
+            labels=legend_labels if "legend_labels" not in kwargs.keys() else kwargs['legend_labels'],
             loc="lower center",
             ncol=5,
             bbox_to_anchor=(0.49, 0.97),
