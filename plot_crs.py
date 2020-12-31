@@ -81,7 +81,7 @@ class Plotter:
             labels=legend_labels if "legend_labels" not in kwargs.keys() else kwargs['legend_labels'],
             loc="lower left",
             bbox_to_anchor=(0., 1.02, 1., .102),
-            ncol=3,
+            ncol=2,
             frameon=False,
             mode="expand",
             borderaxespad=0.
