@@ -79,10 +79,12 @@ class Plotter:
             title="Models" if "legend_title" not in kwargs.keys() else kwargs["legend_title"],
             handles=handles,
             labels=legend_labels if "legend_labels" not in kwargs.keys() else kwargs['legend_labels'],
-            loc="upper center",
-            bbox_to_anchor=(0.5, 1),
+            loc="lower left",
+            bbox_to_anchor=(0., 1.02, 1., .102),
             ncol=3,
-            frameon=False
+            frameon=False,
+            mode="expand",
+            borderaxespad=0.
         )
 
         fig.set_size_inches(6.30045, fig.get_figheight() * 6.30045 / fig.get_figwidth())
