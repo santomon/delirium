@@ -87,7 +87,7 @@ class Plotter:
             borderaxespad=0.
         )
 
-        fig.set_size_inches(6.30045, fig.get_figheight() * 6.30045 / fig.get_figwidth())
+        fig.set_size_inches(6.30045, fig.get_figheight() * 6.30045 / fig.get_figwidth() + 2)
         fig.savefig("xd.pgf")
 
         if "show" in kwargs.keys():
