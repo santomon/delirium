@@ -11,13 +11,15 @@ import matplotlib
 import delirium_config
 
 sns.set_style("whitegrid")
-non_sns_kwargs = ["title", "legend_labels"]
+non_sns_kwargs = ["legend_title", "legend_labels", "fig_name"]
 
-font = {'family' : 'normal',
-        'weight' : 'bold',
-        'size'   : 22}
-
-matplotlib.rc('font', **font)
+matplotlib.use("pgf")  # src: https://timodenk.com/blog/exporting-matplotlib-plots-to-latex/ 31.12.2020
+matplotlib.rcParams.update({
+    "pgf.texsystem": "pdflatex",
+    'font.family': 'serif',
+    'text.usetex': True,
+    'pgf.rcfonts': False,
+})
 
 
 def parse_args():
@@ -68,18 +70,19 @@ class Plotter:
             y="correlation",
             data=self.data,
             ax=ax,
-            **_kwargs_wo_sns_kwargs(kwargs)
+            **_only_sns_kwargs(kwargs)
         )
         handles, legend_labels = ax.get_legend_handles_labels()
         ax.legend().set_visible(False)
         fig.legend(
-            title="Models" if "title" not in kwargs.keys() else kwargs["title"],
+            title="Models" if "legend_title" not in kwargs.keys() else kwargs["legend_title"],
             handles=handles,
             labels=legend_labels if "legend_labels" not in kwargs.keys() else kwargs['legend_labels'],
             loc="upper center",
             ncol=5,
         )
 
+        fig.savefig("xd.pfg")
         plt.show()
 
 
@@ -99,7 +102,7 @@ class Plotter:
         if 'palette' not in kwargs.keys():
             kwargs['palette'] = sns.color_palette("colorblind")
 
-        grid = sns.FacetGrid(
+        grid: sns.FacetGrid = sns.FacetGrid(
             self.data,
             row="subj",
             row_order=[1, 2, 3],
@@ -114,7 +117,7 @@ class Plotter:
             plot,
             "ROI",
             "correlation",
-            **_kwargs_wo_sns_kwargs(kwargs)
+            **_only_sns_kwargs(kwargs)
         )
 
 
@@ -123,7 +126,7 @@ class Plotter:
         handles = grid._legend_data.values()
         legend_labels = grid._legend_data.keys()
         grid.fig.legend(
-            title="Models" if "title" not in kwargs.keys() else kwargs['title'],
+            title="Models" if "legend_title" not in kwargs.keys() else kwargs['legend_title'],
             handles=handles,
             labels=legend_labels if "legend_labels" not in kwargs.keys() else kwargs['legend_labels'],
             loc="lower center",
@@ -134,6 +137,7 @@ class Plotter:
         ax = grid.axes
         sns.despine(fig=grid.fig, ax=ax, left=True, bottom=True)
 
+        grid.savefig("lmao.pfg")
         plt.show()
 
 
@@ -192,6 +196,6 @@ class Plotter:
                                              )
 
 
-def _kwargs_wo_sns_kwargs(kwargs):
+def _only_sns_kwargs(kwargs):
     return {key: value for key, value in kwargs.items() if key not in non_sns_kwargs}
 
