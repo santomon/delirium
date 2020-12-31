@@ -82,7 +82,7 @@ class Plotter:
             ncol=5,
         )
 
-        fig.savefig("xd.pfg")
+        fig.savefig("xd.pgf")
         plt.show()
 
 
@@ -137,7 +137,7 @@ class Plotter:
         ax = grid.axes
         sns.despine(fig=grid.fig, ax=ax, left=True, bottom=True)
 
-        grid.savefig("lmao.pfg")
+        grid.savefig("lmao.pgf")
         plt.show()
 
 
