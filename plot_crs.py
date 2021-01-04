@@ -2,7 +2,6 @@ import argparse
 import os
 import pickle
 import typing as t
-import importlib
 
 import pandas as pd
 import seaborn as sns
@@ -43,10 +42,8 @@ class Plotter:
 
     def plot_average_for_all_subjects(self, plot, figname, **kwargs):
 
-        plt = importlib.import_module("matplotlib.pyplot")
-        matplotlib = importlib.import_module("matplotlib")
-        importlib.reload(plt)
-        importlib.reload(matplotlib)
+        import matplotlib.pyplot as plt
+        import matplotlib
 
 
         if "backend" in kwargs:
@@ -113,9 +110,7 @@ class Plotter:
 
     def plot_for_all_subjects_individually(self, plot, figname, **kwargs):
 
-        matplotlib = importlib.import_module("matplotlib")
-        importlib.reload(matplotlib)
-
+        import matplotlib
         if "backend" in kwargs:
             if kwargs['backend'] == "pgf":
                 matplotlib.use("pgf")  # src: https://timodenk.com/blog/exporting-matplotlib-plots-to-latex/ 31.12.2020
