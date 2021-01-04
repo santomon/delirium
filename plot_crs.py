@@ -2,6 +2,7 @@ import argparse
 import os
 import pickle
 import typing as t
+import importlib
 
 import pandas as pd
 import seaborn as sns
@@ -44,6 +45,9 @@ class Plotter:
 
         import matplotlib.pyplot as plt
         import matplotlib
+        importlib.reload(plt)
+        importlib.reload(matplotlib)
+
 
         if "backend" in kwargs:
             if kwargs['backend'] == "pgf":
@@ -108,6 +112,7 @@ class Plotter:
     def plot_for_all_subjects_individually(self, plot, figname, **kwargs):
 
         import matplotlib
+        importlib.reload(matplotlib)
 
         if "backend" in kwargs:
             if kwargs['backend'] == "pgf":
@@ -158,7 +163,7 @@ class Plotter:
             handles=handles,
             labels=legend_labels if "legend_labels" not in kwargs.keys() else kwargs['legend_labels'],
             loc="lower left",
-            bbox_to_anchor=(0., 1.02, 1., .102),
+            bbox_to_anchor=(0., 1.1, 1., .102),
             ncol=2,
             mode="expand",
             borderaxespad=0.
