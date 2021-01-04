@@ -58,6 +58,8 @@ class Plotter:
                     'text.usetex': True,
                     'pgf.rcfonts': False,
                 })
+            else:
+                matplotlib.use("agg")
 
 
         if plot == sns.barplot or plot == "bar":
@@ -106,7 +108,7 @@ class Plotter:
                     'pgf.rcfonts': False,
                 })
                 fig.set_size_inches(6.30045, fig.get_figheight() * 6.30045 / fig.get_figwidth())
-        fig.savefig(figname, bbox_inches='tight')
+        fig.savefig(figname, bbox_inches='tight', dpi=400)
 
 
     def plot_for_all_subjects_individually(self, plot, figname, **kwargs):
@@ -123,6 +125,8 @@ class Plotter:
                     'text.usetex': True,
                     'pgf.rcfonts': False,
                 })
+        else:
+            matplotlib.use("agg")
 
         if plot == sns.barplot or plot == "bar":
             plot = sns.barplot
@@ -175,7 +179,7 @@ class Plotter:
             if kwargs['backend'] == "pgf":
 
                 grid.fig.set_size_inches(6.30045, grid.fig.get_figheight() * 6.30045 / grid.fig.get_figwidth())
-        grid.fig.savefig(figname, bbox_inches='tight')
+        grid.fig.savefig(figname, bbox_inches='tight', dpi=400)
 
 
 
