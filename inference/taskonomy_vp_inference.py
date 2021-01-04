@@ -7,7 +7,7 @@ import numpy as np
 import typing as t
 
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-module_name = "taskonomy_inference_visualpriors"
+module_name = "taskonomy_vp_inference"
 
 viable_models = 'autoencoder curvature denoise edge2d edge3d \
 keypoint2d keypoint3d jigsaw \
