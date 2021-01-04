@@ -45,6 +45,16 @@ class Plotter:
         import matplotlib.pyplot as plt
         import matplotlib
 
+        if "backend" in kwargs:
+            if kwargs['backend'] == "pgf":
+                matplotlib.use("pgf")  # src: https://timodenk.com/blog/exporting-matplotlib-plots-to-latex/ 31.12.2020
+                matplotlib.rcParams.update({
+                    "pgf.texsystem": "pdflatex",
+                    'font.family': 'serif',
+                    'text.usetex': True,
+                    'pgf.rcfonts': False,
+                })
+
 
         if plot == sns.barplot or plot == "bar":
             plot = sns.barplot
@@ -99,6 +109,16 @@ class Plotter:
 
         import matplotlib
 
+        if "backend" in kwargs:
+            if kwargs['backend'] == "pgf":
+                matplotlib.use("pgf")  # src: https://timodenk.com/blog/exporting-matplotlib-plots-to-latex/ 31.12.2020
+                matplotlib.rcParams.update({
+                    "pgf.texsystem": "pdflatex",
+                    'font.family': 'serif',
+                    'text.usetex': True,
+                    'pgf.rcfonts': False,
+                })
+
         if plot == sns.barplot or plot == "bar":
             plot = sns.barplot
         elif plot == sns.violinplot or plot == 'violin':
@@ -148,13 +168,7 @@ class Plotter:
 
         if "backend" in kwargs:
             if kwargs['backend'] == "pgf":
-                matplotlib.use("pgf")  # src: https://timodenk.com/blog/exporting-matplotlib-plots-to-latex/ 31.12.2020
-                matplotlib.rcParams.update({
-                    "pgf.texsystem": "pdflatex",
-                    'font.family': 'serif',
-                    'text.usetex': True,
-                    'pgf.rcfonts': False,
-                })
+
                 grid.fig.set_size_inches(6.30045, grid.fig.get_figheight() * 6.30045 / grid.fig.get_figwidth())
         grid.fig.savefig(figname, bbox_inches='tight')
 
