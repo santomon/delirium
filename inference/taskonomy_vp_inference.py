@@ -10,9 +10,9 @@ device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cp
 module_name = "taskonomy_vp_inference"
 
 viable_models = "autoencoding depth_euclidean jigsaw reshading colorization " \
-                "edge_occlusion keypoints2d room_layout curvature edge_texture " \    
+                "edge_occlusion keypoints2d room_layout curvature edge_texture " \
                 "keypoints3d segment_unsup2d class_object egomotion nonfixated_pose " \
-                "segment_unsup25d class_scene fixated_pose normal segment_semantic " \    
+                "segment_unsup25d class_scene fixated_pose normal segment_semantic " \
                 "denoising inpainting point_matching vanishing_point".split(" ")  # slightly different names than in Taskonomy
 
 currently_selected_model:str = None
