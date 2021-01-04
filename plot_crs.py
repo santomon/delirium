@@ -43,8 +43,8 @@ class Plotter:
 
     def plot_average_for_all_subjects(self, plot, figname, **kwargs):
 
-        import matplotlib.pyplot as plt
-        import matplotlib
+        plt = importlib.import_module("matplotlib.pyplot")
+        matplotlib = importlib.import_module("matplotlib")
         importlib.reload(plt)
         importlib.reload(matplotlib)
 
@@ -111,7 +111,7 @@ class Plotter:
 
     def plot_for_all_subjects_individually(self, plot, figname, **kwargs):
 
-        import matplotlib
+        matplotlib = importlib.import_module("matplotlib")
         importlib.reload(matplotlib)
 
         if "backend" in kwargs:
