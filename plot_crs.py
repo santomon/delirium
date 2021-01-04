@@ -5,21 +5,11 @@ import typing as t
 
 import pandas as pd
 import seaborn as sns
-import matplotlib.pyplot as plt
-import matplotlib
 
 import delirium_config
 
 sns.set_style("whitegrid")
-non_sns_kwargs = ["legend_title", "legend_labels", "fig_name", "show"]
-
-matplotlib.use("pgf")  # src: https://timodenk.com/blog/exporting-matplotlib-plots-to-latex/ 31.12.2020
-matplotlib.rcParams.update({
-    "pgf.texsystem": "pdflatex",
-    'font.family': 'serif',
-    'text.usetex': True,
-    'pgf.rcfonts': False,
-})
+non_sns_kwargs = ["legend_title", "legend_labels","backend"]
 
 
 def parse_args():
@@ -50,7 +40,12 @@ class Plotter:
         return [self._load_NT_corr(subj, task) for subj in range(1, 4)]
 
 
-    def plot_average_for_all_subjects(self, plot, **kwargs):
+    def plot_average_for_all_subjects(self, plot, figname, **kwargs):
+
+        import matplotlib.pyplot as plt
+        import matplotlib
+
+
         if plot == sns.barplot or plot == "bar":
             plot = sns.barplot
         elif plot == sns.violinplot or plot == 'violin':
@@ -87,17 +82,22 @@ class Plotter:
             borderaxespad=0.
         )
 
-        fig.set_size_inches(6.30045, fig.get_figheight() * 6.30045 / fig.get_figwidth())
-        fig.savefig("xd.pgf", bbox_inches='tight')
+        if "backend" in kwargs:
+            if kwargs['backend'] == "pgf":
+                matplotlib.use("pgf")  # src: https://timodenk.com/blog/exporting-matplotlib-plots-to-latex/ 31.12.2020
+                matplotlib.rcParams.update({
+                    "pgf.texsystem": "pdflatex",
+                    'font.family': 'serif',
+                    'text.usetex': True,
+                    'pgf.rcfonts': False,
+                })
+                fig.set_size_inches(6.30045, fig.get_figheight() * 6.30045 / fig.get_figwidth())
+        fig.savefig(figname, bbox_inches='tight')
 
-        if "show" in kwargs.keys():
-            if kwargs['show']:
-                plt.show()
 
+    def plot_for_all_subjects_individually(self, plot, figname, **kwargs):
 
-
-
-    def plot_for_all_subjects_individually(self, plot, **kwargs):
+        import matplotlib
 
         if plot == sns.barplot or plot == "bar":
             plot = sns.barplot
@@ -146,11 +146,18 @@ class Plotter:
         ax = grid.axes
         sns.despine(fig=grid.fig, ax=ax, left=True, bottom=True)
 
-        grid.savefig("lmao.pgf", bbox_inches='tight')
+        if "backend" in kwargs:
+            if kwargs['backend'] == "pgf":
+                matplotlib.use("pgf")  # src: https://timodenk.com/blog/exporting-matplotlib-plots-to-latex/ 31.12.2020
+                matplotlib.rcParams.update({
+                    "pgf.texsystem": "pdflatex",
+                    'font.family': 'serif',
+                    'text.usetex': True,
+                    'pgf.rcfonts': False,
+                })
+                grid.fig.set_size_inches(6.30045, grid.fig.get_figheight() * 6.30045 / grid.fig.get_figwidth())
+        grid.fig.savefig(figname, bbox_inches='tight')
 
-        if "show" in kwargs.keys():
-            if kwargs['show']:
-                plt.show()
 
 
 
