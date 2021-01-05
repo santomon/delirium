@@ -117,8 +117,8 @@ def _permute_single(data: pd.DataFrame, repeats: int, save_permutations, save_di
         full_path = os.path.join(save_dir_root, data.name[0], data.name[1], "permutation_results")
         if not os.path.isdir(full_path):
             os.makedirs(full_path)
-        permutation_file_name = utility.generate_permutation_file_name(*data.name[2:])
-        pvalues_file_name = utility.generate_pvalues_file_name(*data.name[:2])
+        permutation_file_name = utility.generate_permutation_file_name(*data.name[2:-1], *data.name[-1])
+        pvalues_file_name = utility.generate_pvalues_file_name(*data.name[2:-1], *data.name[-1])
 
         pickle.dump(corrs_dist, open(os.path.join(full_path, permutation_file_name), "wb"))
         pickle.dump(corrs_dist, open(os.path.join(full_path, pvalues_file_name), "wb"))
