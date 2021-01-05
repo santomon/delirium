@@ -5,6 +5,7 @@ import torch
 import os
 import numpy as np
 import typing as t
+import warnings
 
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 module_name = "taskonomy_vp_inference"
@@ -39,7 +40,9 @@ def preprocessor(pil_image):
 
 def model_call(preprocessed_img, layer):
 
-    # layer is isgnored for now; cant be selected yet; will always be encoder.output with size: [8, 16,16]
+    if layer is not None:
+        warnings.warn("Layer cannot be specified for visualpriors, encoder.output with size [16, 18, 18] will always be"
+                      "put out.")
     return visualpriors.representation_transform(preprocessed_img, currently_selected_model, device=device)
 
 

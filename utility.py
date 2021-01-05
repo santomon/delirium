@@ -126,3 +126,30 @@ def download_and_extract(url: str, tmp_name:str, target_dir:str =".", chunk_size
 
 def identity(x: t.Any) -> t.Any:
     return x
+
+
+# certain file names:
+def generate_permutation_file_name(hemisphere: str, roi: str, subj: int,  did_pca, fix_testing, did_cv, TR: t.List, *fname_spec):
+    return "perm_{}{}_subj{}_TR{}_{}_{}_{}{}.p".format(
+                                    hemisphere,
+                                    roi,
+                                    subj,
+                                    "".join([str(tr) for tr in TR]),
+                                    "pca" if did_pca else "nopca",
+                                    "fixtesting" if fix_testing else "nofixtesting",
+                                    "cv" if did_cv else "nocv",
+                                    "" if len(fname_spec) == 0 else "_" + "_".join(fname_spec)
+                                    )
+
+
+def generate_pvalues_file_name(hemisphere: str, roi: str, subj: int, did_pca, fix_testing, did_cv,  TR: t.List, *fname_spec):
+    return "pvalues_{}{}_subj{}_TR{}_{}_{}_{}{}.p".format(
+                                    hemisphere,
+                                    roi,
+                                    subj,
+                                    "".join([str(tr) for tr in TR]),
+                                    "pca" if did_pca else "nopca",
+                                    "fixtesting" if fix_testing else "nofixtesting",
+                                    "cv" if did_cv else "nocv",
+                                    "" if len(fname_spec) == 0 else "_" + "_".join(fname_spec)
+                                    )

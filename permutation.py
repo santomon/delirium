@@ -10,6 +10,9 @@ from scipy.stats import pearsonr
 import delirium_config
 from NeuralTaskonomy.code.util.util import pearson_corr, empirical_p
 
+import utility
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     return parser.parse_args()
@@ -20,12 +23,16 @@ class Permutator():
     def __init__(self, repeats=5000):
         # predictions are not offered for NT
         self.repeats = repeats
-        self.data = pd.DataFrame(columns=["module_name", "model_name", "subj", "yhat", "ylabel", "ROI", "Hemisphere", "did_pca"])
+        self.data = pd.DataFrame(columns=["module_name", "model_name",
+                                          "hemisphere", "ROI", "subj", "did_pca", "fixed_testing",
+                                          "did_cv", "TR", "fname_spec", "yhat", "ylabel"])
 
 
-    def permute(self):
-        grouped = self.data.groupby(list(set(self.data.columns) - set(["yhat", "ylabel"])))
-        self.grouped_result = grouped.apply(_permute_single, self.repeats)
+    def permute(self, save_permutations=True, save_dir_root=delirium_config.NN_RESULT_PATH):
+        # grouped = self.data.groupby(list(set(self.data.columns) - set(["yhat", "ylabel"])))
+        grouped = self.data.groupby(self.data.columns[:-2])     # everything except "yhat" and "ylabel" should be keys
+                                                                # naturally assumes "yhat and "ylabel" are last
+        self.grouped_result = grouped.apply(_permute_single, self.repeats, save_permutations, save_dir_root)
 
 
 
@@ -45,7 +52,7 @@ class Permutator():
 
         with open(_path, "rb") as f:
             _data = pickle.load(f)
-        self._append_data(_data, module_name, model_name + ("" if len(fname_spec)==0 else "_"+ "_".join(fname_spec)), subj, did_pca=did_pca)
+        self._append_data(_data, module_name, model_name, subj, did_pca, fixed_testing, did_cv, TR, *fname_spec)
         return _data
 
     def _get_filename(self, subj, did_pca, fixed_testing, did_cv, TR, *fname_spec):
@@ -57,7 +64,7 @@ class Permutator():
                                                       "" if len(fname_spec) == 0 else "_" + "_".join(fname_spec)
                                                       )
 
-    def _append_data(self, _data, module_name, model_name, subj, did_pca):
+    def _append_data(self, _data, module_name, model_name, subj, did_pca, fixed_testing, did_cv, TR, *fname_spec):
         for i, (roi, roi_data) in enumerate(zip(delirium_config.ROI_LABELS, _data)):
 
             _len = len(roi_data[0])
@@ -69,7 +76,11 @@ class Permutator():
                 "ylabel": [x for x in roi_data[1]],
                 "ROI": [roi[2:] for i in range(_len)],
                 "hemisphere": [roi[:2] for _ in range(_len)],
-                "did_pca": [did_pca for _ in range(_len)]
+                "did_pca": [did_pca for _ in range(_len)],
+                "did_cv": [did_cv for _ in range(_len)],
+                "fixed_testing": [fixed_testing for _ in range(_len)],
+                "TR": [TR for _ in range(_len)],
+                "fname_spec": [fname_spec for _ in range(_len)]
             }
 
             rdata = pd.DataFrame(_data_dict)
@@ -77,9 +88,14 @@ class Permutator():
 
 
 
-def _permute_single(data: pd.DataFrame, repeats: int):
-    # expected keys are: "yhat", "ylabel"
-    # to be used on grouped data
+def _permute_single(data: pd.DataFrame, repeats: int, save_permutations, save_dir_root):
+    """
+    expected keys are: "yhat", "ylabel"
+    "module_name" and "model_name" are expected to be the first 2 entries of data.name;
+    this is the case, when they are the first 2 columns of the original data frame;
+
+    to be used on grouped data from Permutator
+    """
 
     yhat= np.array(list(data["yhat"]))
 
@@ -95,6 +111,15 @@ def _permute_single(data: pd.DataFrame, repeats: int):
         perm_corrs = pearson_corr(y_test_perm, yhat, rowvar=False)
         corrs_dist.append(perm_corrs)
     p = empirical_p(corrs_only, np.array(corrs_dist))
+
+
+    if save_permutations:
+        full_path = os.path.join(save_dir_root, data.name[0], data[1], "permutation_results")
+        permutation_file_name = utility.generate_permutation_file_name(*data.name[2:])
+        pvalues_file_name = utility.generate_pvalues_file_name(*data.name[:2])
+
+        pickle.dump(corrs_dist, open(os.path.join(full_path, permutation_file_name), "wb"))
+        pickle.dump(corrs_dist, open(os.path.join(full_path, pvalues_file_name), "wb"))
 
     assert len(p) == ylabel.shape[1], "length of p is not equal to the number of voxels"
 

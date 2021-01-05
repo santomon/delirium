@@ -177,8 +177,6 @@ class Plotter:
         grid.fig.savefig(figname, bbox_inches='tight', dpi=400)
 
 
-
-
     def _load_NT_corr(self,subj: int, task: str):
 
         _path = os.path.join(delirium_config.NT_PATH,
