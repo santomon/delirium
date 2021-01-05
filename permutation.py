@@ -30,8 +30,8 @@ class Permutator():
 
     def permute(self, save_permutations=True, save_dir_root=delirium_config.NN_RESULT_PATH):
         # grouped = self.data.groupby(list(set(self.data.columns) - set(["yhat", "ylabel"])))
-        grouped = self.data.groupby(self.data.columns[:-2])     # everything except "yhat" and "ylabel" should be keys
-                                                                # naturally assumes "yhat and "ylabel" are last
+        grouped = self.data.groupby(list(self.data.columns[:-2]))       # everything except "yhat" and "ylabel" should be keys
+                                                                        # naturally assumes "yhat and "ylabel" are last
         self.grouped_result = grouped.apply(_permute_single, self.repeats, save_permutations, save_dir_root)
 
 
