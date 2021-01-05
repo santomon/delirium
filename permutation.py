@@ -114,7 +114,7 @@ def _permute_single(data: pd.DataFrame, repeats: int, save_permutations, save_di
 
 
     if save_permutations:
-        full_path = os.path.join(save_dir_root, data.name[0], data[1], "permutation_results")
+        full_path = os.path.join(save_dir_root, data.name[0], data.name[1], "permutation_results")
         if not os.path.isdir(full_path):
             os.makedirs(full_path)
         permutation_file_name = utility.generate_permutation_file_name(*data.name[2:])
