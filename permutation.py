@@ -92,6 +92,7 @@ def _permute_single(data: pd.DataFrame, repeats: int, save_permutations, save_di
     """
     expected keys are: "yhat", "ylabel"
     "module_name" and "model_name" are expected to be the first 2 entries of data.name;
+    last entry of data.name should be a tuple of any additional keywords that are to be included in the save name;
     this is the case, when they are the first 2 columns of the original data frame;
 
     to be used on grouped data from Permutator
