@@ -122,7 +122,7 @@ def _permute_single(data: pd.DataFrame, repeats: int, save_permutations, save_di
         pvalues_file_name = utility.generate_pvalues_file_name(*data.name[2:-1], *data.name[-1])
 
         pickle.dump(corrs_dist, open(os.path.join(full_path, permutation_file_name), "wb"))
-        pickle.dump(corrs_dist, open(os.path.join(full_path, pvalues_file_name), "wb"))
+        pickle.dump(p, open(os.path.join(full_path, pvalues_file_name), "wb"))
 
     assert len(p) == ylabel.shape[1], "length of p is not equal to the number of voxels"
 
