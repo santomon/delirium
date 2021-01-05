@@ -79,7 +79,7 @@ class Permutator():
                 "did_pca": [did_pca for _ in range(_len)],
                 "did_cv": [did_cv for _ in range(_len)],
                 "fixed_testing": [fixed_testing for _ in range(_len)],
-                "TR": [TR for _ in range(_len)],
+                "TR": [tuple(TR) for _ in range(_len)],
                 "fname_spec": [fname_spec for _ in range(_len)]
             }
 
