@@ -95,7 +95,7 @@ def main():
             model_names: t.List[str] = [args.model] if os.path.isdir(os.path.join(args.data_path, module_name, args.model)) else []
 
         if model_names == []:
-            raise NotImplementedError("model(s) could not be found!")
+            raise NotImplementedError("outputs of model(s) could not be found!")
 
         for model_name in model_names:
             print("running experiment for: ", model_name)
