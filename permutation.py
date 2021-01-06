@@ -74,7 +74,7 @@ class Permutator():
                 "subj": [subj for _ in range(_len)],
                 "yhat": [x for x in roi_data[0]],
                 "ylabel": [x for x in roi_data[1]],
-                "ROI": [roi[2:] for i in range(_len)],
+                "ROI": [roi[2:] for _ in range(_len)],
                 "hemisphere": [roi[:2] for _ in range(_len)],
                 "did_pca": [did_pca for _ in range(_len)],
                 "did_cv": [did_cv for _ in range(_len)],
@@ -95,7 +95,9 @@ def _permute_single(data: pd.DataFrame, repeats: int, save_permutations, save_di
     last entry of data.name should be a tuple of any additional keywords that are to be included in the save name;
     this is the case, when they are the first 2 columns of the original data frame;
 
-    to be used on grouped data from Permutator
+    to be used on grouped data from Permutator:
+
+    permutes predictions and labels and computes correlation and pvalue
     """
 
     yhat= np.array(list(data["yhat"]))
@@ -126,7 +128,7 @@ def _permute_single(data: pd.DataFrame, repeats: int, save_permutations, save_di
 
     assert len(p) == ylabel.shape[1], "length of p is not equal to the number of voxels"
 
-    return pd.Series([p], index=["empirical_ps"])
+    return pd.Series([p, corrs_dist], index=["empirical_ps", "permuted correlations"])
 
 
 def main():
