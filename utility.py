@@ -153,3 +153,14 @@ def generate_pvalues_file_name(hemisphere: str, roi: str, subj: int, did_pca, fi
                                     "cv" if did_cv else "nocv",
                                     "" if len(fname_spec) == 0 else "_" + "_".join(fname_spec)
                                     )
+
+
+def generate_corr_file_name(subj: int, did_pca, fix_testing, did_cv,  TR: t.List, *fname_spec):
+    return "corr_subj{}_TR{}_{}_{}_{}{}.p".format(
+                                    subj,
+                                    "".join([str(tr) for tr in TR]),
+                                    "pca" if did_pca else "nopca",
+                                    "fixtesting" if fix_testing else "nofixtesting",
+                                    "cv" if did_cv else "nocv",
+                                    "" if len(fname_spec) == 0 else "_" + "_".join(fname_spec)
+                                    )
