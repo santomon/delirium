@@ -26,6 +26,9 @@ class Permutator():
         self.data = pd.DataFrame(columns=["module_name", "model_name",
                                           "hemisphere", "ROI", "subj", "did_pca", "fixed_testing",
                                           "did_cv", "TR", "fname_spec", "yhat", "ylabel"])
+        self.grouped_result = pd.DataFrame(columns=["module_name", "model_name",
+                                          "hemisphere", "ROI", "subj", "did_pca", "fixed_testing",
+                                          "did_cv", "TR", "fname_spec", "empirical_ps", "permuted_corrs", "acc_corrs"])
 
 
     def permute(self, save_permutations=True, save_dir_root=delirium_config.NN_RESULT_PATH):
@@ -33,6 +36,35 @@ class Permutator():
         grouped = self.data.groupby(list(self.data.columns[:-2]))       # everything except "yhat" and "ylabel" should be keys
                                                                         # naturally assumes "yhat and "ylabel" are last
         self.grouped_result = grouped.apply(_permute_single, self.repeats, save_permutations, save_dir_root)
+
+
+    def load_permutations_and_pvalues(self, module_name, model_name: str, did_pca: bool, fixed_testing: bool, did_cv: bool, TR: t.List,
+                         result_path: str = delirium_config.NN_RESULT_PATH, *fname_spec):
+        for subj in range(1, 4):
+            corr_file_name = utility.generate_corr_file_name(subj, did_pca, fixed_testing, did_cv, TR, *fname_spec)
+            with open(os.path.join(module_name, model_name, corr_file_name), "rb") as f:
+                corrs_raw = pickle.load(f)
+
+
+            for i, roi in enumerate(delirium_config.ROI_LABELS):
+
+                perm_result_path = os.path.join(result_path, module_name, model_name, "permutation_results")
+                perm_file_name = utility.generate_permutation_file_name(roi[:2], roi[2:], subj, did_pca, fixed_testing, did_cv,
+                                                                        TR, *fname_spec)
+                with open(os.path.join(perm_result_path, perm_file_name), "rb") as f:
+                    permutated_corrs = pickle.load(f)
+
+                pvalues_file_name = utility.generate_pvalues_file_name(roi[:2], roi[2:], subj, did_pca, fixed_testing, did_cv, TR, *fname_spec)
+                with open(os.path.join(perm_result_path, pvalues_file_name), "rb") as f:
+                    pvalues = pickle.load(f)
+
+                acc_corr_only = [corr for (corr, pvalue) in corrs_raw[i]]
+
+
+
+
+
+
 
 
 
@@ -74,13 +106,38 @@ class Permutator():
                 "subj": [subj for _ in range(_len)],
                 "yhat": [x for x in roi_data[0]],
                 "ylabel": [x for x in roi_data[1]],
-                "ROI": [roi[2:] for _ in range(_len)],
-                "hemisphere": [roi[:2] for _ in range(_len)],
+                "ROI": [roi[2:] for _ in range(_len)],  # one of OPA, PPA, LOC, EarlyVis or RHC
+                "hemisphere": [roi[:2] for _ in range(_len)],  # either LH or RH
                 "did_pca": [did_pca for _ in range(_len)],
                 "did_cv": [did_cv for _ in range(_len)],
                 "fixed_testing": [fixed_testing for _ in range(_len)],
                 "TR": [tuple(TR) for _ in range(_len)],
                 "fname_spec": [fname_spec for _ in range(_len)]
+            }
+
+            rdata = pd.DataFrame(_data_dict)
+            self.data = pd.concat([self.data, rdata])
+
+
+    def _append_result_data(self, _data, pvalues, corr_dist, acc_corr,
+                            module_name, model_name, subj, did_pca, fixed_testing, did_cv, TR, *fname_spec):
+        for i, (roi, roi_data) in enumerate(zip(delirium_config.ROI_LABELS, _data)):
+
+            _len = len(roi_data[0])
+            _data_dict = {
+                "module_name": [module_name],
+                "model_name": [model_name],
+                "subj": [subj],
+                "ROI": [roi[2:]],  # one of OPA, PPA, LOC, EarlyVis or RHC
+                "hemisphere": [roi[:2]],  # either LH or RH
+                "did_pca": [did_pca],
+                "did_cv": [did_cv],
+                "fixed_testing": [fixed_testing],
+                "TR": [tuple(TR)],
+                "fname_spec": [fname_spec],
+                "empirical_ps": [pvalues],
+                "permutated_corrs": [corr_dist],
+                "acc_corrs": [acc_corr],
             }
 
             rdata = pd.DataFrame(_data_dict)
@@ -128,7 +185,7 @@ def _permute_single(data: pd.DataFrame, repeats: int, save_permutations, save_di
 
     assert len(p) == ylabel.shape[1], "length of p is not equal to the number of voxels"
 
-    return pd.Series([p, corrs_dist], index=["empirical_ps", "permuted correlations"])
+    return pd.Series([p, corrs_dist, original_corrs], index=["empirical_ps", "permuted_corrs", "acc_corrs"])
 
 
 def main():
