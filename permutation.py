@@ -47,15 +47,16 @@ class Permutator():
         """
         WIP
         """
+        _root = os.path.join(result_path, module_name, model_name)
         for subj in range(1, 4):
             corr_file_name = utility.generate_corr_file_name(subj, did_pca, fixed_testing, did_cv, TR, *fname_spec)
-            with open(os.path.join(module_name, model_name, corr_file_name), "rb") as f:
+            with open(os.path.join(_root, corr_file_name), "rb") as f:
                 corrs_raw = pickle.load(f)
 
 
             for i, roi in enumerate(delirium_config.ROI_LABELS):
 
-                perm_result_path = os.path.join(result_path, module_name, model_name, "permutation_results")
+                perm_result_path = os.path.join(_root, "permutation_results")
                 perm_file_name = utility.generate_permutation_file_name(roi[:2], roi[2:], subj, did_pca, fixed_testing, did_cv,
                                                                         TR, *fname_spec)
                 with open(os.path.join(perm_result_path, perm_file_name), "rb") as f:
