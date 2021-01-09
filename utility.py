@@ -9,6 +9,10 @@ import typing as t
 import scipy.io
 import numpy as np
 
+import pandas as pd
+from pandas.core.groupby.groupby import GroupBy as pdGroupBy
+import itertools
+
 
 
 FENDINGS = ("jpg", "JPEG", "JPG")
@@ -126,6 +130,39 @@ def download_and_extract(url: str, tmp_name:str, target_dir:str =".", chunk_size
 
 def identity(x: t.Any) -> t.Any:
     return x
+
+
+def groupby_combine(groupby_dataframe: pdGroupBy,
+                    func: t.Callable[[pd.DataFrame, pd.DataFrame, t.Any], t.Any], *args, **kwargs) -> pd.DataFrame:
+
+    """
+    combines the groups of a pandas groupby object with a function, that uses 2 groups as arguments, such that
+    if the groups are x,y,z and function is f:
+         x         y        z
+    x: f(x,x)    f(x,y)   f(x,z)
+    y: f(y,x)    f(y,y)   f(y,z)
+    z: f(z,x)    f(z,y)   f(z,z)
+
+    """
+
+    _len = groupby_dataframe
+    _group_names = [name for name, group in groupby_dataframe]
+    _empty = np.zeros((_len, _len))
+    result = pd.DataFrame(_empty)
+    result.columns = _group_names
+    result.index = _group_names
+
+    combinations = itertools.combinations(groupby_dataframe, 2)
+
+    for ((group1_name, group1_df), (group2_name, group2_df)) in combinations:
+        partial_result1 = func(group1_df, group2_df, *args, **kwargs)
+        partial_result2 = func(group2_df, group1_df, *args, **kwargs)
+
+        result.loc[group1_name, group2_name] = partial_result1
+        result.loc[group2_name, group1_name] = partial_result2
+
+    return result
+
 
 
 # certain file names:
