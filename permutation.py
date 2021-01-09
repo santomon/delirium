@@ -11,7 +11,7 @@ from statsmodels.stats.multitest import fdrcorrection
 
 
 import delirium_config
-from NeuralTaskonomy.code.util.util import pearson_corr, empirical_p, fdrcorrection
+from NeuralTaskonomy.code.util.util import pearson_corr, empirical_p
 
 import utility
 
