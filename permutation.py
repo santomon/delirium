@@ -7,8 +7,11 @@ import pandas as pd
 import numpy as np
 from scipy.stats import pearsonr
 
+from statsmodels.stats.multitest import fdrcorrection
+
+
 import delirium_config
-from NeuralTaskonomy.code.util.util import pearson_corr, empirical_p
+from NeuralTaskonomy.code.util.util import pearson_corr, empirical_p, fdrcorrection
 
 import utility
 
@@ -28,7 +31,7 @@ class Permutator():
                                           "did_cv", "TR", "fname_spec", "yhat", "ylabel"])
         self.grouped_result = pd.DataFrame(columns=["module_name", "model_name",
                                           "hemisphere", "ROI", "subj", "did_pca", "fixed_testing",
-                                          "did_cv", "TR", "fname_spec", "empirical_ps", "permuted_corrs", "acc_corrs"])
+                                          "did_cv", "TR", "fname_spec", "empirical_ps", "corr_dist", "acc_corrs"])
 
 
     def permute(self, save_permutations=True, save_dir_root=delirium_config.NN_RESULT_PATH):
@@ -40,6 +43,10 @@ class Permutator():
 
     def load_permutations_and_pvalues(self, module_name, model_name: str, did_pca: bool, fixed_testing: bool, did_cv: bool, TR: t.List,
                          result_path: str = delirium_config.NN_RESULT_PATH, *fname_spec):
+
+        """
+        WIP
+        """
         for subj in range(1, 4):
             corr_file_name = utility.generate_corr_file_name(subj, did_pca, fixed_testing, did_cv, TR, *fname_spec)
             with open(os.path.join(module_name, model_name, corr_file_name), "rb") as f:
@@ -58,10 +65,13 @@ class Permutator():
                 with open(os.path.join(perm_result_path, pvalues_file_name), "rb") as f:
                     pvalues = pickle.load(f)
 
-                acc_corr_only = [corr for (corr, pvalue) in corrs_raw[i]]
+                self._append_result_data()
 
 
+    def permutation_roiwise_two_stat_p(self):
+        """
 
+        """
 
 
 
@@ -119,29 +129,27 @@ class Permutator():
             self.data = pd.concat([self.data, rdata])
 
 
-    def _append_result_data(self, _data, pvalues, corr_dist, acc_corr,
+    def _append_result_data(self, pvalues, corr_dist, acc_corr, roi,
                             module_name, model_name, subj, did_pca, fixed_testing, did_cv, TR, *fname_spec):
-        for i, (roi, roi_data) in enumerate(zip(delirium_config.ROI_LABELS, _data)):
 
-            _len = len(roi_data[0])
-            _data_dict = {
-                "module_name": [module_name],
-                "model_name": [model_name],
-                "subj": [subj],
-                "ROI": [roi[2:]],  # one of OPA, PPA, LOC, EarlyVis or RHC
-                "hemisphere": [roi[:2]],  # either LH or RH
-                "did_pca": [did_pca],
-                "did_cv": [did_cv],
-                "fixed_testing": [fixed_testing],
-                "TR": [tuple(TR)],
-                "fname_spec": [fname_spec],
-                "empirical_ps": [pvalues],
-                "permutated_corrs": [corr_dist],
-                "acc_corrs": [acc_corr],
-            }
+        _data_dict = {
+            "module_name": [module_name],
+            "model_name": [model_name],
+            "subj": [subj],
+            "ROI": [roi[2:]],  # one of OPA, PPA, LOC, EarlyVis or RHC
+            "hemisphere": [roi[:2]],  # either LH or RH
+            "did_pca": [did_pca],
+            "did_cv": [did_cv],
+            "fixed_testing": [fixed_testing],
+            "TR": [tuple(TR)],
+            "fname_spec": [fname_spec],
+            "empirical_ps": [pvalues],
+            "permutated_corrs": [corr_dist],
+            "acc_corrs": [acc_corr],
+        }
 
-            rdata = pd.DataFrame(_data_dict)
-            self.data = pd.concat([self.data, rdata])
+        rdata = pd.DataFrame(_data_dict)
+        self.grouped_result = pd.concat([self.grouped_result, rdata])
 
 
 
@@ -160,17 +168,17 @@ def _permute_single(data: pd.DataFrame, repeats: int, save_permutations, save_di
     yhat= np.array(list(data["yhat"]))
 
     ylabel = np.array(list(data["ylabel"]))
-    corrs_dist = []
-    original_corrs = [pearsonr(ylabel[:, i], yhat[:, i]) for i in range(ylabel.shape[1])]  #list tuple of corrs and pvalues
-    corrs_only = [r[0] for r in original_corrs]
+    corr_dist = []
+    acc_corrs = [pearsonr(ylabel[:, i], yhat[:, i]) for i in range(ylabel.shape[1])]  #list tuple of corrs and pvalues
+    corrs_only = [r[0] for r in acc_corrs]
 
     label_idx = np.arange(ylabel.shape[0])
     for _ in range(repeats):
         np.random.shuffle(label_idx)
         y_test_perm = ylabel[label_idx, :]
         perm_corrs = pearson_corr(y_test_perm, yhat, rowvar=False)
-        corrs_dist.append(perm_corrs)
-    p = empirical_p(corrs_only, np.array(corrs_dist))
+        corr_dist.append(perm_corrs)
+    p = empirical_p(corrs_only, np.array(corr_dist))
 
 
     if save_permutations:
@@ -180,12 +188,48 @@ def _permute_single(data: pd.DataFrame, repeats: int, save_permutations, save_di
         permutation_file_name = utility.generate_permutation_file_name(*data.name[2:-1], *data.name[-1])
         pvalues_file_name = utility.generate_pvalues_file_name(*data.name[2:-1], *data.name[-1])
 
-        pickle.dump(corrs_dist, open(os.path.join(full_path, permutation_file_name), "wb"))
+        pickle.dump(corr_dist, open(os.path.join(full_path, permutation_file_name), "wb"))
         pickle.dump(p, open(os.path.join(full_path, pvalues_file_name), "wb"))
 
     assert len(p) == ylabel.shape[1], "length of p is not equal to the number of voxels"
 
-    return pd.Series([p, corrs_dist, original_corrs], index=["empirical_ps", "permuted_corrs", "acc_corrs"])
+    return pd.Series([p, corr_dist, acc_corrs], index=["empirical_ps", "corrs_dist", "acc_corrs"])
+
+
+def empirical_two_stat_p(group1: pd.DataFrame, group2: pd.DataFrame, correction="fdr"):
+    """
+    expects group1 and group2 to be a DataFrame with columns
+    "corr_dist" and "acc_corrs"
+    only expects 2 rows (1 for each hemisphere), where group{}.loc[i, "corr_dist"] is a 2-dim array
+    and                                                group{}.loc[i, "acc_corrs"] is a list of tuples: [(corr, pvalue)]
+
+    computes the empirical p for permutated(group1) - permutated(group2) > actual group1 - actual group2
+
+    the lower the pvlaue, the higher the probability that group1 > group2 should be
+    """
+
+    corr_dist1 = np.hstack((group1.loc[0, "corr_dist"], group1.loc[1, "corr_dist"]))
+    acc1 = group1.loc[0, "acc_corrs"] +  group1.loc[1, "acc_corrs"]  # concat
+    acc1 = [corr for corr, pvalue in acc1]
+    acc1_mean = np.mean(acc1)
+
+    corr_dist2 = np.hstack((group2.loc[0, "corr_dist"], group2.loc[1, "corr_dist"]))
+    acc2 = group2.loc[0, "acc_corrs"] +  group1.loc[2, "acc_corrs"]
+    acc2 = [corr for corr, pvalue in acc2]
+    acc2_mean = np.mean(acc2)
+
+    p = empirical_p(acc1_mean - acc2_mean, corr_dist1 - corr_dist2)
+
+    if correction == "fdr":
+        p = fdrcorrection(p)[1]
+    return p
+
+
+
+
+
+
+
 
 
 def main():
