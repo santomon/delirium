@@ -145,7 +145,7 @@ def groupby_combine(groupby_dataframe: pdGroupBy,
 
     """
 
-    _len = groupby_dataframe
+    _len = len(groupby_dataframe)
     _group_names = [name for name, group in groupby_dataframe]
     _empty = np.zeros((_len, _len))
     result = pd.DataFrame(_empty)
