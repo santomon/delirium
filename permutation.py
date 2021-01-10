@@ -40,7 +40,8 @@ class Permutator():
         # grouped = self.data.groupby(list(set(self.data.columns) - set(["yhat", "ylabel"])))
         grouped = self.data.groupby(list(self.data.columns[:-2]))       # everything except "yhat" and "ylabel" should be keys
                                                                         # naturally assumes "yhat and "ylabel" are last
-        self.grouped_result = grouped.apply(_permute_single, self.repeats, save_permutations, save_dir_root)
+        self.grouped_result = grouped.apply(_permute_single, self.repeats, save_permutations, save_dir_root).reset_index()
+
 
 
     def load_permutations_and_pvalues(self, module_name, model_name: str, did_pca: bool, fixed_testing: bool, did_cv: bool, TR: t.List,
