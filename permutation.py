@@ -229,13 +229,13 @@ def empirical_two_stat_p(group1: pd.DataFrame, group2: pd.DataFrame, correction=
     group1 = group1.reset_index()
     group2 = group2.reset_index()
     corr_dist1 = np.hstack((group1.loc[0, "corr_dist"], group1.loc[1, "corr_dist"]))
-    corr_dist1_mean = np.mean(corr_dist1, axis=1)
+    corr_dist1_mean = np.nanmean(corr_dist1, axis=1)
     acc1 = group1.loc[0, "acc_corrs"] +  group1.loc[1, "acc_corrs"]  # concat
     acc1 = [corr for corr, pvalue in acc1]
     acc1_mean = np.mean(acc1)
 
     corr_dist2 = np.hstack((group2.loc[0, "corr_dist"], group2.loc[1, "corr_dist"]))
-    corr_dist2_mean = np.mean(corr_dist2, axis=1)
+    corr_dist2_mean = np.nanmean(corr_dist2, axis=1)
     acc2 = group2.loc[0, "acc_corrs"] +  group2.loc[1, "acc_corrs"]
     acc2 = [corr for corr, pvalue in acc2]
     acc2_mean = np.mean(acc2)
