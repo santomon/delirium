@@ -85,7 +85,12 @@ class Permutator():
             valid_group_keys = list(group_roi.columns[:-3])  # last three are "empirical_ps", "corr_dist", "acc_corr"
             valid_group_keys.remove("hemisphere")  # hemisphere is not part of grouping
 
-            roiwise_result = group_roi.groupby(valid_group_keys)  
+            roiwise_result = group_roi.groupby(valid_group_keys)
+
+            for x, rr in roiwise_result:
+                print(x, rr.head())
+
+
             roiwise_result = utility.groupby_combine(roiwise_result, empirical_two_stat_p)
 
 
@@ -227,20 +232,24 @@ def empirical_two_stat_p(group1: pd.DataFrame, group2: pd.DataFrame, correction=
     the lower the pvlaue, the higher the probability that group1 > group2 should be
     """
 
+    group1 = group1.reset_index()
+    group2 = group2.reset_index()
     corr_dist1 = np.hstack((group1.loc[0, "corr_dist"], group1.loc[1, "corr_dist"]))
+    corr_dist1_mean = np.mean(corr_dist1, axis=1)
     acc1 = group1.loc[0, "acc_corrs"] +  group1.loc[1, "acc_corrs"]  # concat
     acc1 = [corr for corr, pvalue in acc1]
     acc1_mean = np.mean(acc1)
 
     corr_dist2 = np.hstack((group2.loc[0, "corr_dist"], group2.loc[1, "corr_dist"]))
-    acc2 = group2.loc[0, "acc_corrs"] +  group1.loc[2, "acc_corrs"]
+    corr_dist2_mean = np.mean(corr_dist2, axis=1)
+    acc2 = group2.loc[0, "acc_corrs"] +  group2.loc[1, "acc_corrs"]
     acc2 = [corr for corr, pvalue in acc2]
     acc2_mean = np.mean(acc2)
 
-    p = empirical_p(acc1_mean - acc2_mean, corr_dist1 - corr_dist2)
+    p = empirical_p(acc1_mean - acc2_mean, corr_dist1_mean - corr_dist2_mean)
 
     if correction == "fdr":
-        p = fdrcorrection(p)[1]
+        p = fdrcorrection(p)[1][0]  # p is floating point number, 0-index, bc fdrcorrection(x)[1] returns a list
     return p
 
 
