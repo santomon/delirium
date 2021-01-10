@@ -2,19 +2,18 @@ import argparse
 import typing as t
 import os
 import pickle
+import itertools
+
 
 import pandas as pd
 import numpy as np
 from scipy.stats import pearsonr
-
 from statsmodels.stats.multitest import fdrcorrection
 from pandas.core.groupby.groupby import GroupBy as pdGroupBy
 
 
-
 import delirium_config
 from NeuralTaskonomy.code.util.util import pearson_corr, empirical_p
-
 import utility
 
 
@@ -87,11 +86,7 @@ class Permutator():
 
             roiwise_result = group_roi.groupby(valid_group_keys)
 
-            for x, rr in roiwise_result:
-                print(x, rr.head())
-
-
-            roiwise_result = utility.groupby_combine(roiwise_result, empirical_two_stat_p)
+            roiwise_result = groupby_combine(roiwise_result, empirical_two_stat_p)
 
 
         # self.final_result = roiwise_groups.apply(lambda x: utility.groupby_combine(x, empirical_two_stat_p))
@@ -255,7 +250,35 @@ def empirical_two_stat_p(group1: pd.DataFrame, group2: pd.DataFrame, correction=
 
 
 
+def groupby_combine(groupby_dataframe: pdGroupBy,
+                    func: t.Callable[[pd.DataFrame, pd.DataFrame, t.Any], t.Any], *args, **kwargs) -> pd.DataFrame:
 
+    """
+    combines the groups of a pandas groupby object with a function, that uses 2 groups as arguments, such that
+    if the groups are x,y,z and function is f:
+         x         y        z
+    x: f(x,x)    f(x,y)   f(x,z)
+    y: f(y,x)    f(y,y)   f(y,z)
+    z: f(z,x)    f(z,y)   f(z,z)
+
+    """
+
+    _len = len(groupby_dataframe)
+
+    _group_names = [name for name, group in groupby_dataframe]
+    _empty = np.zeros((_len, _len))
+    result = pd.DataFrame(_empty)
+    result.columns = pd.MultiIndex.from_tuples(_group_names)
+    result.index = pd.MultiIndex.from_tuples(_group_names)
+
+    combinations = itertools.product(groupby_dataframe, repeat=2)
+
+    for ((group1_name, group1_df), (group2_name, group2_df)) in combinations:
+        partial_result = func(group1_df, group2_df, *args, **kwargs)
+
+        result.loc[group1_name, group2_name] = partial_result
+
+    return result
 
 
 

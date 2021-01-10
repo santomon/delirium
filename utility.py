@@ -132,35 +132,7 @@ def identity(x: t.Any) -> t.Any:
     return x
 
 
-def groupby_combine(groupby_dataframe: pdGroupBy,
-                    func: t.Callable[[pd.DataFrame, pd.DataFrame, t.Any], t.Any], *args, **kwargs) -> pd.DataFrame:
 
-    """
-    combines the groups of a pandas groupby object with a function, that uses 2 groups as arguments, such that
-    if the groups are x,y,z and function is f:
-         x         y        z
-    x: f(x,x)    f(x,y)   f(x,z)
-    y: f(y,x)    f(y,y)   f(y,z)
-    z: f(z,x)    f(z,y)   f(z,z)
-
-    """
-
-    _len = len(groupby_dataframe)
-
-    _group_names = [name for name, group in groupby_dataframe]
-    _empty = np.zeros((_len, _len))
-    result = pd.DataFrame(_empty)
-    result.columns = pd.MultiIndex.from_tuples(_group_names)
-    result.index = pd.MultiIndex.from_tuples(_group_names)
-
-    combinations = itertools.product(groupby_dataframe, repeat=2)
-
-    for ((group1_name, group1_df), (group2_name, group2_df)) in combinations:
-        partial_result = func(group1_df, group2_df, *args, **kwargs)
-
-        result.loc[group1_name, group2_name] = partial_result
-
-    return result
 
 
 
