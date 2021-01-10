@@ -82,8 +82,10 @@ class Permutator():
 
         for group_name, group_roi in roiwise_groups:
             print(list(group_roi.columns[:-3]))
-            roiwise_result = group_roi.groupby(list(group_roi.columns[:-3]))  # last three are "empirical_ps", "corr_dist", "acc_corr"
+            valid_group_keys = list(group_roi.columns[:-3])  # last three are "empirical_ps", "corr_dist", "acc_corr"
+            valid_group_keys.remove("hemisphere")  # hemisphere is not part of grouping
 
+            roiwise_result = group_roi.groupby(valid_group_keys)  
             roiwise_result = utility.groupby_combine(roiwise_result, empirical_two_stat_p)
 
 
