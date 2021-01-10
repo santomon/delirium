@@ -152,14 +152,12 @@ def groupby_combine(groupby_dataframe: pdGroupBy,
     result.columns = _group_names
     result.index = _group_names
 
-    combinations = itertools.combinations(groupby_dataframe, 2)
+    combinations = itertools.product(groupby_dataframe, 2)
 
     for ((group1_name, group1_df), (group2_name, group2_df)) in combinations:
-        partial_result1 = func(group1_df, group2_df, *args, **kwargs)
-        partial_result2 = func(group2_df, group1_df, *args, **kwargs)
+        partial_result = func(group1_df, group2_df, *args, **kwargs)
 
-        result.loc[group1_name, group2_name] = partial_result1
-        result.loc[group2_name, group1_name] = partial_result2
+        result.loc[group1_name, group2_name] = partial_result
 
     return result
 
