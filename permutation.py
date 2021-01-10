@@ -246,7 +246,7 @@ def empirical_two_stat_p(group1: pd.DataFrame, group2: pd.DataFrame, correction=
     acc2 = [corr for corr, pvalue in acc2]
     acc2_mean = np.mean(acc2)
 
-    p = empirical_p(acc1_mean - acc2_mean, corr_dist1_mean - corr_dist2_mean)
+    p = empirical_p(acc1_mean - acc2_mean, corr_dist1_mean - corr_dist2_mean, dim=1)
 
     if correction == "fdr":
         p = fdrcorrection(p)[1][0]  # p is floating point number, 0-index, bc fdrcorrection(x)[1] returns a list
