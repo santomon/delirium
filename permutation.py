@@ -81,7 +81,7 @@ class Permutator():
         roiwise_groups: pdGroupBy = self.grouped_result.groupby(["ROI", "subj"])
 
         for group_name, group_roi in roiwise_groups:
-
+            print(group_roi.columns[:-3])
             roiwise_result = group_roi.groupby(group_roi.columns[:-3])  # last three are "empirical_ps", "corr_dist", "acc_corr"
 
             roiwise_result = utility.groupby_combine(roiwise_result, empirical_two_stat_p)
