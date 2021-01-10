@@ -66,7 +66,8 @@ class Permutator():
                 with open(os.path.join(perm_result_path, pvalues_file_name), "rb") as f:
                     pvalues = pickle.load(f)
 
-                self._append_result_data()
+                self._append_result_data(permutated_corrs, corrs_raw[i], pvalues, roi, module_name, model_name, subj,
+                                         did_pca, fixed_testing, did_cv, TR, *fname_spec)
 
 
     def permutation_roiwise_two_stat_p(self):
@@ -130,7 +131,7 @@ class Permutator():
             self.data = pd.concat([self.data, rdata])
 
 
-    def _append_result_data(self, pvalues, corr_dist, acc_corr, roi,
+    def _append_result_data(self, corr_dist,acc_corr, pvalues, roi,
                             module_name, model_name, subj, did_pca, fixed_testing, did_cv, TR, *fname_spec):
 
         _data_dict = {
