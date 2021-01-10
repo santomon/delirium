@@ -146,7 +146,7 @@ class Permutator():
             "TR": [tuple(TR)],
             "fname_spec": [fname_spec],
             "empirical_ps": [pvalues],
-            "permutated_corrs": [corr_dist],
+            "corr_dist": [corr_dist],
             "acc_corrs": [acc_corr],
         }
 
