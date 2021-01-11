@@ -33,6 +33,8 @@ class Permutator():
         self.grouped_result = pd.DataFrame(columns=["module_name", "model_name",
                                           "hemisphere", "ROI", "subj", "did_pca", "fixed_testing",
                                           "did_cv", "TR", "fname_spec", "empirical_ps", "corr_dist", "acc_corrs"])
+        
+        self.roiwise_two_stat_ps = dict()
 
 
     def permute(self, save_permutations=True, save_dir_root=delirium_config.NN_RESULT_PATH):
@@ -78,6 +80,7 @@ class Permutator():
         """
 
         roiwise_groups: pdGroupBy = self.grouped_result.groupby(["ROI", "subj"])
+        result = dict()
 
         for group_name, group_roi in roiwise_groups:
             valid_group_keys = list(group_roi.columns[:-3])  # last three are "empirical_ps", "corr_dist", "acc_corr"
@@ -87,10 +90,10 @@ class Permutator():
 
             roiwise_result = groupby_combine(roiwise_result, empirical_two_stat_p)
 
-            print(roiwise_result)
+            result.update({group_name: roiwise_result})
         # self.final_result = roiwise_groups.apply(lambda x: utility.groupby_combine(x, empirical_two_stat_p))
 
-
+        self.roiwise_two_stat_ps = result
 
 
 
@@ -224,6 +227,8 @@ def empirical_two_stat_p(group1: pd.DataFrame, group2: pd.DataFrame, correction=
     computes the empirical p for permutated(group1) - permutated(group2) > actual group1 - actual group2
 
     the lower the pvlaue, the higher the probability that group1 > group2 should be
+
+    CAVE: using nanmean instead of mean, atm
     """
 
     group1 = group1.reset_index()
@@ -236,7 +241,7 @@ def empirical_two_stat_p(group1: pd.DataFrame, group2: pd.DataFrame, correction=
 
     corr_dist2 = np.hstack((group2.loc[0, "corr_dist"], group2.loc[1, "corr_dist"]))
     corr_dist2_mean = np.nanmean(corr_dist2, axis=1)
-    acc2 = group2.loc[0, "acc_corrs"] +  group2.loc[1, "acc_corrs"]
+    acc2 = group2.loc[0, "acc_corrs"] + group2.loc[1, "acc_corrs"]
     acc2 = [corr for corr, pvalue in acc2]
     acc2_mean = np.nanmean(acc2)
 
