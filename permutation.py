@@ -99,7 +99,7 @@ class Permutator():
 
         if save:
             try:
-                if save_name[:-2] != ".p":
+                if save_name[-2:] != ".p":
                     save_name = save_name + ".p"
             except IndexError:
                 save_name = save_name + ".p"
@@ -144,6 +144,7 @@ class Permutator():
                 sns.heatmap(self.roiwise_two_stat_ps[(roi, subj)], vmin=0, vmax=1, ax=ax, linewidth=.5)
 
         plt.show()
+        if save=
 
 
 
