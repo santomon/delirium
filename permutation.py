@@ -140,7 +140,7 @@ class Permutator():
 
 
         for axes_horizontal, subj in zip(axes, range(1, 4)):
-            for ax, roi in zip(axes_horizontal, delirium_config.roi):
+            for ax, roi in zip(axes_horizontal, delirium_config.ROI):
                 sns.heatmap(self.roiwise_two_stat_ps[(roi, subj)], vmin=0, vmax=1, ax=ax, linewidth=.5)
 
         plt.show()
