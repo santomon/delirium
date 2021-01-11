@@ -144,7 +144,6 @@ class Permutator():
                 sns.heatmap(self.roiwise_two_stat_ps[(roi, subj)], vmin=0, vmax=1, ax=ax, linewidth=.5)
 
         plt.show()
-        if save=
 
 
 
