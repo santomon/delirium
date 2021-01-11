@@ -74,7 +74,7 @@ class Permutator():
                                          did_pca, fixed_testing, did_cv, TR, *fname_spec)
 
 
-    def permutation_roiwise_two_stat_p(self):
+    def permutation_roiwise_two_stat_p(self, save=True, save_name="permutation_riowise_ps.p", save_dir=delirium_config.NN_RESULT_PATH):
         """
 
         """
@@ -94,6 +94,17 @@ class Permutator():
         # self.final_result = roiwise_groups.apply(lambda x: utility.groupby_combine(x, empirical_two_stat_p))
 
         self.roiwise_two_stat_ps = result
+
+        if save:
+            try:
+                if save_name[:-2] != ".p":
+                    save_name = save_name + ".p"
+            except IndexError:
+                save_name = save_name + ".p"
+
+            full_save_file = os.path.join(save_dir, save_name)
+            with open(full_save_file, "wb") as f:
+                pickle.dump(self.roiwise_two_stat_ps, f)
 
 
 
