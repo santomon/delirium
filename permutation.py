@@ -3,7 +3,6 @@ import typing as t
 import os
 import pickle
 import itertools
-import collections
 
 
 import pandas as pd
@@ -35,7 +34,7 @@ class Permutator():
                                           "hemisphere", "ROI", "subj", "did_pca", "fixed_testing",
                                           "did_cv", "TR", "fname_spec", "empirical_ps", "corr_dist", "acc_corrs"])
 
-        self.roiwise_two_stat_ps = collections.OrderedDict()
+        self.roiwise_two_stat_ps = dict()
 
 
     def permute(self, save_permutations=True, save_dir_root=delirium_config.NN_RESULT_PATH):
@@ -81,7 +80,7 @@ class Permutator():
         """
 
         roiwise_groups: pdGroupBy = self.grouped_result.groupby(["ROI", "subj"])
-        result = collections.OrderedDict()
+        result = dict()
 
         for group_name, group_roi in roiwise_groups:
             valid_group_keys = list(group_roi.columns[:-3])  # last three are "empirical_ps", "corr_dist", "acc_corr"
