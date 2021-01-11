@@ -10,6 +10,8 @@ import numpy as np
 from scipy.stats import pearsonr
 from statsmodels.stats.multitest import fdrcorrection
 from pandas.core.groupby.groupby import GroupBy as pdGroupBy
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 
 import delirium_config
@@ -106,6 +108,42 @@ class Permutator():
             with open(full_save_file, "wb") as f:
                 pickle.dump(self.roiwise_two_stat_ps, f)
 
+
+
+    def plot_two_stat_ps(self, save=True, figname=os.path.join(delirium_config.NN_RESULT_PATH, "two_stat_ps"), *args, **kwargs):
+        """
+
+        """
+
+        if len(self.roiwise_two_stat_ps) == 0:
+            print("self.roiwise_two_stat_ps is empty, nothing to plot")
+            return
+
+        import matplotlib
+        if "backend" in kwargs:
+            if kwargs['backend'] == "pgf":
+                matplotlib.use("pgf")  # src: https://timodenk.com/blog/exporting-matplotlib-plots-to-latex/ 31.12.2020
+                matplotlib.rcParams.update({
+                    "pgf.texsystem": "pdflatex",
+                    'font.family': 'serif',
+                    'text.usetex': True,
+                    'pgf.rcfonts': False,
+                })
+        else:
+            matplotlib.use("agg")
+
+
+        if 'palette' not in kwargs.keys():
+            kwargs['palette'] = sns.color_palette("colorblind")
+
+        fig, axes = plt.subplots(3, 5, figsize=(40, 10))
+
+
+        for axes_horizontal, subj in zip(axes, range(1, 4)):
+            for ax, roi in zip(axes_horizontal, delirium_config.roi):
+                sns.heatmap(self.roiwise_two_stat_ps[(roi, subj)], vmin=0, vmax=1, ax=ax, linewidth=.5)
+
+        plt.show()
 
 
 
