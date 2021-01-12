@@ -155,9 +155,9 @@ class Permutator():
                 ax.set_yticklabels(tick_labels)
 
                 if x != 0:
-                    ax.get_xaxis.set_visible(False)
+                    ax.get_xaxis().set_visible(False)
                 if y != 0:
-                    ax.get_yaxis.set_visible(False)
+                    ax.get_yaxis().set_visible(False)
 
         plt.show()
         if save:
