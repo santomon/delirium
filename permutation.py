@@ -167,7 +167,7 @@ class Permutator():
 
         fig.legend(
             title="Models" if "legend_title" not in kwargs.keys() else kwargs["legend_title"],
-            handles=[1, 2, 3, 4, 5, 6],
+            handles=handles,
             labels=legend_labels if "legend_labels" not in kwargs.keys() else kwargs['legend_labels'],
             loc="lower left",
             bbox_to_anchor=(0., 1.02, 1., .102),
