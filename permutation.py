@@ -19,7 +19,7 @@ from NeuralTaskonomy.code.util.util import pearson_corr, empirical_p
 import utility
 
 
-non_sns_kwargs = ["tick_labels", "backend", "palette"]
+non_sns_kwargs = ["tick_labels", "backend", "palette", "horizontal_yticks"]
 def parse_args():
     parser = argparse.ArgumentParser()
     return parser.parse_args()
@@ -156,6 +156,10 @@ class Permutator():
                             cbar=True if y == len(axes_horizontal) - 1 else False,
                             square=True
                             *args, **_only_sns_kwargs(kwargs))
+
+                if "horizontal_yticks" in kwargs.keys():
+                    if kwargs["horizontal_yticks"]:
+                        plt.yticks(rotation=0)
 
                 if x != len(axes) - 1:
                     ax.get_xaxis().set_visible(False)
