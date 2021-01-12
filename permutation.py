@@ -171,7 +171,7 @@ class Permutator():
         if save:
             if "backend" in kwargs:
                 if kwargs['backend'] == "pgf":
-                    fig.set_size_inches(7.30045,  7.30045 )
+                    fig.set_size_inches(6.30045,  6.30045 )
             path = os.path.dirname(figname)
             if not os.path.isdir(path):
                 os.makedirs(path)
