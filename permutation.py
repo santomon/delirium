@@ -158,11 +158,10 @@ class Permutator():
                     ax.get_xaxis().set_visible(False)
                 else:
                     ax.xaxis.tick_top()
-                    ax.xticks(rotation=90)
                 if y != 0:
                     ax.get_yaxis().set_visible(False)
 
-
+        fig.xticks(rotation=90)
         plt.show()
         if save:
             fig.savefig(figname, bbox_inches="tight")
