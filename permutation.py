@@ -159,7 +159,7 @@ class Permutator():
 
                 if "horizontal_yticks" in kwargs.keys():
                     if kwargs["horizontal_yticks"]:
-                        heatmap.set_xticklabels(rotation=0)
+                        heatmap.set_xticklabels(heatmap.get_xticklabels(), rotation=0)
 
                 if x != len(axes) - 1:
                     ax.get_xaxis().set_visible(False)
