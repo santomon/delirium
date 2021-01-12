@@ -158,11 +158,11 @@ class Permutator():
                     ax.get_xaxis().set_visible(False)
                 else:
                     ax.xaxis.tick_top()
+                    ax.xticks(rotation=90)
                 if y != 0:
                     ax.get_yaxis().set_visible(False)
 
-        fig.get_xaxis().set_visible(False)
-        fig.get_yaxis().set_visible(False)
+
         plt.show()
         if save:
             fig.savefig(figname, bbox_inches="tight")
@@ -306,7 +306,7 @@ def empirical_two_stat_p(group1: pd.DataFrame, group2: pd.DataFrame, correction=
     group2 = group2.reset_index()
     corr_dist1 = np.hstack((group1.loc[0, "corr_dist"], group1.loc[1, "corr_dist"]))
     corr_dist1_mean = np.nanmean(corr_dist1, axis=1)
-    acc1 = group1.loc[0, "acc_corrs"] +  group1.loc[1, "acc_corrs"]  # concat
+    acc1 = group1.loc[0, "acc_corrs"] + group1.loc[1, "acc_corrs"]  # concat
     acc1 = [corr for corr, pvalue in acc1]
     acc1_mean = np.nanmean(acc1)
 
@@ -364,3 +364,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
