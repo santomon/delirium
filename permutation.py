@@ -153,6 +153,7 @@ class Permutator():
                 sns.heatmap(np.array(self.roiwise_two_stat_ps[(roi, subj)]), vmin=0, vmax=1, ax=ax, linewidth=.5,
                             xticklabels=tick_labels,
                             yticklabels=tick_labels,
+                            cbar=True if x == len(axes) - 1 or y == 0 else False,
                             *args, **_only_sns_kwargs(kwargs))
 
                 if x != len(axes) - 1:
