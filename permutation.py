@@ -151,8 +151,13 @@ class Permutator():
 
                 sns.heatmap(self.roiwise_two_stat_ps[(roi, subj)], vmin=0, vmax=1, ax=ax, linewidth=.5,
                             *args, **kwargs)
-                ax.set_xticklabels(tick_labels if x == 0 else [])
-                ax.set_yticklabels(tick_labels if y == 0 else [])
+                ax.set_xticklabels(tick_labels)
+                ax.set_yticklabels(tick_labels)
+
+                if x != 0:
+                    ax.get_xaxis.set_visible(False)
+                if y != 0:
+                    ax.get_yaxis.set_visible(False)
 
         plt.show()
         if save:
