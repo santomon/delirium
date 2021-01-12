@@ -170,7 +170,9 @@ class Permutator():
             if "backend" in kwargs:
                 if kwargs['backend'] == "pgf":
                     fig.set_size_inches(6.30045, fig.get_figheight() * 6.30045 /fig.get_figwidth())
-                    
+            path = os.path.dirname(figname)
+            if not os.path.isdir(path):
+                os.makedirs(path)
             fig.savefig(figname, bbox_inches="tight")
 
 
