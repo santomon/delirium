@@ -134,7 +134,9 @@ class Permutator():
 
 
         if 'palette' not in kwargs.keys():
-            kwargs['palette'] = sns.color_palette("colorblind")
+            sns.color_palette(kwargs['palette'])
+        else:
+            sns.color_palette(("colorblind"))
 
 
         fig, axes = plt.subplots(3, 5, figsize=(40, 10))
