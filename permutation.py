@@ -159,7 +159,7 @@ class Permutator():
 
                 if "horizontal_yticks" in kwargs.keys():
                     if kwargs["horizontal_yticks"]:
-                        plt.yticks(rotation=0)
+                        ax.set_xticks(rotation=0)
 
                 if x != len(axes) - 1:
                     ax.get_xaxis().set_visible(False)
@@ -379,4 +379,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
