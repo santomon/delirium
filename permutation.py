@@ -162,7 +162,19 @@ class Permutator():
                 if y != 0:
                     ax.get_yaxis().set_visible(False)
 
-        plt.xticks(rotation=90)
+                handles, legend_labels = ax.get_legend_handles_labels()
+
+
+        fig.legend(
+            title="Models" if "legend_title" not in kwargs.keys() else kwargs["legend_title"],
+            handles=[1, 2, 3, 4, 5, 6],
+            labels=legend_labels if "legend_labels" not in kwargs.keys() else kwargs['legend_labels'],
+            loc="lower left",
+            bbox_to_anchor=(0., 1.02, 1., .102),
+            ncol=2,
+            mode="expand",
+            borderaxespad=0.
+        )
         plt.show()
         if save:
             fig.savefig(figname, bbox_inches="tight")
@@ -364,4 +376,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+plt.Axes.get_xaxis().set_ticks()
 
