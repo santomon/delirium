@@ -381,5 +381,3 @@ if __name__ == '__main__':
     main()
 
 
-plt.Axes.set_xticklabels()
-
