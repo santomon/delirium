@@ -154,7 +154,7 @@ class Permutator():
                             yticklabels=tick_labels,
                             *args, **kwargs)
 
-                if x != 3:
+                if x != len(axes) - 1:
                     ax.get_xaxis().set_visible(False)
                 else:
                     ax.set_xlabel(roi)
