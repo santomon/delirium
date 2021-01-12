@@ -19,6 +19,7 @@ from NeuralTaskonomy.code.util.util import pearson_corr, empirical_p
 import utility
 
 
+non_sns_kwargs = ["tick_labels", "backend", "palette"]
 def parse_args():
     parser = argparse.ArgumentParser()
     return parser.parse_args()
@@ -152,7 +153,7 @@ class Permutator():
                 sns.heatmap(np.array(self.roiwise_two_stat_ps[(roi, subj)]), vmin=0, vmax=1, ax=ax, linewidth=.5,
                             xticklabels=tick_labels,
                             yticklabels=tick_labels,
-                            *args, **kwargs)
+                            *args, **_only_sns_kwargs(kwargs))
 
                 if x != len(axes) - 1:
                     ax.get_xaxis().set_visible(False)
@@ -163,9 +164,6 @@ class Permutator():
                     ax.get_yaxis().set_visible(False)
                 else:
                     ax.set_ylabel("subj = {}".format(subj))
-
-
-
 
         plt.show()
         if save:
@@ -360,7 +358,8 @@ def groupby_combine(groupby_dataframe: pdGroupBy,
     return result
 
 
-
+def _only_sns_kwargs(kwargs):
+    return {key: value for key, value in kwargs.items() if key not in non_sns_kwargs}
 
 def main():
     args = parse_args()
