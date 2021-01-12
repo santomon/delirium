@@ -150,9 +150,9 @@ class Permutator():
                     tick_labels = self.roiwise_two_stat_ps[(roi, subj)].columns
 
                 sns.heatmap(self.roiwise_two_stat_ps[(roi, subj)], vmin=0, vmax=1, ax=ax, linewidth=.5,
-                            xticklabels=tick_labels if x == 0 else [],
-                            yticklabels=tick_labels if y == 0 else [],
                             *args, **kwargs)
+                ax.set_xticklabels(tick_labels if x == 0 else [])
+                ax.set_yticklabels(tick_labels if y == 0 else [])
 
         plt.show()
         if save:
