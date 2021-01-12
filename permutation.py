@@ -156,7 +156,7 @@ class Permutator():
 
         plt.show()
         if save:
-            fig.savefig(figname, bbox_inches="tight", dpi=400)
+            fig.savefig(figname, bbox_inches="tight")
 
 
 
