@@ -41,7 +41,7 @@ class Permutator():
 
     def permute(self, save_permutations=True, save_dir_root=delirium_config.NN_RESULT_PATH):
         # grouped = self.data.groupby(list(set(self.data.columns) - set(["yhat", "ylabel"])))
-        grouped = self.data.groupby(list(self.data.columns[:-2]))       # everything except "yhat" and "ylabel" should be keys
+        grouped = self.data.groupby(list(self.data.columns[:-2]), sort=False)       # everything except "yhat" and "ylabel" should be keys
                                                                         # naturally assumes "yhat and "ylabel" are last
         self.grouped_result = grouped.apply(_permute_single, self.repeats, save_permutations, save_dir_root).reset_index()
 
@@ -81,14 +81,14 @@ class Permutator():
 
         """
 
-        roiwise_groups: pdGroupBy = self.grouped_result.groupby(["ROI", "subj"])
+        roiwise_groups: pdGroupBy = self.grouped_result.groupby(["ROI", "subj"], sort=False)
         result = dict()
 
         for group_name, group_roi in roiwise_groups:
             valid_group_keys = list(group_roi.columns[:-3])  # last three are "empirical_ps", "corr_dist", "acc_corr"
             valid_group_keys.remove("hemisphere")  # hemisphere is not part of grouping
 
-            roiwise_result = group_roi.groupby(valid_group_keys)
+            roiwise_result = group_roi.groupby(valid_group_keys, sort=False)
 
             roiwise_result = groupby_combine(roiwise_result, empirical_two_stat_p)
 
@@ -112,7 +112,7 @@ class Permutator():
 
     def plot_two_stat_ps(self, save=True, figname=os.path.join(delirium_config.NN_RESULT_PATH, "two_stat_ps"), *args, **kwargs):
         """
-
+        tick_labels: custom tick labels to be used, instead of tuples from grouping
         """
 
         if len(self.roiwise_two_stat_ps) == 0:
@@ -136,14 +136,25 @@ class Permutator():
         if 'palette' not in kwargs.keys():
             kwargs['palette'] = sns.color_palette("colorblind")
 
+
         fig, axes = plt.subplots(3, 5, figsize=(40, 10))
 
+        for x, (axes_horizontal, subj) in enumerate(zip(axes, range(1, 4))):
+            for y, (ax, roi) in enumerate(zip(axes_horizontal, delirium_config.ROI)):
 
-        for axes_horizontal, subj in zip(axes, range(1, 4)):
-            for ax, roi in zip(axes_horizontal, delirium_config.ROI):
-                sns.heatmap(self.roiwise_two_stat_ps[(roi, subj)], vmin=0, vmax=1, ax=ax, linewidth=.5)
+                if 'tick_labels' in kwargs.keys():
+                    tick_labels = kwargs['tick_labels']
+                else:
+                    tick_labels = self.roiwise_two_stat_ps[(roi, subj)].columns
+
+                sns.heatmap(self.roiwise_two_stat_ps[(roi, subj)], vmin=0, vmax=1, ax=ax, linewidth=.5,
+                            xticklabels=tick_labels if x == 0 else False,
+                            yticklabels=tick_labels if y == 0 else False,
+                            *args, **kwargs)
 
         plt.show()
+        if save:
+            fig.savefig(figname, bbox_inches="tight", dpi=400)
 
 
 
@@ -321,7 +332,7 @@ def groupby_combine(groupby_dataframe: pdGroupBy,
     _group_names = [name for name, group in groupby_dataframe]
     _empty = np.zeros((_len, _len))
     result = pd.DataFrame(_empty)
-    result.columns = pd.MultiIndex.from_tuples(_group_names)
+    result.columns = pd.MultiIndex.from_tuples(_group_names, )
     result.index = pd.MultiIndex.from_tuples(_group_names)
 
     combinations = itertools.product(groupby_dataframe, repeat=2)
