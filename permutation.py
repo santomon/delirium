@@ -161,6 +161,8 @@ class Permutator():
                 if y != 0:
                     ax.get_yaxis().set_visible(False)
 
+        fig.get_xaxis().set_visible(False)
+        fig.get_yaxis().set_visible(False)
         plt.show()
         if save:
             fig.savefig(figname, bbox_inches="tight")
