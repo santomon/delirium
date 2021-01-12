@@ -377,5 +377,4 @@ def main():
 if __name__ == '__main__':
     main()
 
-plt.Axes.get_xaxis().set_ticks()
 
