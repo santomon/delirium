@@ -156,6 +156,8 @@ class Permutator():
 
                 if x != 0:
                     ax.get_xaxis().set_visible(False)
+                else:
+                    ax.xaxis.tick_top()
                 if y != 0:
                     ax.get_yaxis().set_visible(False)
 
