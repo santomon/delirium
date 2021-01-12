@@ -150,7 +150,7 @@ class Permutator():
                 else:
                     tick_labels = self.roiwise_two_stat_ps[(roi, subj)].columns
 
-                sns.heatmap(np.array(self.roiwise_two_stat_ps[(roi, subj)]), vmin=0, vmax=1, ax=ax, linewidth=.5,
+                heatmap = sns.heatmap(np.array(self.roiwise_two_stat_ps[(roi, subj)]), vmin=0, vmax=1, ax=ax, linewidth=.5,
                             xticklabels=tick_labels,
                             yticklabels=tick_labels,
                             cbar=True if y == len(axes_horizontal) - 1 else False,
@@ -159,7 +159,7 @@ class Permutator():
 
                 if "horizontal_yticks" in kwargs.keys():
                     if kwargs["horizontal_yticks"]:
-                        ax.set_xticks(rotation=0)
+                        heatmap.set_xticklabels(rotation=0)
 
                 if x != len(axes) - 1:
                     ax.get_xaxis().set_visible(False)
@@ -380,4 +380,6 @@ def main():
 if __name__ == '__main__':
     main()
 
+
+plt.Axes.set_xticklabels()
 
