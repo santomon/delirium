@@ -77,7 +77,8 @@ class Permutator():
                                          did_pca, fixed_testing, did_cv, TR, *fname_spec)
 
 
-    def permutation_roiwise_two_stat_p(self, save=True, save_name="permutation_riowise_ps.p", save_dir=delirium_config.NN_RESULT_PATH):
+    def permutation_roiwise_two_stat_p(self, save=True,
+                                       save_name="permutation_riowise_ps.p", save_dir=delirium_config.NN_RESULT_PATH):
         """
 
         """
@@ -111,7 +112,8 @@ class Permutator():
 
 
 
-    def plot_two_stat_ps(self, save=True, figname=os.path.join(delirium_config.NN_RESULT_PATH, "two_stat_ps"), *args, **kwargs):
+    def plot_two_stat_ps(self, plot_alpha: t.Union[bool, float]=False,
+                         save=True, figname=os.path.join(delirium_config.NN_RESULT_PATH, "two_stat_ps"), *args, **kwargs):
         """
         tick_labels: custom tick labels to be used, instead of tuples from grouping
         """
@@ -150,7 +152,10 @@ class Permutator():
                 else:
                     tick_labels = self.roiwise_two_stat_ps[(roi, subj)].columns
 
-                heatmap = sns.heatmap(np.array(self.roiwise_two_stat_ps[(roi, subj)]), vmin=0, vmax=1, ax=ax, linewidth=.5,
+
+                heatmap = sns.heatmap(self.roiwise_two_stat_ps[(roi, subj)] if not plot_alpha else \
+                                      self.roiwise_two_stat_ps[(roi, subj)] > plot_alpha
+                                      , vmin=0, vmax=1, ax=ax, linewidth=.5,
                             xticklabels=tick_labels,
                             yticklabels=tick_labels,
                             cbar=True if y == len(axes_horizontal) - 1 else False,
@@ -175,7 +180,7 @@ class Permutator():
         if save:
             if "backend" in kwargs:
                 if kwargs['backend'] == "pgf":
-                    fig.set_size_inches(7.30045,  6.30045 )
+                    fig.set_size_inches(7.30045,  6.30045)
             path = os.path.dirname(figname)
             if not os.path.isdir(path):
                 os.makedirs(path)
