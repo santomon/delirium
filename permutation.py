@@ -140,7 +140,7 @@ class Permutator():
         if 'palette' in kwargs.keys():
             palette = sns.color_palette(kwargs['palette'])
         else:
-            palette = sns.color_palette("colorblind")
+            palette = sns.color_palette("rocket")
 
 
         fig, axes = plt.subplots(3, 5)
@@ -183,7 +183,7 @@ class Permutator():
             less_than_alpha = mpatches.Patch(color=palette[0], label="p-value less than {}".format(plot_alpha))
             fig.legend(handles=[greater_than_alpha, less_than_alpha],
                        loc="lower left",
-                       bbox_to_anchor=(0., 1.1, 1., .102),
+                       bbox_to_anchor=(0., 1.02, 1., .102),
                        ncol=2,
                        mode="expand",
                        borderaxespad=0.
@@ -195,7 +195,7 @@ class Permutator():
         if save:
             if "backend" in kwargs:
                 if kwargs['backend'] == "pgf":
-                    fig.set_size_inches(7.30045,  6.30045)
+                    fig.set_size_inches(6.30045,  6.30045)
             path = os.path.dirname(figname)
             if not os.path.isdir(path):
                 os.makedirs(path)
