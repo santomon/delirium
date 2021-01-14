@@ -182,10 +182,8 @@ class Permutator():
             greater_than_alpha = mpatches.Patch(color=palette[-1], label="p-value greater than {}".format(plot_alpha))
             less_than_alpha = mpatches.Patch(color=palette[0], label="p-value less than {}".format(plot_alpha))
             fig.legend(handles=[greater_than_alpha, less_than_alpha],
-                       loc="lower left",
-                       bbox_to_anchor=(0., 1.02, 1., .102),
+                       loc="upper center",
                        ncol=2,
-                       borderaxespad=0.
                        )
             # 0e0e25
             # faebdd
