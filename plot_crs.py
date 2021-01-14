@@ -165,8 +165,10 @@ class Plotter:
             bbox_to_anchor=(0., 1.1, 1., .102),
             ncol=2,
             mode="expand",
-            borderaxespad=0.
+            borderaxespad=0.,
+            frameon=False
         )
+        grid.fig.subplots_adjust(hspace=0.4)
         ax = grid.axes
         sns.despine(fig=grid.fig, ax=ax, left=True, bottom=True)
 
