@@ -143,7 +143,7 @@ class Permutator():
             palette = sns.color_palette("colorblind")
 
 
-        fig, axes = plt.subplots(3, 5, figsize=(40, 10))
+        fig, axes = plt.subplots(3, 5)
 
         for x, (axes_horizontal, subj) in enumerate(zip(axes, range(1, 4))):
             for y, (ax, roi) in enumerate(zip(axes_horizontal, delirium_config.ROI)):
