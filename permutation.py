@@ -185,7 +185,6 @@ class Permutator():
                        loc="lower left",
                        bbox_to_anchor=(0., 1.02, 1., .102),
                        ncol=2,
-                       mode="expand",
                        borderaxespad=0.
                        )
             # 0e0e25
@@ -195,7 +194,7 @@ class Permutator():
         if save:
             if "backend" in kwargs:
                 if kwargs['backend'] == "pgf":
-                    fig.set_size_inches(6.30045,  6.30045)
+                    fig.set_size_inches(6.30045, fig.get_figheight() * 6.30045 / fig.get_figwidth())
             path = os.path.dirname(figname)
             if not os.path.isdir(path):
                 os.makedirs(path)
