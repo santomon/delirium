@@ -160,6 +160,7 @@ class Permutator():
                             xticklabels=tick_labels,
                             yticklabels=tick_labels,
                             cbar=True if y == len(axes_horizontal) - 1 and not plot_alpha else False,
+                            cmap=palette,
                             square=True
                             *args, **_only_sns_kwargs(kwargs))
 
