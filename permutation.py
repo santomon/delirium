@@ -123,6 +123,7 @@ class Permutator():
             return
 
         import matplotlib
+        import matplotlib.patches as mpatches
         if "backend" in kwargs:
             if kwargs['backend'] == "pgf":
                 matplotlib.use("pgf")  # src: https://timodenk.com/blog/exporting-matplotlib-plots-to-latex/ 31.12.2020
@@ -137,9 +138,9 @@ class Permutator():
 
 
         if 'palette' in kwargs.keys():
-            sns.color_palette(kwargs['palette'])
+            palette = sns.color_palette(kwargs['palette'])
         else:
-            sns.color_palette("colorblind")
+            palette = sns.color_palette("colorblind")
 
 
         fig, axes = plt.subplots(3, 5, figsize=(40, 10))
@@ -158,7 +159,7 @@ class Permutator():
                                       , vmin=0, vmax=1, ax=ax, linewidth=.5,
                             xticklabels=tick_labels,
                             yticklabels=tick_labels,
-                            cbar=True if y == len(axes_horizontal) - 1 else False,
+                            cbar=True if y == len(axes_horizontal) - 1 and not plot_alpha else False,
                             square=True
                             *args, **_only_sns_kwargs(kwargs))
 
@@ -175,6 +176,19 @@ class Permutator():
                     ax.get_yaxis().set_visible(False)
                 else:
                     ax.set_ylabel("subj = {}".format(subj))
+
+        if plot_alpha:
+            greater_than_alpha = mpatches.Patch(color=palette[-1], label="p-value greater than {}".format(plot_alpha))
+            less_than_alpha = mpatches.Patch(color=palette[0], label="p-value less than {}".format(plot_alpha))
+            fig.legend(handles=[greater_than_alpha, less_than_alpha],
+                       loc="lower left",
+                       bbox_to_anchor=(0., 1.1, 1., .102),
+                       ncol=2,
+                       mode="expand",
+                       borderaxespad=0.
+                       )
+            # 0e0e25
+            # faebdd
 
         plt.show()
         if save:
