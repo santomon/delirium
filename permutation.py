@@ -77,7 +77,7 @@ class Permutator():
                                          did_pca, fixed_testing, did_cv, TR, *fname_spec)
 
 
-    def permutation_roiwise_two_stat_p(self, save=True,
+    def permutation_roiwise_two_stat_p(self, correction="fdr", save=True,
                                        save_name="permutation_riowise_ps.p", save_dir=delirium_config.NN_RESULT_PATH):
         """
 
@@ -93,6 +93,9 @@ class Permutator():
             roiwise_result = group_roi.groupby(valid_group_keys, sort=False)
 
             roiwise_result = groupby_combine(roiwise_result, empirical_two_stat_p)
+
+            if correction == "fdr":
+                roiwise_result = matrix_fdrcorrection(roiwise_result)
 
             result.update({group_name: roiwise_result})
         # self.final_result = roiwise_groups.apply(lambda x: utility.groupby_combine(x, empirical_two_stat_p))
@@ -319,7 +322,7 @@ def _permute_single(data: pd.DataFrame, repeats: int, save_permutations, save_di
     return pd.Series([p, corr_dist, acc_corrs], index=["empirical_ps", "corrs_dist", "acc_corrs"])
 
 
-def empirical_two_stat_p(group1: pd.DataFrame, group2: pd.DataFrame, correction="fdr"):
+def empirical_two_stat_p(group1: pd.DataFrame, group2: pd.DataFrame):
     """
     expects group1 and group2 to be a DataFrame with columns
     "corr_dist" and "acc_corrs"
@@ -337,7 +340,7 @@ def empirical_two_stat_p(group1: pd.DataFrame, group2: pd.DataFrame, correction=
     group2 = group2.reset_index()
     corr_dist1 = np.hstack((group1.loc[0, "corr_dist"], group1.loc[1, "corr_dist"]))
     corr_dist1_mean = np.nanmean(corr_dist1, axis=1)
-    acc1 = group1.loc[0, "acc_corrs"] + group1.loc[1, "acc_corrs"]  # concat
+    acc1 = group1.loc[0, "acc_corrs"] + group1.loc[1, "acc_corrs"]  # concat for LH, and RH
     acc1 = [corr for corr, pvalue in acc1]
     acc1_mean = np.nanmean(acc1)
 
@@ -349,10 +352,54 @@ def empirical_two_stat_p(group1: pd.DataFrame, group2: pd.DataFrame, correction=
 
     p = empirical_p(acc1_mean - acc2_mean, corr_dist1_mean - corr_dist2_mean, dim=1)
 
-    if correction == "fdr":
-        p = fdrcorrection(p)[1][0]  # p is floating point number, 0-index, bc fdrcorrection(x)[1] returns a list
     return p
 
+
+def choose_from_triangles(matrix: np.ndarray, f: t.Callable[[t.Any, t.Any], bool]) -> t.Tuple[np.ndarray, np.ndarray]:
+    """
+    assumes matrix is of shape (i, i) and an np.ndarray;
+
+    given a matrix and f: x, y -> bool
+    returns a tuple of np.ndarrays of indices: (a, b) if f(matrix[a, b], matrix[b, a]) == True else (b, a),
+
+    excluding diagonal entries of the matrix;
+    e.g.:
+    (np.array([a1, a2, b3]), np.array([b1, b2, a3]))
+    """
+
+    ut: t.Tuple[np.ndarray, np.ndarray] = np.triu_indices(matrix.shape[0], 1)
+    lt: t.Tuple[np.ndarray, np.ndarray] = np.tril_indices(matrix.shape[0], -1)
+    # upper triangle and lower triangle are ordered, such that (a, b) and (b, a) are at the same position
+
+    result = (np.zeros(matrix.shape[0], dtype=np.int), np.zeros(matrix.shape[0], dtype=np.int))
+    for i, (a, b) in enumerate(zip(matrix[ut], matrix[lt])):
+        if f(a, b):
+            result[0][i] = ut[0][i]
+            result[1][i] = ut[1][i]
+        else:
+            result[0][i] = lt[0][i]
+            result[1][i] = lt[1][i]
+    return result
+
+
+def matrix_fdrcorrection(matrix: t.Union[np.ndarray, pd.DataFrame]) -> t.Union[np.ndarray, pd.DataFrame]:
+    """
+    assumes matrix is of shape (i, i);
+    assumes for non-diagonal p-values: matrix[a,b] = 1 - matrix[b, a];
+    applies fdrcorrection using the smaller p-values of matrix[a,b] and matrix[b,a] for all a,b
+    the larger p-values in matrix[a, b] are overwritten with 1 - newpvalue(matrix[b,a])
+    """
+
+    matrix_ = np.asarray(matrix)  # cast into np.ndarray
+
+    small_pvalue_indices: t.Tuple[np.ndarray, np.ndarray] = choose_from_triangles(matrix_, lambda x, y: x < y)
+    large_pvalue_indices: t.Tuple[np.ndarray, np.ndarray] = (small_pvalue_indices[1], small_pvalue_indices[0])
+    _, new_small_pvalues = fdrcorrection(matrix_[small_pvalue_indices])
+
+    matrix_[small_pvalue_indices] = new_small_pvalues
+    matrix_[large_pvalue_indices] = 1 - new_small_pvalues
+    matrix[:] = matrix_  # if original form was pd.DataFrame, entries will be safely overwritten
+    return matrix
 
 
 
