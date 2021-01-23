@@ -390,7 +390,7 @@ def matrix_fdrcorrection(matrix: t.Union[np.ndarray, pd.DataFrame]) -> t.Union[n
     the larger p-values in matrix[a, b] are overwritten with 1 - newpvalue(matrix[b,a])
     """
 
-    matrix_ = np.asarray(matrix)  # cast into np.ndarray
+    matrix_ = np.array(matrix)  # cast into np.ndarray
 
     small_pvalue_indices: t.Tuple[np.ndarray, np.ndarray] = choose_from_triangles(matrix_, lambda x, y: x < y)
     large_pvalue_indices: t.Tuple[np.ndarray, np.ndarray] = (small_pvalue_indices[1], small_pvalue_indices[0])
