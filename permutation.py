@@ -371,7 +371,7 @@ def choose_from_triangles(matrix: np.ndarray, f: t.Callable[[t.Any, t.Any], bool
     lt: t.Tuple[np.ndarray, np.ndarray] = np.tril_indices(matrix.shape[0], -1)
     # upper triangle and lower triangle are ordered, such that (a, b) and (b, a) are at the same position
 
-    result = (np.zeros(matrix.shape[0], dtype=np.int), np.zeros(matrix.shape[0], dtype=np.int))
+    result = (np.zeros(ut[0].shape[0], dtype=np.int), np.zeros(ut[0].shape[0], dtype=np.int))
     for i, (a, b) in enumerate(zip(matrix[ut], matrix[lt])):
         if f(a, b):
             result[0][i] = ut[0][i]
