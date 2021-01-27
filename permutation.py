@@ -423,7 +423,7 @@ def mapped_spearmanr(array1: np.ndarray, array2: np.ndarray, axis=0) -> np.ndarr
     if axis == 1:
         array1 = array1.transpose()
         array2 = array2.transpose()
-    assert array1.shape == array2.shape
+    assert array1.shape == array2.shape, "array1 is shape {} and array2 is shape {}".format(array1.shape, array2.shape)
 
     rs = []
     for x, y in zip(array1, array2):
