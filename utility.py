@@ -132,7 +132,16 @@ def identity(x: t.Any) -> t.Any:
     return x
 
 
-
+def groupby_except(df: pd.DataFrame, notby: t.Iterable, *args, **kwargs):
+    """
+    groups the dataframe by all columns, except the ones in notby;
+    will fail if not-to-group-bys cannot be found in df.columns;
+    args, kwargs will be passed to df.groupby
+    """
+    cols = list(df.columns)
+    for col in notby:
+        cols.remove(col)
+    return df.groupby(cols, *args, **kwargs)
 
 
 
