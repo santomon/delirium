@@ -35,7 +35,7 @@ class Permutator():
                                           "did_cv", "TR", "task", "fname_spec", "yhat", "ylabel"])
         self.grouped_result = pd.DataFrame(columns=["module_name", "model_name",
                                           "hemisphere", "ROI", "subj", "did_pca", "fixed_testing",
-                                          "did_cv", "TR", "fname_spec", "empirical_ps", "corr_dist", "acc_corrs"])
+                                          "did_cv", "TR", "task", "fname_spec", "empirical_ps", "corr_dist", "acc_corrs"])
 
         self.roiwise_two_stat_ps = dict()
 
@@ -397,21 +397,13 @@ def voxelwise_spearmanr(group1: pd.DataFrame, group2: pd.DataFrame):
 
     group1 = group1.reset_index()
     group2 = group2.reset_index()
-    corr_dist1 = np.hstack((group1.loc[0, "corr_dist"], group1.loc[1, "corr_dist"]))
-    corr_dist1_mean = np.nanmean(corr_dist1, axis=1)
-    acc1 = group1.loc[0, "acc_corrs"] + group1.loc[1, "acc_corrs"]  # concat for LH, and RH
-    acc1 = [corr for corr, pvalue in acc1]
-    acc1_mean = np.nanmean(acc1)
 
-    corr_dist2 = np.hstack((group2.loc[0, "corr_dist"], group2.loc[1, "corr_dist"]))
-    corr_dist2_mean = np.nanmean(corr_dist2, axis=1)
-    acc2 = group2.loc[0, "acc_corrs"] + group2.loc[1, "acc_corrs"]
-    acc2 = [corr for corr, pvalue in acc2]
-    acc2_mean = np.nanmean(acc2)
+    corrs1 = np.array(group1["acc_corrs"])
+    corrs2 = np.array(group2["acc_corrs"])
 
-    p = empirical_p(acc1_mean - acc2_mean, corr_dist1_mean - corr_dist2_mean, dim=1)
+    return np.mean(mapped_spearmanr(corrs1, corrs2, axis=1))
 
-    return p
+
 
 
 def mapped_spearmanr(array1: np.ndarray, array2: np.ndarray, axis=0) -> np.ndarray:
@@ -428,7 +420,7 @@ def mapped_spearmanr(array1: np.ndarray, array2: np.ndarray, axis=0) -> np.ndarr
          [18 19 20 21]]
     Result = [1. 1. 1. 1.]
     """
-    if axis == 0:
+    if axis == 1:
         array1 = array1.transpose()
         array2 = array2.transpose()
     assert array1.shape == array2.shape
