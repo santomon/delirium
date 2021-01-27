@@ -7,7 +7,7 @@ import itertools
 
 import pandas as pd
 import numpy as np
-from scipy.stats import pearsonr
+from scipy.stats import pearsonr, spearmanr
 from statsmodels.stats.multitest import fdrcorrection
 from pandas.core.groupby.groupby import GroupBy as pdGroupBy
 import seaborn as sns
@@ -32,7 +32,7 @@ class Permutator():
         self.repeats = repeats
         self.data = pd.DataFrame(columns=["module_name", "model_name",
                                           "hemisphere", "ROI", "subj", "did_pca", "fixed_testing",
-                                          "did_cv", "TR", "fname_spec", "yhat", "ylabel"])
+                                          "did_cv", "TR", "task", "fname_spec", "yhat", "ylabel"])
         self.grouped_result = pd.DataFrame(columns=["module_name", "model_name",
                                           "hemisphere", "ROI", "subj", "did_pca", "fixed_testing",
                                           "did_cv", "TR", "fname_spec", "empirical_ps", "corr_dist", "acc_corrs"])
@@ -49,7 +49,7 @@ class Permutator():
 
 
     def load_permutations_and_pvalues(self, module_name, model_name: str, did_pca: bool, fixed_testing: bool, did_cv: bool, TR: t.List,
-                         result_path: str = delirium_config.NN_RESULT_PATH, *fname_spec):
+                         task:str, result_path: str = delirium_config.NN_RESULT_PATH, *fname_spec):
 
         """
         WIP
@@ -74,7 +74,7 @@ class Permutator():
                     pvalues = pickle.load(f)
 
                 self._append_result_data(permutated_corrs, corrs_raw[i], pvalues, roi, module_name, model_name, subj,
-                                         did_pca, fixed_testing, did_cv, TR, *fname_spec)
+                                         did_pca, fixed_testing, did_cv, TR, task, *fname_spec)
 
 
     def permutation_roiwise_two_stat_p(self, correction="fdr", save=True,
@@ -96,6 +96,37 @@ class Permutator():
 
             if correction == "fdr":
                 roiwise_result = matrix_fdrcorrection(roiwise_result)
+
+            result.update({group_name: roiwise_result})
+        # self.final_result = roiwise_groups.apply(lambda x: utility.groupby_combine(x, empirical_two_stat_p))
+
+        self.roiwise_two_stat_ps = result
+
+        if save:
+            try:
+                if save_name[-2:] != ".p":
+                    save_name = save_name + ".p"
+            except IndexError:
+                save_name = save_name + ".p"
+
+            full_save_file = os.path.join(save_dir, save_name)
+            with open(full_save_file, "wb") as f:
+                pickle.dump(self.roiwise_two_stat_ps, f)
+
+
+    def roiwise_spearmanr(self, save=True, save_name="roiwise_spearmanrs.p", save_dir=delirium_config.NN_RESULT_PATH):
+
+        roiwise_groups: pdGroupBy = self.grouped_result.groupby(["ROI", "subj"], sort=False)
+        result = dict()
+
+        for group_name, group_roi in roiwise_groups:
+            valid_group_keys = list(group_roi.columns[:-3])  # last three are "empirical_ps", "corr_dist", "acc_corr"
+            valid_group_keys.remove("hemisphere")  # hemisphere is not part of grouping
+
+            roiwise_result = group_roi.groupby(valid_group_keys, sort=False)
+
+            roiwise_result = groupby_combine(roiwise_result, empirical_two_stat_p)
+
 
             result.update({group_name: roiwise_result})
         # self.final_result = roiwise_groups.apply(lambda x: utility.groupby_combine(x, empirical_two_stat_p))
@@ -205,14 +236,14 @@ class Permutator():
 
 
 
-    def load_predictions(self, module_name, model_name: str, did_pca: bool, fixed_testing: bool, did_cv: bool, TR: t.List,
+    def load_predictions(self, module_name, model_name: str, did_pca: bool, fixed_testing: bool, did_cv: bool, TR: t.List, task: str,
                          result_path: str = delirium_config.NN_RESULT_PATH, *fname_spec):
-        [self._load_prediction(subj, module_name, model_name, did_pca, fixed_testing, did_cv, TR, result_path, *fname_spec)
+        [self._load_prediction(subj, module_name, model_name, did_pca, fixed_testing, did_cv, TR, task, result_path, *fname_spec)
          for subj in range(1, 4)]
 
     def _load_prediction(self, subj: int, module_name: str, model_name: str, did_pca: bool, fixed_testing: bool,
                    did_cv: bool,
-                   TR: t.List, result_path=delirium_config.NN_RESULT_PATH, *fname_spec):
+                   TR: t.List, task: str, result_path=delirium_config.NN_RESULT_PATH, *fname_spec):
 
 
         _file_name = self._get_filename(subj, did_pca, fixed_testing, did_cv, TR, *fname_spec)
@@ -232,7 +263,7 @@ class Permutator():
                                                       "" if len(fname_spec) == 0 else "_" + "_".join(fname_spec)
                                                       )
 
-    def _append_data(self, _data, module_name, model_name, subj, did_pca, fixed_testing, did_cv, TR, *fname_spec):
+    def _append_data(self, _data, module_name, model_name, subj, did_pca, fixed_testing, did_cv, TR, task, *fname_spec):
         for i, (roi, roi_data) in enumerate(zip(delirium_config.ROI_LABELS, _data)):
 
             _len = len(roi_data[0])
@@ -248,6 +279,7 @@ class Permutator():
                 "did_cv": [did_cv for _ in range(_len)],
                 "fixed_testing": [fixed_testing for _ in range(_len)],
                 "TR": [tuple(TR) for _ in range(_len)],
+                "task": [task for _ in range(_len)],
                 "fname_spec": [fname_spec for _ in range(_len)]
             }
 
@@ -256,7 +288,7 @@ class Permutator():
 
 
     def _append_result_data(self, corr_dist,acc_corr, pvalues, roi,
-                            module_name, model_name, subj, did_pca, fixed_testing, did_cv, TR, *fname_spec):
+                            module_name, model_name, subj, did_pca, fixed_testing, did_cv, TR, task, *fname_spec):
 
         _data_dict = {
             "module_name": [module_name],
@@ -268,6 +300,7 @@ class Permutator():
             "did_cv": [did_cv],
             "fixed_testing": [fixed_testing],
             "TR": [tuple(TR)],
+            "task": [task],
             "fname_spec": [fname_spec],
             "empirical_ps": [pvalues],
             "corr_dist": [corr_dist],
@@ -353,6 +386,59 @@ def empirical_two_stat_p(group1: pd.DataFrame, group2: pd.DataFrame):
     p = empirical_p(acc1_mean - acc2_mean, corr_dist1_mean - corr_dist2_mean, dim=1)
 
     return p
+
+def voxelwise_spearmanr(group1: pd.DataFrame, group2: pd.DataFrame):
+    """
+    expects group1 and group2 to be a DataFrame with columns
+    "acc_corrs"
+
+    computes the mean voxelwise Spearman's correlation between the two groups, based on correlation values for each task
+    """
+
+    group1 = group1.reset_index()
+    group2 = group2.reset_index()
+    corr_dist1 = np.hstack((group1.loc[0, "corr_dist"], group1.loc[1, "corr_dist"]))
+    corr_dist1_mean = np.nanmean(corr_dist1, axis=1)
+    acc1 = group1.loc[0, "acc_corrs"] + group1.loc[1, "acc_corrs"]  # concat for LH, and RH
+    acc1 = [corr for corr, pvalue in acc1]
+    acc1_mean = np.nanmean(acc1)
+
+    corr_dist2 = np.hstack((group2.loc[0, "corr_dist"], group2.loc[1, "corr_dist"]))
+    corr_dist2_mean = np.nanmean(corr_dist2, axis=1)
+    acc2 = group2.loc[0, "acc_corrs"] + group2.loc[1, "acc_corrs"]
+    acc2 = [corr for corr, pvalue in acc2]
+    acc2_mean = np.nanmean(acc2)
+
+    p = empirical_p(acc1_mean - acc2_mean, corr_dist1_mean - corr_dist2_mean, dim=1)
+
+    return p
+
+
+def mapped_spearmanr(array1: np.ndarray, array2: np.ndarray, axis=0) -> np.ndarray:
+    """
+    computes only column- or row-wise Spearman correlation for two 2D-arrays with the same shape;
+    returns a 1D array with the Spearman correlations
+
+    if axis=0:
+    M1 = [[ 1  2  3  4]
+         [ 5  6  7  8]
+         [ 9 10 11 12]]
+    M2 = [[10 11 12 13]
+         [14 15 16 17]
+         [18 19 20 21]]
+    Result = [1. 1. 1. 1.]
+    """
+    if axis == 0:
+        array1 = array1.transpose()
+        array2 = array2.transpose()
+    assert array1.shape == array2.shape
+
+    rs = []
+    for x, y in zip(array1, array2):
+
+        r, p = spearmanr(x, y)
+        rs.append(r)
+    return np.array(rs)
 
 
 def choose_from_triangles(matrix: np.ndarray, f: t.Callable[[t.Any, t.Any], bool]) -> t.Tuple[np.ndarray, np.ndarray]:
@@ -444,4 +530,6 @@ def main():
 if __name__ == '__main__':
     main()
 
+    x: pdGroupBy
+    x.first
 
