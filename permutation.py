@@ -401,7 +401,7 @@ def voxelwise_spearmanr(group1: pd.DataFrame, group2: pd.DataFrame):
     corrs1 = np.array(group1["acc_corrs"])
     corrs2 = np.array(group2["acc_corrs"])
 
-    return np.mean(mapped_spearmanr(corrs1, corrs2, axis=1))
+    return np.nanmean(mapped_spearmanr(corrs1, corrs2, axis=1))
 
 
 
