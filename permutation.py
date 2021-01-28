@@ -126,9 +126,8 @@ class Permutator():
             df["acc_corrs"] = df["acc_corrs"].apply(lambda x: [c for c, p in x])
             return df
 
-        df = self.grouped_result.drop(["empirical_ps", "corr_dist", "fname_spec"], axis=1)  # drop whatever messes with the grouping
+        df = self.grouped_result.drop(["empirical_ps", "corr_dist", "fname_spec"], axis=1).replace(replacement_dict)  # drop whatever messes with the grouping
         df = mergeLHRH(df)
-        df = df.replace(replacement_dict)
         df = df.reset_index()
         df = only_corrs(df)
 
