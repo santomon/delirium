@@ -114,24 +114,36 @@ class Permutator():
                 pickle.dump(self.roiwise_two_stat_ps, f)
 
 
-    def roiwise_spearmanr(self, save=True, save_name="roiwise_spearmanrs.p", save_dir=delirium_config.NN_RESULT_PATH):
+    def roiwise_spearmanr(self, replacement_dict: dict={}, save=True, save_name="roiwise_spearmanrs.p", save_dir=delirium_config.NN_RESULT_PATH):
 
-        roiwise_groups: pdGroupBy = self.grouped_result.groupby(["ROI", "subj"], sort=False)
+        def mergeLHRH(df: pd.DataFrame) -> pd.DataFrame:
+            cols = list(df.columns)
+            cols.remove("hemisphere")
+            cols.remove("acc_corrs")
+            return df.groupby(cols, sort=False).aggregate(lambda x: list(itertools.chain.from_iterable(x))).drop("hemisphere", axis=1)
+
+        def only_corrs(df: pd.DataFrame) -> pd.DataFrame:
+            df["acc_corrs"] = df["acc_corrs"].apply(lambda x: [c for c, p in x])
+            return df
+
+        df = self.grouped_result.drop(["empircal_ps", "corr_dist", "fname_spec"], axis=1)  # drop whatever messes with the grouping
+        df = mergeLHRH(df)
+        df = df.replace(replacement_dict)
+        df = df.reset_index()
+        df = only_corrs(df)
+
+        roiwise_groups: pdGroupBy = df.groupby(["ROI", "subj"], sort=False)
         result = dict()
 
         for group_name, group_roi in roiwise_groups:
-            valid_group_keys = list(group_roi.columns[:-3])  # last three are "empirical_ps", "corr_dist", "acc_corr"
-            valid_group_keys.remove("hemisphere")  # hemisphere is not part of grouping
 
-            roiwise_result = group_roi.groupby(valid_group_keys, sort=False)
+            roiwise_result = utility.groupby_except(group_roi, ["task", "acc_corrs"], sort=False)
 
-            roiwise_result = groupby_combine(roiwise_result, empirical_two_stat_p)
-
+            roiwise_result = groupby_combine(roiwise_result, voxelwise_spearmanr)
 
             result.update({group_name: roiwise_result})
-        # self.final_result = roiwise_groups.apply(lambda x: utility.groupby_combine(x, empirical_two_stat_p))
 
-        self.roiwise_two_stat_ps = result
+        self.roiwise_spearmanrs = result
 
         if save:
             try:
@@ -142,7 +154,7 @@ class Permutator():
 
             full_save_file = os.path.join(save_dir, save_name)
             with open(full_save_file, "wb") as f:
-                pickle.dump(self.roiwise_two_stat_ps, f)
+                pickle.dump(self.roiwise_spearmanrs, f)
 
 
 
