@@ -126,7 +126,7 @@ class Permutator():
             df["acc_corrs"] = df["acc_corrs"].apply(lambda x: [c for c, p in x])
             return df
 
-        df = self.grouped_result.drop(["empirical_ps", "corr_dist", "fname_spec"], axis=1).replace(replacement_dict)  # drop whatever messes with the grouping
+        df = self.grouped_result.drop(["empirical_ps", "corr_dist", "fname_spec"], axis=1).replace(replacement_dict)  # drop/rename whatever messes with the grouping
         df = mergeLHRH(df)
         df = df.reset_index()
         df = only_corrs(df)
@@ -135,11 +135,8 @@ class Permutator():
         result = dict()
 
         for group_name, group_roi in roiwise_groups:
-
             roiwise_result = utility.groupby_except(group_roi, ["task", "acc_corrs"], sort=False)
-
             roiwise_result = groupby_combine(roiwise_result, voxelwise_spearmanr)
-
             result.update({group_name: roiwise_result})
 
         self.roiwise_spearmanrs = result
@@ -154,6 +151,79 @@ class Permutator():
             full_save_file = os.path.join(save_dir, save_name)
             with open(full_save_file, "wb") as f:
                 pickle.dump(self.roiwise_spearmanrs, f)
+
+
+    def plot_spearmanr(self, save=True, figname=os.path.join(delirium_config.NN_RESULT_PATH, "spearmanr"), *args, **kwargs):
+        """
+
+        """
+        if len(self.roiwise_spearmanrs) == 0:
+            print("self.roiwise_two_stat_ps is empty, nothing to plot")
+            return
+
+        import matplotlib
+        import matplotlib.patches as mpatches
+        if "backend" in kwargs:
+            if kwargs['backend'] == "pgf":
+                matplotlib.use("pgf")  # src: https://timodenk.com/blog/exporting-matplotlib-plots-to-latex/ 31.12.2020
+                matplotlib.rcParams.update({
+                    "pgf.texsystem": "pdflatex",
+                    'font.family': 'serif',
+                    'text.usetex': True,
+                    'pgf.rcfonts': False,
+                })
+        else:
+            matplotlib.use("agg")
+
+
+        if 'palette' in kwargs.keys():
+            palette = sns.color_palette(kwargs['palette'])
+        else:
+            palette = sns.color_palette("rocket")
+
+
+        fig, axes = plt.subplots(3, 5)
+
+        for x, (axes_horizontal, subj) in enumerate(zip(axes, range(1, 4))):
+            for y, (ax, roi) in enumerate(zip(axes_horizontal, delirium_config.ROI)):
+
+                if 'tick_labels' in kwargs.keys():
+                    tick_labels = kwargs['tick_labels']
+                else:
+                    tick_labels = self.roiwise_spearmanrs[(roi, subj)].columns
+
+
+                heatmap = sns.heatmap(self.roiwise_spearmanrs[(roi, subj)], vmin=0, vmax=1, ax=ax, linewidth=.5,
+                            xticklabels=tick_labels,
+                            yticklabels=tick_labels,
+                            cbar=True if y == len(axes_horizontal) - 1,
+                            cmap=palette,
+                            square=True
+                            *args, **_only_sns_kwargs(kwargs))
+
+                if "horizontal_yticks" in kwargs.keys():
+                    if kwargs["horizontal_yticks"]:
+                        heatmap.set_xticklabels(heatmap.get_xticklabels(), rotation=0)
+
+                if x != len(axes) - 1:
+                    ax.get_xaxis().set_visible(False)
+                else:
+                    ax.set_xlabel(roi)
+
+                if y != 0:
+                    ax.get_yaxis().set_visible(False)
+                else:
+                    ax.set_ylabel("subj = {}".format(subj))
+
+        plt.show()
+        if save:
+            if "backend" in kwargs:
+                if kwargs['backend'] == "pgf":
+                    fig.set_size_inches(6.30045, fig.get_figheight() * 6.30045 / fig.get_figwidth())
+            path = os.path.dirname(figname)
+            if not os.path.isdir(path):
+                os.makedirs(path)
+            fig.savefig(figname, bbox_inches="tight")
 
 
 
