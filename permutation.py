@@ -196,9 +196,9 @@ class Permutator():
                 heatmap = sns.heatmap(self.roiwise_spearmanrs[(roi, subj)], vmin=0, vmax=1, ax=ax, linewidth=.5,
                             xticklabels=tick_labels,
                             yticklabels=tick_labels,
-                            cbar=True if y == len(axes_horizontal) else False,
+                            cbar=True if y == len(axes_horizontal) - 1 else False,
                             cmap=palette,
-                            square=True
+                            square=True,
                             *args, **_only_sns_kwargs(kwargs))
 
                 if "horizontal_yticks" in kwargs.keys():
@@ -276,7 +276,7 @@ class Permutator():
                             yticklabels=tick_labels,
                             cbar=True if y == len(axes_horizontal) - 1 and not plot_alpha else False,
                             cmap=palette,
-                            square=True
+                            square=True,
                             *args, **_only_sns_kwargs(kwargs))
 
                 if "horizontal_yticks" in kwargs.keys():
