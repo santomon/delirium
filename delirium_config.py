@@ -11,10 +11,11 @@ BOLD5K_STIMULI_URL = "https://www.dropbox.com/s/5ie18t4rjjvsl47/BOLD5000_Stimuli
 BOLD5K_ROI_DATA_URL = "https://ndownloader.figshare.com/files/12965447"
 
 
-NN_DATA_PATH = os.path.join("/content/gdrive/My Drive/output/")
-NN_SAVE_PATH = os.path.join("/content/output/")
+NN_DATA_PATH = os.path.join("/", "content", "output")
 
-NT_PATH = r"C:\xd\bt\NeuralTaskonomy"
+NN_RESULT_PATH = os.path.join("/", "content", "result")
+
+NT_PATH = "./NeuralTaskonomy"
 
 NAME_PREFIX = ""  # when loading inferences from neural nets, you can specify a prefix for the name of the file
 NAME_SUFFIX = "_bb_f16"  # when loading inferences from neural nets, you can specify a prefix for the name of the file

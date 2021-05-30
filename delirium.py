@@ -11,12 +11,17 @@ import typing as t
 import scipy.io
 import numpy as np
 import sys
+import importlib
+import pickle
+
+from sklearn.decomposition import PCA
 
 import utility
 import delirium_config as config
 import tqdm
 
-sys.path.append(os.path.join(config.NT_PATH, "code"))
+
+
 
 # import encodingmodel.encoding_model
 
@@ -65,6 +70,8 @@ def load_brain_data(
         raise TypeError("tr should be either instance of int or list[int]!")
 
 
+
+
 def load_stim_lists(brain_data_path: str = config.BOLD5K_ROI_DATA_PATH, subjects: t.List[int] = (1, 2, 3)) -> \
     t.List[t.List[str]]:
     stim_lists = []
@@ -108,31 +115,30 @@ def eliminate_from_data_by_substr(data_: brain_dtype, stim_lists: t.List[t.List[
 
 def load_nn_data(
         stim_list: t.List[str],
-        nn_data_path: str = config.NN_DATA_PATH,
-        prefix: str = config.NAME_PREFIX,
-        suffix: str = config.NAME_SUFFIX,
-        file_ending: str = config.NAME_FENDING
+        full_nn_data_path: str,
+        module_name: str,
+        model_name: str,
+        fname_spec: t.List
 ) -> np.ndarray:
     """
     TODO:doc
     :param stim_list:
-    :param nn_data_path:
-    :param prefix:
-    :param suffix:
-    :param file_ending:
+    :param nn_data_path: path to where the files are located, currently only supports models, generated from inference/inference.py
     :return:
     """
 
-    if file_ending in ["npy"]:
-        data_: t.List[np.ndarray] = []
-        for img_name in tqdm.tqdm(stim_list):
-            data_path = os.path.join(nn_data_path, prefix + img_name.split(".")[0] + suffix + "." + file_ending,)
-            data_.append(np.load(data_path, allow_pickle=True).flatten())
-        data_: np.ndarray = np.array(data_)
-        assert len(data_.shape) == 2, "Error: not all datapoints have the same number of parameters!"
-        return data_
-    else:
-        raise NotImplementedError("operation is currently only supported for npy-files")
+    #VULNERABLE:
+    module = importlib.import_module("inference." + module_name)
+    module.select_model(model_name)
+
+    data_: t.List[np.ndarray] = []
+    for img_name in tqdm.tqdm(stim_list):
+        data_path = os.path.join(full_nn_data_path, module.generate_file_name(img_name, *fname_spec))
+        data_.append(np.load(data_path, allow_pickle=True).flatten())
+    data_: np.ndarray = np.array(data_, np.float32)
+    assert len(data_.shape) == 2, "Error: not all datapoints have the same number of parameters!"
+    return data_
+
 
 
 def get_BOLD5K_Stimuli(target_dir: str=".", chunk_size= 1024*1024*10) -> t.NoReturn:
@@ -160,28 +166,158 @@ def rearrange_nn_data(nn_data: np.ndarray,
 
 
 
-def copy_astmt_model(model_dir: str, target_base_dir: str=".") -> t.NoReturn:
+class EncodingModel:
 
-    # TODO: error on gdrive, when too many files; which can happen, if results have already been computed
+    def __init__(self,
+                 data_path: str,
+                 module_name: str,
+                 model_name: str,
+                 save_path: str,
+                 do_pca: bool,
+                 fix_testing: bool,
+                 BOLD5000_ROI_path: str,
+                 BOLD5000_Stimuli_path: str,
+                 do_cv: bool,
+                 fname_spec: t.List,
+                 subjects: t.List[int] = [1, 2, 3],
+                 TR: t.List[int] = [3, 4],
+                 ):
 
-    for model_name in DEFINED_ASTMT_MODELS:
-        if model_name in model_dir:
-            base_model = model_name
-            break
-    else:
-        raise ValueError("no astmt model that fits the selected directory")
+        self.data_path = data_path
+        self.module_name = module_name
+        self.model_name = model_name
+        self.save_path = save_path
+        self.do_pca = do_pca
+        self.fix_testing = fix_testing
+        self.subjects = subjects
+        self.TR = TR
+        self.do_cv = do_cv
 
-    base_index = model_dir.index(base_model)
-    target_dir = os.path.join(target_base_dir, model_dir[base_index:])
-    print(target_dir)
+        self.fname_spec = fname_spec
 
-    import shutil
+        self.brain_data = [load_brain_data(subject=i, tr=TR) for i in subjects]
+        self.stim_lists = load_stim_lists(subjects=subjects)
 
-    if not os.path.isdir(target_dir):
-        os.makedirs(target_dir)
-    if os.path.isdir(target_dir):
-        os.rmdir(target_dir)
-    shutil.copytree(model_dir, target_dir)
+        self.brain_data, self.stim_lists = eliminate_from_data_by_substr(
+            self.brain_data,
+            self.stim_lists,
+            substr='rep_'
+        )   # remove stimuli, that were not shown for the first time
+
+        for substr in config.UNWANTED_IMAGES:
+            self.brain_data, self.stim_lists = eliminate_from_data_by_substr(self.brain_data, self.stim_lists, substr)
+
+        utility.inspect(self.brain_data)
+
+
+    def fit_encoding_model_SSF(self, do_permutation: int):
+
+        sys.path.append(os.path.abspath(os.path.join(config.NT_PATH, "code")))
+        from encodingmodel.encoding_model import ridge_cv
+
+        for i, (subj, brain_data_single) in enumerate(zip(self.subjects, self.brain_data)):
+
+            corrs_array, rsqs_array, cv_array, l_score_array, best_l_array, predictions_array = (
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+            )
+
+
+            data = load_nn_data(
+                stim_list=self.stim_lists[i],
+                full_nn_data_path=os.path.join(self.data_path, self.module_name, self.model_name),
+                module_name=self.module_name,
+                model_name=self.model_name,
+                fname_spec=self.fname_spec,
+            )
+
+            ridged_brain_data_single = dict()
+            for roi in config.ROI_LABELS:
+                corrs, *cv_outputs =ridge_cv(X=np.float32(data),
+                                                y=np.float32(brain_data_single[roi]),
+                                                permute_y= do_permutation,
+                                                cv=self.do_cv,
+                                                pca = self.do_pca,
+                                                fix_testing= self.fix_testing,
+                                                split_by_runs=False,
+                                                repeat=do_permutation)
+
+                if do_permutation:
+                    full_save_path = os.path.join(self.save_path, self.module_name, self.model_name, 'permutations', 'subj{}'.format(subj))
+                    if not os.path.isdir(full_save_path):
+                        os.makedirs(full_save_path)
+
+                    pickle.dump(
+                        corrs,
+                        open(
+                            os.path.join(full_save_path, "permutation_test_on_test_data_corr{}.p".format(roi)),
+                            "wb",
+                        ),
+                    )
+
+                    pickle.dump(
+                        cv_outputs[0],
+                        open(
+                            os.path.join(full_save_path, "permutation_test_on_test_data_pvalue_{}.p".format(roi)),
+                            "wb",
+                        ),
+                    )
+                else:
+                    corrs_array.append(corrs)  # append values of all ROIs
+                    if len(cv_outputs) > 0:
+                        rsqs_array.append(cv_outputs[0])
+                        cv_array.append(cv_outputs[1])
+                        l_score_array.append(cv_outputs[2])
+                        best_l_array.append(cv_outputs[3])
+                        predictions_array.append(cv_outputs[4])
+
+
+
+            outpath = os.path.join(self.save_path, self.module_name, self.model_name)
+            if not os.path.isdir(outpath):
+                os.makedirs(outpath)
+            full_model_name = self.generate_full_model_name(subj)
+
+            pickle.dump(
+                corrs_array, open(os.path.join(outpath, "corr_{}.p".format(full_model_name)), "wb")
+            )
+
+            if len(cv_outputs) > 0:  # happens if no permutations
+                pickle.dump(
+                    rsqs_array, open(os.path.join(outpath, "rsq_{}.p".format(full_model_name)), "wb")
+                )
+                pickle.dump(
+                    cv_array,
+                    open(os.path.join(outpath, "cv_score_{}.p".format(full_model_name)), "wb"),
+                )
+                pickle.dump(
+                    l_score_array,
+                    open(os.path.join(outpath, "l_score_{}.p".format(full_model_name)), "wb"),
+                )
+                pickle.dump(
+                    best_l_array,
+                    open(os.path.join(outpath, "best_l_{}.p".format(full_model_name)), "wb"),
+                )
+
+                if self.fix_testing:
+                    pickle.dump(
+                        predictions_array,
+                        open(os.path.join(outpath, "pred_{}.p".format(full_model_name)), "wb"),
+                    )
+
+
+    def generate_full_model_name(self, subj):
+        return "subj{}_TR{}_{}_{}_{}{}".format(subj,
+                                             "".join([str(tr) for tr in self.TR]),
+                                             "pca" if self.do_pca else "nopca",
+                                             "fixtesting" if self.fix_testing else "nofixtesting",
+                                             "cv" if self.do_cv else "nocv",
+                                             "" if len(self.fname_spec) == 0 else "_" + "_".join(self.fname_spec)
+                                             )
 
 
 if __name__ == "__main__":

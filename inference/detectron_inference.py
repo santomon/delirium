@@ -35,6 +35,7 @@ from detectron2.structures import ImageList
 from detectron2.model_zoo import model_zoo
 from detectron2.modeling import meta_arch
 
+module_name = "detectron_inference"
 
 viable_models = model_zoo._ModelZooUrls.CONFIG_PATH_TO_URL_SUFFIX.keys()
 # the viable model names can be found there
@@ -77,7 +78,7 @@ class FeatureExtractor:
         self.model = model_zoo.get(cfg_path, trained=True)
         self.model.eval()
         self.aug = T.ResizeShortestEdge(
-            [cfg.INPUT.MIN_SIZE_TEST, cfg.INPUT.MIN_SIZE_TEST], cfg.INPUT.MAX_SIZE_TEST
+            [self.cfg.INPUT.MIN_SIZE_TEST, self.cfg.INPUT.MIN_SIZE_TEST], self.cfg.INPUT.MAX_SIZE_TEST
         )
 
     def __call__(self, original_image):
@@ -113,7 +114,7 @@ class FeatureExtractor:
 
     def preprocess_image(self, batched_inputs):
         # all models from detectron2 preprocess the images the same way
-        # this could change in the future; fingers crossed that fbresearch stays consistent
+        # this could change in the future; fingers crossed
         # reference: https://github.com/facebookresearch/detectron2/tree/master/detectron2/modeling/meta_arch  # last checked: 23.11.20
 
         images = [x["image"].to(self.model.device) for x in batched_inputs]
@@ -124,11 +125,7 @@ class FeatureExtractor:
 
 
 predictor: FeatureExtractor = FeatureExtractor(default_model)
-
-
-
-def dependency_solver(): #implement this, if needed
-    pass
+currently_selected_model = default_model
 
 
 def loader(path_to_image: str) -> np.ndarray:
@@ -138,19 +135,50 @@ def loader(path_to_image: str) -> np.ndarray:
 
 
 def preprocessor(data_):
-    pass
+    #identity; incorporated in modelcall
+    return data_
 
 
-def model_call(data_):
-    pass
+def model_call(data_, layer: str=None):
+    result = _reorder_features(predictor(data_))
+
+    if layer is None:
+        return result[list(result.keys())[-1]]  # return last layer
+    else:
+        return result[layer]
 
 
-def postprpocessor(data_):
-    pass
+def postprocessor(data_: t.Dict, compress=True) -> np.ndarray:
+
+    try:
+        result = data_
+        if compress:
+            result = torch.nn.AvgPool2d(3)(result).cpu()
+            result = np.float16(result).squeeze(0)
+        return result
+    except TypeError as t:
+        print(t)
+        print(currently_selected_model, "failed. ")
+        print("data_ looks like:" )
+        print(data_)
+        raise TypeError("stop")
 
 
-def saver(data_, save_path, name):
-    pass
+def saver(data_: np.ndarray, path: str, file_name: str) -> t.NoReturn:
+    full_path = os.path.join(path, module_name, currently_selected_model)
+    if not os.path.isdir(full_path):
+        os.makedirs(full_path)
+    np.save(os.path.join(full_path, generate_file_name(file_name)), data_)
+
+
+def generate_file_name(old_file_name: str) -> str:
+    """
+    for a given image name, generate a respective file name, the output should be saved as;
+    e.g.  xd.jpg -> xd_features.npy
+
+    can be used to find the files for the regression part
+    """
+    return old_file_name.split(".")[0] + '_features' + '.npy'
 
 
 def select_model(model_name: str):
@@ -158,8 +186,9 @@ def select_model(model_name: str):
     change the model, that will be used by the predictor;
     to get the model_names, refer to viable models at the top of this file
     """
-    global predictor
+    global predictor, currently_selected_model
     predictor = FeatureExtractor(model_name)
+    currently_selected_model = model_name
 
 
 def get_features_by_image_path(path_to_image: str) -> t.Dict[str, torch.Tensor]:
@@ -196,7 +225,7 @@ def _reorder_features(outputs: t.Dict[str, torch.Tensor]) -> t.Dict[str, torch.T
     results = collections.OrderedDict()
     keys = outputs.keys()
 
-    res_keys: t.List = [key for key in keys if 'res' in key]
+    res_keys: t.List = sorted([key for key in keys if 'res' in key])
     p_keys: t.List = sorted([key for key in keys if 'p' in key], reverse=True)
 
     new_keys = res_keys + p_keys
@@ -226,4 +255,5 @@ def _create_model_out_dictkeys():
             print(t)
 
     pd.DataFrame(list(zip(model_names, result_keys))).to_csv("d2_model_out_dictkeys.csv")
+
 

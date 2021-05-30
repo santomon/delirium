@@ -23,6 +23,7 @@ from torchvision import transforms
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
+module_name = 'torch_inference'  # VULNERABLE: last verified 26.11.20
 
 torch_dir = 'pytorch/vision'
 default_model = 'deeplabv3_resnet101'
@@ -61,7 +62,7 @@ backbone_return_layers: t.Dict[str, str] = None
 intermediate_layer_getter: torch.nn.Module = None
 
 
-loader = lambda x: np.asarray(Image.open(x))
+loader = lambda x: Image.open(x)
 
 
 def preprocessor(data_):
@@ -73,20 +74,24 @@ def preprocessor(data_):
 
     # create a transformer, the numeric values can be found on https://pytorch.org/hub/pytorch_vision_deeplabv3_resnet101/
     transformer = transforms.Compose([
+    transforms.Resize(256),
+    transforms.CenterCrop(224),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),  # luckily torch models all have the same mean and std
     ])
     return transformer(data_).to(device).unsqueeze(0)
 
 
-def model_call(data_: torch.Tensor) -> t.Dict:
+def model_call(data_: torch.Tensor, layer: str = None) -> t.Dict:
     with torch.no_grad():
         result = intermediate_layer_getter(data_)
-        return result[list(result.keys())[-1]]           # take the last ouput from all generated features
+        if layer is None:
+            return result[list(result.keys())[-1]]           # take the last ouput from all generated features
+        else:
+            return result[layer]
 
 
 def postprocessor(data_: t.Dict, compress=True) -> np.ndarray:
-
     try:
         result = data_
         if compress:
@@ -102,7 +107,7 @@ def postprocessor(data_: t.Dict, compress=True) -> np.ndarray:
 
 
 def saver(data_: np.ndarray, path: str, file_name: str) -> t.NoReturn:
-    full_path = os.path.join(path, currently_selected_model)
+    full_path = os.path.join(path, module_name, currently_selected_model)
     if not os.path.isdir(full_path):
         os.makedirs(full_path)
     np.save(os.path.join(full_path, generate_file_name(file_name)), data_)
@@ -213,4 +218,4 @@ def _update_viable_models():
 ##############################################
 
 select_default_model = lambda: select_model(default_model)
-select_default_model()
+# select_default_model()

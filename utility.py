@@ -9,6 +9,10 @@ import typing as t
 import scipy.io
 import numpy as np
 
+import pandas as pd
+from pandas.core.groupby.groupby import GroupBy as pdGroupBy
+import itertools
+
 
 
 FENDINGS = ("jpg", "JPEG", "JPG")
@@ -126,3 +130,54 @@ def download_and_extract(url: str, tmp_name:str, target_dir:str =".", chunk_size
 
 def identity(x: t.Any) -> t.Any:
     return x
+
+
+def groupby_except(df: pd.DataFrame, notby: t.Iterable, *args, **kwargs):
+    """
+    groups the dataframe by all columns, except the ones in notby;
+    will fail if not-to-group-bys cannot be found in df.columns;
+    args, kwargs will be passed to df.groupby
+    """
+    cols = list(df.columns)
+    for col in notby:
+        cols.remove(col)
+    return df.groupby(cols, *args, **kwargs)
+
+
+
+# certain file names:
+def generate_permutation_file_name(hemisphere: str, roi: str, subj: int,  did_pca, fix_testing, did_cv, TR: t.List, *fname_spec):
+    return "perm_{}{}_subj{}_TR{}_{}_{}_{}{}.p".format(
+                                    hemisphere,
+                                    roi,
+                                    subj,
+                                    "".join([str(tr) for tr in TR]),
+                                    "pca" if did_pca else "nopca",
+                                    "fixtesting" if fix_testing else "nofixtesting",
+                                    "cv" if did_cv else "nocv",
+                                    "" if len(fname_spec) == 0 else "_" + "_".join(fname_spec)
+                                    )
+
+
+def generate_pvalues_file_name(hemisphere: str, roi: str, subj: int, did_pca, fix_testing, did_cv,  TR: t.List, *fname_spec):
+    return "pvalues_{}{}_subj{}_TR{}_{}_{}_{}{}.p".format(
+                                    hemisphere,
+                                    roi,
+                                    subj,
+                                    "".join([str(tr) for tr in TR]),
+                                    "pca" if did_pca else "nopca",
+                                    "fixtesting" if fix_testing else "nofixtesting",
+                                    "cv" if did_cv else "nocv",
+                                    "" if len(fname_spec) == 0 else "_" + "_".join(fname_spec)
+                                    )
+
+
+def generate_corr_file_name(subj: int, did_pca, fix_testing, did_cv,  TR: t.List, *fname_spec):
+    return "corr_subj{}_TR{}_{}_{}_{}{}.p".format(
+                                    subj,
+                                    "".join([str(tr) for tr in TR]),
+                                    "pca" if did_pca else "nopca",
+                                    "fixtesting" if fix_testing else "nofixtesting",
+                                    "cv" if did_cv else "nocv",
+                                    "" if len(fname_spec) == 0 else "_" + "_".join(fname_spec)
+                                    )
