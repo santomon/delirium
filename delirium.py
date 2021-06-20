@@ -169,7 +169,7 @@ def rearrange_nn_data(nn_data: np.ndarray,
 
 def download_taskonomy_features(save_dir: str):
 
-    for task, url in config.taskonomy_features_urls:
+    for task, url in config.taskonomy_features_urls.items():
         tmp_file_name = os.path.join("tmp", task + "_encoder_output" + ".zip")
 
         if not os.path.isdir(save_dir):
