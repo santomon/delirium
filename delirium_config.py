@@ -36,6 +36,12 @@ HEMISPHERES = ["LH", "RH"]
 ROI = ["OPA", "PPA", "LOC", "EarlyVis", "RSC"]
 ROI_LABELS = tuple(hs + roi for hs in HEMISPHERES for roi in ROI)
 
+###############
+taskonomy_features_urls = dict()
+taskonomy_features_urls["rgb2sfnorm"] = "https://drive.google.com/u/0/uc?export=download&confirm=oakK&id=1WFb4F9a7BnqXbBKOP_xe77gDNiLlt4qZ"
+taskonomy_features_urls["edge2d"] ="https://drive.google.com/u/0/uc?export=download&confirm=Oofu&id=18XrUM3UlwmX_RgYoJH1ycNvpLSb1JH0f"
+taskonomy_features_urls["segmentsemantic"] = "https://drive.google.com/u/0/uc?export=download&confirm=WPRB&id=1KBqD2ccAMJi3hQhLHl2qBDuVsXoTzjRL"
+
 ################################
 #downloadlinks:
 # BOLD5000_Stimuli dataset:

@@ -19,6 +19,7 @@ from sklearn.decomposition import PCA
 import utility
 import delirium_config as config
 import tqdm
+import gdown
 
 
 
@@ -153,6 +154,7 @@ def get_BOLD5K_ROI_data(target_dir: str=".", chunk_size= 1024*1024*10) -> t.NoRe
 
 
 
+
 def rearrange_nn_data(nn_data: np.ndarray,
                       curr_subj: int,
                       next_subj: int,
@@ -164,6 +166,22 @@ def rearrange_nn_data(nn_data: np.ndarray,
 
     return nn_data[idx_tmp]
 
+
+def download_taskonomy_features(save_dir: str):
+
+    for task, url in config.taskonomy_features_urls:
+        tmp_file_name = os.path.join("tmp", task + "_encoder_output" + ".zip")
+
+        if not os.path.isdir(save_dir):
+            os.makedirs(save_dir)
+        if not os.path.isdir("tmp"):
+            os.mkdir("tmp")
+
+        if not os.path.isfile(tmp_file_name):
+            gdown.download(url, tmp_file_name, quiet=False)
+            gdown.extractall(tmp_file_name, save_dir)
+        else:
+            print(tmp_file_name, "already exists, skipping download")
 
 
 class EncodingModel:
