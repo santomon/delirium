@@ -264,6 +264,7 @@ class EncodingModel:
                                                 split_by_runs=False,
                                                 repeat=do_permutation,
                                                 save_components=True,
+                                                subj=subj,
                                                 component_path=outpath
                                              )
 
