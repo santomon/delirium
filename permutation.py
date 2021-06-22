@@ -332,7 +332,7 @@ class Permutator():
 
         with open(_path, "rb") as f:
             _data = pickle.load(f)
-        self._append_data(_data, module_name, model_name, subj, did_pca, fixed_testing, did_cv, TR, *fname_spec)
+        self._append_data(_data, module_name, model_name, subj, did_pca, fixed_testing, did_cv, TR, task,*fname_spec)
         return _data
 
     def _get_filename(self, subj, did_pca, fixed_testing, did_cv, TR, *fname_spec):

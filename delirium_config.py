@@ -13,7 +13,7 @@ BOLD5K_ROI_DATA_URL = "https://ndownloader.figshare.com/files/12965447"
 
 NN_DATA_PATH = os.path.join("/", "content", "output")
 
-NN_RESULT_PATH = os.path.join("/", "content", "result")
+NN_RESULT_PATH = os.path.join("/", "content", "results")
 
 NT_PATH = "./NeuralTaskonomy"
 
