@@ -264,7 +264,7 @@ class EncodingModel:
                                                 split_by_runs=False,
                                                 repeat=do_permutation,
                                                 save_components=True,
-                                                components_path=outpath
+                                                component_path=outpath
                                              )
 
                 if do_permutation:
