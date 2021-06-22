@@ -231,10 +231,10 @@ class EncodingModel:
     def fit_encoding_model_SSF(self, do_permutation: int):
 
         sys.path.append(os.path.abspath(os.path.join(config.NT_PATH, "code")))
-        from encodingmodel.encoding_model import ridge_cv
+        from encodingmodel.encoding_model import ridge_cv2
 
         for i, (subj, brain_data_single) in enumerate(zip(self.subjects, self.brain_data)):
-
+            outpath = os.path.join(self.save_path, self.module_name, self.model_name)
             corrs_array, rsqs_array, cv_array, l_score_array, best_l_array, predictions_array = (
                 [],
                 [],
@@ -255,14 +255,17 @@ class EncodingModel:
 
             ridged_brain_data_single = dict()
             for roi in config.ROI_LABELS:
-                corrs, *cv_outputs =ridge_cv(X=np.float32(data),
+                corrs, *cv_outputs =ridge_cv2(X=np.float32(data),
                                                 y=np.float32(brain_data_single[roi]),
                                                 permute_y= do_permutation,
                                                 cv=self.do_cv,
                                                 pca = self.do_pca,
                                                 fix_testing= self.fix_testing,
                                                 split_by_runs=False,
-                                                repeat=do_permutation)
+                                                repeat=do_permutation,
+                                                save_components=True,
+                                                components_path=outpath
+                                             )
 
                 if do_permutation:
                     full_save_path = os.path.join(self.save_path, self.module_name, self.model_name, 'permutations', 'subj{}'.format(subj))
@@ -293,9 +296,6 @@ class EncodingModel:
                         best_l_array.append(cv_outputs[3])
                         predictions_array.append(cv_outputs[4])
 
-
-
-            outpath = os.path.join(self.save_path, self.module_name, self.model_name)
             if not os.path.isdir(outpath):
                 os.makedirs(outpath)
             full_model_name = self.generate_full_model_name(subj)
